@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHIVE for IELTS WRITING</title>
+<style>
+@font-face{
+  font-family: 'BookkGothic';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkGothic-Lt.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face{
+  font-family: 'BookkGothic';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkGothic-Bd.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap');
+
+:root{
+  --bg: #ffffff;
+  --card: #ffffff;
+  --ink: #131315;
+  --ink-soft: #6b7076;
+  --ink-faint: #9aa0a6;
+  --line: #e9e9ea;
+  --red: #c23b3b;
+  --red-deep: #9a2c2c;
+  --red-wash: #fbe9e9;
+  --radius: 12px;
+  --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
+  --en: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
+  --hand: 'Caveat', cursive;
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+
+body{
+  margin:0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--kr);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+a{ color:inherit; text-decoration:none; }
+::selection{ background: var(--red-wash); color: var(--red-deep); }
+:focus-visible{ outline: 2px solid var(--red); outline-offset: 3px; }
+
+.wrap{
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ---------- top bar ---------- */
+.topbar{ padding: 26px 0 0; }
+.topbar .wrap{
+  display:flex; align-items:center; justify-content:flex-end;
+  padding-bottom: 20px;
+}
+.dotcluster{ display:flex; gap:6px; }
+.dotcluster span{ width:8px; height:8px; border-radius:50%; display:inline-block; }
+.dotcluster span:nth-child(1){ background:#c23b3b; }
+.dotcluster span:nth-child(2){ background:#131315; }
+.dotcluster span:nth-child(3){ background:#d8a02a; }
+
+/* ---------- hero ---------- */
+.hero{
+  padding: 34px 0 30px;
+}
+.hero .eyebrow{
+  font-family: var(--en);
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+  color: var(--red);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display:flex; align-items:center; gap:8px;
+}
+.hero .eyebrow::before{
+  content:"";
+  width: 20px; height: 2px;
+  background: var(--red);
+  display:inline-block;
+}
+.hero h1{
+  font-family: var(--en);
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.hero h1 span{ display:block; }
+.hero h1 .l1{ font-size: clamp(38px, 6.4vw, 62px); line-height: 1.02; }
+.hero h1 .l2{ font-size: clamp(20px, 3vw, 28px); font-weight: 700; color: var(--ink-soft); margin: 2px 0; }
+.hero h1 .l3{ font-size: clamp(38px, 6.4vw, 62px); line-height: 1.05; }
+
+/* ---------- legend row (unused, kept out) ---------- */
+
+/* ---------- section headers ---------- */
+.section-head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  margin: 44px 0 18px;
+}
+.section-head h2{
+  font-family: var(--kr);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-faint);
+  letter-spacing: 0.02em;
+  margin:0;
+}
+.section-head .count{
+  font-family: var(--en);
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+/* ---------- category grid ---------- */
+.cat-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.cat-card{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  padding: 18px 18px 16px;
+  cursor:pointer;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+  display:flex; flex-direction:column; gap:10px;
+  position: relative;
+}
+.cat-card:hover{
+  border-color: #d8d8d9;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  transform: translateY(-2px);
+}
+.cat-card.active{ border-color: var(--ink); }
+.cat-card .top-row{ display:flex; align-items:flex-start; justify-content:space-between; }
+.cat-card .eyebrow{
+  font-family: var(--en);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+.pill{
+  font-family: var(--kr);
+  font-weight: 300;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.cat-card .label{
+  font-family: var(--kr);
+  font-weight: 700;
+  font-size: 16.5px;
+  line-height: 1.35;
+}
+.cat-card .desc{
+  font-family: var(--kr);
+  font-weight: 300;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  line-height:1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cat-card .bottom-row{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-top: auto; padding-top: 4px;
+}
+.cat-card .arrow{
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  color: var(--ink-faint);
+}
+.cat-card .arrow svg{ width: 11px; height: 11px; display:block; }
+
+/* ---------- category detail banner ---------- */
+.cat-banner{
+  display:none;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  margin: 8px 0 30px;
+}
+.cat-banner.show{ display:block; }
+.cat-banner .eyebrow{
+  font-family: var(--en);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.cat-banner h3{
+  font-family: var(--kr);
+  font-weight: 700;
+  font-size: 21px;
+  margin: 0 0 10px;
+}
+.cat-banner p{
+  font-family: var(--kr);
+  font-weight: 300;
+  color: var(--ink-soft);
+  font-size: 14px;
+  max-width: 62ch;
+  margin: 0 0 4px;
+}
+.cat-banner .back{
+  display:inline-block;
+  margin-top: 14px;
+  font-family: var(--en);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+/* ---------- essay cards ---------- */
+.essay-grid{ display:flex; flex-direction:column; gap: 12px; }
+.essay-card{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  display:grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.essay-card:hover{
+  border-color: #d8d8d9;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  transform: translateY(-2px);
+}
+.essay-card .meta-line{
+  font-family: var(--en);
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+.essay-card .title{
+  font-family: var(--kr);
+  font-weight: 700;
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+.essay-card .tag-row{ display:flex; flex-wrap:wrap; gap: 6px; }
+.essay-card .score{
+  text-align: right;
+}
+.essay-card .score .num{
+  font-family: var(--en);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--ink);
+  line-height: 1;
+}
+.essay-card .score .lbl{
+  font-family: var(--en);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* ---------- essay detail header ---------- */
+.essay-header{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px 26px;
+  margin: 8px 0 30px;
+  display:grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+}
+.essay-header .meta-line{
+  font-family: var(--en);
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+.essay-header h3{
+  font-family: var(--kr);
+  font-weight: 700;
+  font-size: 22px;
+  margin: 0 0 6px;
+}
+.essay-header .back{
+  display:inline-block;
+  margin-top: 10px;
+  font-family: var(--en);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.essay-header .score{ text-align:right; }
+.essay-header .score .num{
+  font-family: var(--en);
+  font-weight: 700;
+  font-size: 34px;
+  color: var(--ink);
+  line-height: 1;
+}
+.essay-header .score .lbl{
+  font-family: var(--en);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* ---------- entries (sentence-level corrections) ---------- */
+.entries{ display:flex; flex-direction:column; }
+.entry{
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+  display:grid;
+  grid-template-columns: 96px 1fr;
+  gap: 18px;
+}
+.entry .meta{
+  font-family: var(--en);
+  font-size: 11px;
+  color: var(--ink-faint);
+  padding-top: 3px;
+}
+.entry .meta .tag{
+  display:inline-block;
+  margin-top: 8px;
+  font-family: var(--kr);
+  font-weight: 300;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.entry .body .wrong{
+  font-family: var(--en);
+  font-weight: 400;
+  font-size: 15.5px;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+.entry .body .wrong .struck{
+  text-decoration: line-through;
+  text-decoration-color: var(--red);
+  text-decoration-thickness: 1.5px;
+  color: var(--ink-faint);
+}
+.entry .body .correct{
+  font-family: var(--hand);
+  font-size: 21px;
+  color: var(--red-deep);
+  transform: rotate(-0.4deg);
+  margin-bottom: 8px;
+}
+.entry .body .correct::before{ content: "→ "; }
+.entry .body .explanation{
+  font-family: var(--kr);
+  font-weight: 300;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  max-width: 64ch;
+}
+
+.empty{
+  padding: 40px 0;
+  color: var(--ink-faint);
+  font-size: 14px;
+  font-family: var(--kr);
+}
+
+footer{
+  margin-top: 60px;
+  padding: 26px 0 50px;
+  border-top: 1px solid var(--line);
+  font-family: var(--en);
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+}
+
+@media (max-width: 760px){
+  .cat-grid{ grid-template-columns: repeat(2, 1fr); }
+  .entry{ grid-template-columns: 1fr; gap: 6px; }
+  .entry .meta{ display:flex; align-items:center; gap:10px; padding-top:0; }
+  .hero{ padding: 24px 0 22px; }
+  .essay-card{ grid-template-columns: 1fr; }
+  .essay-card .score{ text-align:left; }
+  .essay-header{ grid-template-columns: 1fr; }
+  .essay-header .score{ text-align:left; }
+}
+@media (max-width: 480px){
+  .cat-grid{ grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="dotcluster"><span></span><span></span><span></span></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Grammar Archive · IELTS Writing</div>
+      <h1>
+        <span class="l1">ARCHIVE</span>
+        <span class="l2">for</span>
+        <span class="l3">IELTS WRITING</span>
+      </h1>
+    </div>
+  </section>
+
+  <div class="cat-banner" id="catBanner">
+    <div class="eyebrow" id="catEyebrow"></div>
+    <h3 id="catTitle"></h3>
+    <p id="catDesc"></p>
+    <p id="catNote"></p>
+    <a href="#/" class="back">← 전체 목록으로</a>
+  </div>
+
+  <div id="catSection">
+    <div class="section-head">
+      <h2 id="sectionTitle">카테고리 목록</h2>
+      <span class="count" id="catCount"></span>
+    </div>
+    <div class="cat-grid" id="catGrid"></div>
+  </div>
+
+  <div id="essayHeaderWrap"></div>
+
+  <div class="section-head">
+    <h2 id="entryTitle">기록한 글</h2>
+    <span class="count" id="entryCount"></span>
+  </div>
+  <div id="listArea"></div>
+
+  <footer>
+    <span>Personal grammar log · updated by hand</span>
+    <span id="lastUpdated"></span>
+  </footer>
+
+</main>
+
+<script>
+// ---------------------------------------------------------------
+// DATA
+// 새 글(에세이)을 추가하려면 essays 배열에 객체를 추가하면 됨.
+// 각 essay 안의 entries 배열에 문장별 교정을 추가하면 됨.
+// 새 카테고리가 필요하면 categories 배열에 추가하면 됨 (자동 반영).
+// ---------------------------------------------------------------
+const DATA = {
+  "categories": [
+    { "id": "subject-verb-agreement", "label": "주어-동사 수 일치", "eyebrow": "AGREEMENT",
+      "description": "주어가 단수인지 복수인지에 따라 동사 형태가 달라져야 함. 관계대명사절 뒤, 소유격이 붙은 복수 명사(the teams' scores 등) 뒤에서 특히 자주 놓침." },
+    { "id": "tense", "label": "시제", "eyebrow": "TENSE",
+      "description": "이미 끝난 특정 연도의 사건은 단순과거로, 한 시점보다 앞선 일은 과거완료(had + p.p.)로 표기. 현재완료와 단순과거를 섞어 쓰면 시간 순서가 헷갈림." },
+    { "id": "voice", "label": "능동태·수동태", "eyebrow": "VOICE",
+      "description": "depend, happen, occur 같은 자동사는 수동태로 쓸 수 없음. '~에 좌우되다'라는 뜻이라도 반드시 능동형(depend on)으로 표기." },
+    { "id": "preposition", "label": "전치사", "eyebrow": "PREPOSITION",
+      "description": "비교·출처·기준을 나타내는 전치사(than, from, by, year to year 등)를 문맥에 맞지 않게 쓰거나, 불필요한 전치사를 덧붙이는 경우." },
+    { "id": "pronoun-agreement", "label": "대명사·소유격 일치", "eyebrow": "REFERENCE",
+      "description": "대명사(it, they)와 소유격(its, their)이 가리키는 대상의 수와 일치해야 하며, 비교 대상 앞에는 소유격 누락이 없어야 함." },
+    { "id": "sentence-structure", "label": "문장 구조", "eyebrow": "STRUCTURE",
+      "description": "as, because 같은 종속접속사로 시작한 절에는 반드시 주절이 이어져야 완전한 문장이 됨. 주절 없이 끝나면 '조각 문장(fragment)'이 됨.",
+      "note": "비교 대상이 불명확하거나 어순이 어색한 경우도 포함." },
+    { "id": "comparison", "label": "비교 구문", "eyebrow": "COMPARISON",
+      "description": "비교 대상이 자기 자신이 되지 않도록 주의하고, above·better 같은 비교 표현에 than 이중 사용을 피해야 함." },
+    { "id": "register", "label": "격식체·구어체", "eyebrow": "REGISTER",
+      "description": "By the way, a lot, pt 같은 구어체·축약 표현은 IELTS 라이팅 같은 격식 있는 글에는 부적합. However, significantly 같은 격식체로 대체." },
+    { "id": "word-form", "label": "단어 형태·불규칙 활용", "eyebrow": "FORM",
+      "description": "동사의 불규칙 과거분사형(become, shrink 등)을 규칙 활용처럼 잘못 쓰는 경우. had + 과거분사 조합에서 특히 자주 나타남." }
+  ],
+  "essays": [
+    {
+      "id": "essay-1",
+      "title": "Bar Chart · 팀별 점수 비교 (Task 1)",
+      "date": "2026-08-10",
+      "score": "5.5",
+      "entries": [
+        { "category": "subject-verb-agreement", "wrong": "the bar chart above show", "correct": "the bar chart above shows",
+          "explanation": "주어 'the bar chart'는 단수이므로 동사도 단수형 'shows'가 되어야 함." },
+        { "category": "subject-verb-agreement", "wrong": "the teams' score is not always high or low", "correct": "the teams' scores are not always high or low",
+          "explanation": "'teams'가 복수 소유격이므로 뒤에 오는 명사와 동사도 복수(scores are)로 일치시켜야 함." },
+        { "category": "voice", "wrong": "it could be depended on the season", "correct": "it could depend on the season",
+          "explanation": "depend는 '~에 좌우되다'라는 뜻의 자동사라 수동태로 쓸 수 없음. 항상 능동형 'depend on'으로 표기." },
+        { "category": "tense", "wrong": "it had became lower until 2004, but it has successfully made their score better in 2005", "correct": "it became lower until 2004, but it made its score better in 2005",
+          "explanation": "2005년은 이미 끝난 특정 연도이므로 현재완료(has made)가 아닌 단순과거(made)로 표기해야 함." },
+        { "category": "word-form", "wrong": "it had became lower", "correct": "it had become lower",
+          "explanation": "become의 과거분사형은 became이 아니라 become. had + 과거분사(become) 형태로 써야 함." },
+        { "category": "word-form", "wrong": "as the gap had shrinked", "correct": "as the gap shrank",
+          "explanation": "shrink의 과거형은 shrinked가 아니라 shrank(불규칙 변화)." },
+        { "category": "comparison", "wrong": "there could be a team whose scores are always way above than others", "correct": "there could be a team whose scores are always way above others",
+          "explanation": "above 자체가 이미 비교의 의미를 포함하므로 뒤에 than을 추가로 붙이지 않아야 함." },
+        { "category": "comparison", "wrong": "Team A and Team C's scores are definitely lower than Team A's", "correct": "Team A and Team C's scores are definitely lower than Team B's",
+          "explanation": "비교 대상이 자기 자신(Team A)이 되어버림. 문맥상 비교 대상은 Team B여야 함." },
+        { "category": "preposition", "wrong": "as you can see by team B's scores", "correct": "as you can see from team B's scores",
+          "explanation": "'~을 보면 알 수 있다'는 'see by'가 아니라 'see from'으로 표기." },
+        { "category": "preposition", "wrong": "the gap changes by the year", "correct": "the gap changes from year to year",
+          "explanation": "'해마다 바뀐다'는 뜻은 'by the year'가 아니라 'from year to year' 또는 'year by year'로 표현함." },
+        { "category": "preposition", "wrong": "something that could be called as a trend", "correct": "something that could be called a trend",
+          "explanation": "call A B(A를 B라고 부르다) 구문에는 전치사 as가 불필요함." },
+        { "category": "pronoun-agreement", "wrong": "it has successfully made their score better", "correct": "it made its score better",
+          "explanation": "주어가 'it'(단수 team)인데 뒤에서 'their'(복수)로 받음. 소유격도 it에 맞춰 'its'로 통일해야 함." },
+        { "category": "pronoun-agreement", "wrong": "compared to the scores of Team B's", "correct": "compared to Team B's scores",
+          "explanation": "'the scores of'와 소유격 's를 동시에 쓰면 소유 표현이 중복됨. 둘 중 하나만 사용해야 함." },
+        { "category": "pronoun-agreement", "wrong": "they were still above Team C", "correct": "they were still above Team C's",
+          "explanation": "점수끼리 비교하는 문장이므로 'Team C' 뒤에 소유격 's를 붙여야 비교 대상이 맞음." },
+        { "category": "sentence-structure", "wrong": "as the gap had shrinked and Team A had performed better in 2004 with the score of 35.", "correct": "the gap shrank, and Team A performed better in 2004, scoring 35 points.",
+          "explanation": "'as'로 시작한 절 뒤에 주절이 없어 문장이 미완성됨(조각 문장). as를 빼고 독립된 문장으로 수정 필요." },
+        { "category": "sentence-structure", "wrong": "Their scores are relatively similar compared to the scores of Team B's", "correct": "Team A and Team C's scores are relatively similar to each other",
+          "explanation": "비교 대상이 불명확함. 'similar to each other'처럼 대상을 명시해야 함." },
+        { "category": "register", "wrong": "By the way, as the gap had shrinked", "correct": "However, the gap shrank",
+          "explanation": "'By the way'는 구어체 화제 전환 표현이라 격식 있는 글에 부적합. 'However'로 대체 필요." },
+        { "category": "register", "wrong": "Team B's score was 82pt in 2002", "correct": "Team B's score was 82 points in 2002",
+          "explanation": "'pt'는 구어체·비격식 축약형. 격식 있는 글에서는 'points'로 풀어서 표기." }
+      ]
+    }
+  ]
+};
+
+(function () {
+  var state = DATA;
+
+  // 9 pastel colors spread evenly around the hue wheel (avoiding washed-out yellow)
+  // with enough saturation/lightness contrast to stay distinguishable at a glance.
+  var PALETTE = [
+    { bg: 'hsl(352, 68%, 93%)', fg: 'hsl(352, 58%, 42%)' }, // red
+    { bg: 'hsl(26, 75%, 90%)',  fg: 'hsl(26, 65%, 38%)'  }, // orange
+    { bg: 'hsl(44, 72%, 87%)',  fg: 'hsl(44, 62%, 32%)'  }, // gold
+    { bg: 'hsl(152, 48%, 90%)', fg: 'hsl(152, 45%, 30%)' }, // green
+    { bg: 'hsl(180, 45%, 88%)', fg: 'hsl(180, 50%, 28%)' }, // teal
+    { bg: 'hsl(210, 62%, 92%)', fg: 'hsl(210, 58%, 40%)' }, // blue
+    { bg: 'hsl(238, 58%, 93%)', fg: 'hsl(238, 52%, 46%)' }, // indigo
+    { bg: 'hsl(272, 52%, 93%)', fg: 'hsl(272, 46%, 46%)' }, // violet
+    { bg: 'hsl(322, 58%, 93%)', fg: 'hsl(322, 52%, 42%)' }  // magenta
+  ];
+
+  var ARROW_SVG = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M8 16L16 8M10 8H16V14" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '</svg>';
+
+  function diffWords(wrong, correct) {
+    var a = wrong.split(/\s+/);
+    var b = correct.split(/\s+/);
+    var i = 0;
+    while (i < a.length && i < b.length && a[i].toLowerCase() === b[i].toLowerCase()) i++;
+    var j = 0;
+    while (
+      j < a.length - i && j < b.length - i &&
+      a[a.length - 1 - j].toLowerCase() === b[b.length - 1 - j].toLowerCase()
+    ) j++;
+    var prefix = a.slice(0, i);
+    var middle = a.slice(i, a.length - j);
+    var suffix = a.slice(a.length - j);
+    if (!middle.length) { middle = a.slice(i); suffix = []; }
+    return { prefix: prefix, middle: middle, suffix: suffix };
+  }
+
+  function renderWrong(wrong, correct) {
+    var d = diffWords(wrong, correct);
+    var parts = [];
+    if (d.prefix.length) parts.push(escapeHtml(d.prefix.join(' ')));
+    if (d.middle.length) parts.push('<span class="struck">' + escapeHtml(d.middle.join(' ')) + '</span>');
+    if (d.suffix.length) parts.push(escapeHtml(d.suffix.join(' ')));
+    return parts.join(' ');
+  }
+
+  function colorFor(id) {
+    var idx = state.categories.findIndex(function (c) { return c.id === id; });
+    if (idx < 0) idx = 0;
+    return PALETTE[idx % PALETTE.length];
+  }
+
+  function catById(id) {
+    for (var i = 0; i < state.categories.length; i++) {
+      if (state.categories[i].id === id) return state.categories[i];
+    }
+    return null;
+  }
+
+  function essayById(id) {
+    for (var i = 0; i < state.essays.length; i++) {
+      if (state.essays[i].id === id) return state.essays[i];
+    }
+    return null;
+  }
+
+  // flatten all entries across essays, each tagged with its parent essay id
+  function allEntries() {
+    var out = [];
+    state.essays.forEach(function (essay) {
+      essay.entries.forEach(function (e) {
+        out.push(Object.assign({}, e, { essayId: essay.id, essayTitle: essay.title, date: essay.date }));
+      });
+    });
+    return out;
+  }
+
+  function countFor(catId) {
+    return allEntries().filter(function (e) { return e.category === catId; }).length;
+  }
+
+  function parseRoute() {
+    var h = window.location.hash;
+    var mEssay = h.match(/^#\/essay\/(.+)$/);
+    if (mEssay) return { type: 'essay', essayId: decodeURIComponent(mEssay[1]) };
+    var mTag = h.match(/^#\/tag\/(.+)$/);
+    if (mTag) return { type: 'tag', tag: decodeURIComponent(mTag[1]) };
+    return { type: 'home' };
+  }
+
+  function render() {
+    var route = parseRoute();
+
+    var catSection = document.getElementById('catSection');
+    var essayHeaderWrap = document.getElementById('essayHeaderWrap');
+    var listArea = document.getElementById('listArea');
+    var entryTitle = document.getElementById('entryTitle');
+    var entryCount = document.getElementById('entryCount');
+
+    if (route.type === 'essay') {
+      catSection.style.display = 'none';
+      document.getElementById('catBanner').classList.remove('show');
+      renderEssayHeader(route.essayId);
+      var essay = essayById(route.essayId);
+      var list = essay ? essay.entries.map(function (e) {
+        return Object.assign({}, e, { essayId: essay.id, date: essay.date });
+      }) : [];
+      entryTitle.textContent = essay ? essay.title + ' · 문장별 교정' : '문장별 교정';
+      entryCount.textContent = list.length + '건';
+      listArea.innerHTML = '';
+      listArea.appendChild(buildEntriesEl(list));
+    } else {
+      catSection.style.display = '';
+      essayHeaderWrap.innerHTML = '';
+      renderCategoryGrid(route.type === 'tag' ? route.tag : null);
+      renderBanner(route.type === 'tag' ? route.tag : null);
+
+      var essays = state.essays;
+      if (route.type === 'tag') {
+        essays = essays.filter(function (essay) {
+          return essay.entries.some(function (e) { return e.category === route.tag; });
+        });
+      }
+      entryTitle.textContent = '기록한 글';
+      entryCount.textContent = essays.length + '개';
+      listArea.innerHTML = '';
+      listArea.appendChild(buildEssayGridEl(essays, route.type === 'tag' ? route.tag : null));
+    }
+
+    var dates = allEntries().map(function (e) { return e.date; }).sort();
+    document.getElementById('lastUpdated').textContent = dates.length ? ('last entry · ' + dates[dates.length - 1]) : '';
+  }
+
+  function renderCategoryGrid(activeTag) {
+    var grid = document.getElementById('catGrid');
+    document.getElementById('catCount').textContent = state.categories.length + '개';
+    grid.innerHTML = state.categories.map(function (c) {
+      var active = c.id === activeTag ? ' active' : '';
+      var color = colorFor(c.id);
+      var n = countFor(c.id);
+      return (
+        '<a class="cat-card' + active + '" href="#/tag/' + encodeURIComponent(c.id) + '">' +
+          '<div class="top-row">' +
+            '<div class="eyebrow">' + c.eyebrow + '</div>' +
+            '<span class="pill" style="background:' + color.bg + ';color:' + color.fg + '">' + n + '건</span>' +
+          '</div>' +
+          '<div class="label">' + c.label + '</div>' +
+          '<div class="desc">' + c.description + '</div>' +
+          '<div class="bottom-row">' +
+            '<span class="pill" style="background:#f4f4f5;color:#6b7076">최근 ' + (lastDateFor(c.id) || '—') + '</span>' +
+            '<span class="arrow">' + ARROW_SVG + '</span>' +
+          '</div>' +
+        '</a>'
+      );
+    }).join('');
+  }
+
+  function lastDateFor(id) {
+    var dates = allEntries().filter(function (e) { return e.category === id; }).map(function (e) { return e.date; }).sort();
+    if (!dates.length) return null;
+    return dates[dates.length - 1].slice(5).replace('-', '.');
+  }
+
+  function renderBanner(tag) {
+    var banner = document.getElementById('catBanner');
+    var c = tag ? catById(tag) : null;
+    if (!c) { banner.classList.remove('show'); return; }
+    var color = colorFor(c.id);
+    banner.classList.add('show');
+    var eb = document.getElementById('catEyebrow');
+    eb.textContent = c.eyebrow;
+    eb.style.color = color.fg;
+    document.getElementById('catTitle').textContent = c.label;
+    document.getElementById('catDesc').textContent = c.description;
+    document.getElementById('catNote').textContent = c.note || '';
+    document.getElementById('sectionTitle').textContent = '전체 카테고리';
+  }
+
+  function renderEssayHeader(essayId) {
+    var essay = essayById(essayId);
+    var wrap = document.getElementById('essayHeaderWrap');
+    if (!essay) { wrap.innerHTML = '<div class="empty">글을 찾을 수 없음.</div>'; return; }
+    wrap.innerHTML =
+      '<div class="essay-header">' +
+        '<div>' +
+          '<div class="meta-line">' + essay.date + '</div>' +
+          '<h3>' + escapeHtml(essay.title) + '</h3>' +
+          '<a href="#/" class="back">← 전체 글 목록으로</a>' +
+        '</div>' +
+        '<div class="score">' +
+          '<div class="num">' + escapeHtml(String(essay.score)) + '</div>' +
+          '<div class="lbl">EST. BAND</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function buildEssayGridEl(essays, activeTag) {
+    var grid = document.createElement('div');
+    grid.className = 'essay-grid';
+    if (!essays.length) {
+      grid.innerHTML = '<div class="empty">아직 기록된 글이 없음.</div>';
+      return grid;
+    }
+    essays.slice().sort(function (a, b) { return b.date.localeCompare(a.date); }).forEach(function (essay) {
+      var cats = {};
+      essay.entries.forEach(function (e) { cats[e.category] = (cats[e.category] || 0) + 1; });
+      var tagRow = Object.keys(cats).map(function (catId) {
+        var c = catById(catId);
+        var color = colorFor(catId);
+        var count = activeTag && catId === activeTag ? cats[catId] : null;
+        return '<span class="pill" style="background:' + color.bg + ';color:' + color.fg + '">' +
+          (c ? c.label : catId) + (count ? ' · ' + count + '건' : '') + '</span>';
+      }).join('');
+
+      var card = document.createElement('a');
+      card.className = 'essay-card';
+      card.href = '#/essay/' + encodeURIComponent(essay.id);
+      card.innerHTML =
+        '<div>' +
+          '<div class="meta-line">' + essay.date + ' · ' + essay.entries.length + '건 교정</div>' +
+          '<div class="title">' + escapeHtml(essay.title) + '</div>' +
+          '<div class="tag-row">' + tagRow + '</div>' +
+        '</div>' +
+        '<div class="score">' +
+          '<div class="num">' + escapeHtml(String(essay.score)) + '</div>' +
+          '<div class="lbl">EST. BAND</div>' +
+        '</div>';
+      grid.appendChild(card);
+    });
+    return grid;
+  }
+
+  function buildEntriesEl(list) {
+    var wrap = document.createElement('div');
+    wrap.className = 'entries';
+    if (!list.length) {
+      wrap.innerHTML = '<div class="empty">아직 기록된 실수가 없음.</div>';
+      return wrap;
+    }
+    wrap.innerHTML = list.map(function (e) {
+      var c = catById(e.category);
+      var color = colorFor(e.category);
+      return (
+        '<div class="entry">' +
+          '<div class="meta">' +
+            e.date +
+            '<br>' +
+            '<a class="tag" href="#/tag/' + encodeURIComponent(e.category) + '" style="background:' + color.bg + ';color:' + color.fg + '">' + (c ? c.label : e.category) + '</a>' +
+          '</div>' +
+          '<div class="body">' +
+            '<div class="wrong">' + renderWrong(e.wrong, e.correct) + '</div>' +
+            '<div class="correct">' + escapeHtml(e.correct) + '</div>' +
+            '<div class="explanation">' + escapeHtml(e.explanation) + '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+    return wrap;
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  render();
+  window.addEventListener('hashchange', render);
+})();
+</script>
+</body>
+</html>
