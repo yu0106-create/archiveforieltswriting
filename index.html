@@ -332,6 +332,46 @@ a{ color:inherit; text-decoration:none; }
   margin-top: 3px;
 }
 
+/* ---------- question + original (uncorrected) text ---------- */
+.essay-original{
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--ink);
+  padding: 22px 26px;
+  margin: -12px 0 30px;
+  background: var(--card);
+}
+.essay-original .block + .block{ margin-top: 22px; }
+.essay-original .block-label{
+  font-family: var(--en);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 8px;
+}
+.essay-original .question-text{
+  font-family: var(--kr);
+  font-weight: 300;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+  font-style: italic;
+  line-height: 1.6;
+}
+.essay-original .question-text.placeholder{
+  color: var(--ink-faint);
+  font-style: normal;
+}
+.essay-original .original-text p{
+  font-family: var(--en);
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--ink);
+  line-height: 1.75;
+  margin: 0 0 14px;
+}
+.essay-original .original-text p:last-child{ margin-bottom: 0; }
+
 /* ---------- entries (sentence-level corrections) ---------- */
 .entries{ display:flex; flex-direction:column; }
 .entry{
@@ -506,6 +546,8 @@ const DATA = {
       "title": "Bar Chart · 팀별 점수 비교 (Task 1)",
       "date": "2026-08-10",
       "score": "5.5",
+      "question": "",
+      "originalText": "Scores could be considered as which are determined by eacg team's ability, but the bar chart above show that it could be depended on the season. Of course, as you can see by team B's scores during 2002~2005, there could be a team whose scores are always way above than others. However, Team B's score was 82pt in 2002 but it had became lower until 2004, but it has successfully made their socre better in 2005.\n\nTeam A and Team C's scores are definitely lower than Team A's for the entire given period. Their scores are relatively similar compared to the scores of Team B's, even though the gap changes by the year. Furthermore, until 2003, Team C's performance was better than Team A's. By the way, as the gap had shrinked and Team A had performed better in 2004 with the score of 35. In 2005, TeamA's score has got lower a lot, but they were still above Team C.\n\nThis chart shows two ponits. First one is that the teams' score is not always high or low, and it costantly changes as the season goes. Second, there's something that could be called as a trend in theses scores.",
       "entries": [
         { "category": "subject-verb-agreement", "wrong": "the bar chart above show", "correct": "the bar chart above shows",
           "explanation": "주어 'the bar chart'는 단수이므로 동사도 단수형 'shows'가 되어야 함." },
@@ -731,6 +773,16 @@ const DATA = {
     var essay = essayById(essayId);
     var wrap = document.getElementById('essayHeaderWrap');
     if (!essay) { wrap.innerHTML = '<div class="empty">글을 찾을 수 없음.</div>'; return; }
+
+    var questionHtml = essay.question
+      ? '<div class="question-text">' + escapeHtml(essay.question) + '</div>'
+      : '<div class="question-text placeholder">질문 미등록 — 추후 추가 예정</div>';
+
+    var originalHtml = (essay.originalText || '')
+      .split(/\n\s*\n/)
+      .map(function (p) { return '<p>' + escapeHtml(p.trim()) + '</p>'; })
+      .join('');
+
     wrap.innerHTML =
       '<div class="essay-header">' +
         '<div>' +
@@ -741,6 +793,16 @@ const DATA = {
         '<div class="score">' +
           '<div class="num">' + escapeHtml(String(essay.score)) + '</div>' +
           '<div class="lbl">EST. BAND</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="essay-original">' +
+        '<div class="block">' +
+          '<div class="block-label">Question</div>' +
+          questionHtml +
+        '</div>' +
+        '<div class="block">' +
+          '<div class="block-label">원문 (첨삭 전)</div>' +
+          '<div class="original-text">' + originalHtml + '</div>' +
         '</div>' +
       '</div>';
   }
