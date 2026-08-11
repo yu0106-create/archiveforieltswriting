@@ -60,9 +60,25 @@ a{ color:inherit; text-decoration:none; }
 /* ---------- top bar ---------- */
 .topbar{ padding: 26px 0 0; }
 .topbar .wrap{
-  display:flex; align-items:center; justify-content:flex-end;
+  display:flex; align-items:center; justify-content:space-between;
   padding-bottom: 20px;
 }
+.navbtns{ display:flex; gap:8px; }
+.navbtns button{
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  display:flex; align-items:center; justify-content:center;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 0;
+  transition: border-color .15s ease, color .15s ease;
+}
+.navbtns button:hover{ border-color: var(--ink); color: var(--ink); }
+.navbtns button:disabled{ opacity: 0.35; cursor: default; }
+.navbtns button:disabled:hover{ border-color: var(--line); color: var(--ink-soft); }
+.navbtns button svg{ width: 15px; height: 15px; }
 .dotcluster{ display:flex; gap:6px; }
 .dotcluster span{ width:8px; height:8px; border-radius:50%; display:inline-block; }
 .dotcluster span:nth-child(1){ background:#c23b3b; }
@@ -188,47 +204,6 @@ a{ color:inherit; text-decoration:none; }
   color: var(--ink-faint);
 }
 .cat-card .arrow svg{ width: 11px; height: 11px; display:block; }
-
-/* ---------- category detail banner ---------- */
-.cat-banner{
-  display:none;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 22px 24px;
-  margin: 8px 0 30px;
-}
-.cat-banner.show{ display:block; }
-.cat-banner .eyebrow{
-  font-family: var(--en);
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  margin-bottom: 8px;
-}
-.cat-banner h3{
-  font-family: var(--kr);
-  font-weight: 700;
-  font-size: 21px;
-  margin: 0 0 10px;
-}
-.cat-banner p{
-  font-family: var(--kr);
-  font-weight: 300;
-  color: var(--ink-soft);
-  font-size: 14px;
-  max-width: 62ch;
-  margin: 0 0 4px;
-}
-.cat-banner .back{
-  display:inline-block;
-  margin-top: 14px;
-  font-family: var(--en);
-  font-weight: 600;
-  font-size: 12px;
-  color: var(--ink);
-  border-bottom: 1px solid var(--ink);
-}
 
 /* ---------- essay cards ---------- */
 .essay-grid{ display:flex; flex-direction:column; gap: 12px; }
@@ -469,6 +444,14 @@ footer{
 
 <header class="topbar">
   <div class="wrap">
+    <div class="navbtns">
+      <button type="button" id="navBack" aria-label="뒤로 가기">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" id="navForward" aria-label="앞으로 가기">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
     <div class="dotcluster"><span></span><span></span><span></span></div>
   </div>
 </header>
@@ -485,14 +468,6 @@ footer{
       </h1>
     </div>
   </section>
-
-  <div class="cat-banner" id="catBanner">
-    <div class="eyebrow" id="catEyebrow"></div>
-    <h3 id="catTitle"></h3>
-    <p id="catDesc"></p>
-    <p id="catNote"></p>
-    <a href="#/" class="back">← 전체 목록으로</a>
-  </div>
 
   <div id="catSection">
     <div class="section-head">
@@ -696,11 +671,9 @@ const DATA = {
     var listArea = document.getElementById('listArea');
     var entryTitle = document.getElementById('entryTitle');
     var entryCount = document.getElementById('entryCount');
-    var catBanner = document.getElementById('catBanner');
 
     if (route.type === 'essay') {
       catSection.style.display = 'none';
-      catBanner.classList.remove('show');
       renderEssayHeader(route.essayId);
       var essay = essayById(route.essayId);
       var list = essay ? essay.entries.map(function (e) {
@@ -711,11 +684,10 @@ const DATA = {
       listArea.innerHTML = '';
       listArea.appendChild(buildEntriesEl(list));
     } else if (route.type === 'tag') {
-      // focused page: category grid stays hidden, just a compact header + the matching sentences
+      // focused page: category grid stays hidden, only the matching sentences show
       catSection.style.display = 'none';
-      essayHeaderWrap.innerHTML = '';
-      renderBanner(route.tag);
       var cat = catById(route.tag);
+      essayHeaderWrap.innerHTML = buildTagHeaderHtml(cat, route.tag);
       var taglist = allEntries().filter(function (e) { return e.category === route.tag; });
       entryTitle.textContent = (cat ? cat.label : route.tag) + ' 실수 목록';
       entryCount.textContent = taglist.length + '건';
@@ -724,7 +696,6 @@ const DATA = {
     } else {
       catSection.style.display = '';
       essayHeaderWrap.innerHTML = '';
-      catBanner.classList.remove('show');
       renderCategoryGrid(null);
 
       entryTitle.textContent = '기록한 글';
@@ -735,6 +706,26 @@ const DATA = {
 
     var dates = allEntries().map(function (e) { return e.date; }).sort();
     document.getElementById('lastUpdated').textContent = dates.length ? ('last entry · ' + dates[dates.length - 1]) : '';
+    updateNavButtons();
+  }
+
+  function buildTagHeaderHtml(cat, tagId) {
+    return (
+      '<div class="essay-header">' +
+        '<div>' +
+          '<div class="meta-line">' + (cat ? cat.eyebrow : '') + '</div>' +
+          '<h3>' + escapeHtml(cat ? cat.label : tagId) + '</h3>' +
+          '<a href="#/" class="back">← 전체 글 목록으로</a>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  // simple browser-history back/forward controls (top-left)
+  document.getElementById('navBack').addEventListener('click', function () { window.history.back(); });
+  document.getElementById('navForward').addEventListener('click', function () { window.history.forward(); });
+  function updateNavButtons() {
+    document.getElementById('navBack').disabled = window.history.length <= 1;
   }
 
   function renderCategoryGrid(activeTag) {
@@ -765,21 +756,6 @@ const DATA = {
     var dates = allEntries().filter(function (e) { return e.category === id; }).map(function (e) { return e.date; }).sort();
     if (!dates.length) return null;
     return dates[dates.length - 1].slice(5).replace('-', '.');
-  }
-
-  function renderBanner(tag) {
-    var banner = document.getElementById('catBanner');
-    var c = tag ? catById(tag) : null;
-    if (!c) { banner.classList.remove('show'); return; }
-    var color = colorFor(c.id);
-    banner.classList.add('show');
-    var eb = document.getElementById('catEyebrow');
-    eb.textContent = c.eyebrow;
-    eb.style.color = color.fg;
-    document.getElementById('catTitle').textContent = c.label;
-    document.getElementById('catDesc').textContent = c.description;
-    document.getElementById('catNote').textContent = c.note || '';
-    document.getElementById('sectionTitle').textContent = '전체 카테고리';
   }
 
   function renderEssayHeader(essayId) {
