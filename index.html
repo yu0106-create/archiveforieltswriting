@@ -29,6 +29,8 @@
   --red: #c23b3b;
   --red-deep: #9a2c2c;
   --red-wash: #fbe9e9;
+  --star: #ffcd3c;
+  --hl-pink: #ff2ec4;
   --radius: 12px;
   --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
   --en: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
@@ -85,11 +87,20 @@ a{ color:inherit; text-decoration:none; }
 .navbtns button:disabled{ opacity: 0.35; cursor: default; }
 .navbtns button:disabled:hover{ border-color: var(--line); color: var(--ink-soft); }
 .navbtns button svg{ width: 15px; height: 15px; }
-.dotcluster{ display:flex; gap:6px; }
-.dotcluster span{ width:8px; height:8px; border-radius:50%; display:inline-block; }
-.dotcluster span:nth-child(1){ background:#c23b3b; }
-.dotcluster span:nth-child(2){ background:#131315; }
-.dotcluster span:nth-child(3){ background:#d8a02a; }
+.starnav{ display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+.starnav-btn{
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 2px 0;
+  display: flex;
+  gap: 2px;
+  line-height: 0;
+}
+.starnav-btn svg{ width: 13px; height: 13px; }
+.starnav-btn svg .star-fill{ fill: var(--star); stroke: var(--star); }
+.starnav-btn svg .star-empty{ fill: none; stroke: var(--ink-faint); stroke-width: 1.5; }
+.starnav-btn.active svg .star-empty{ stroke: var(--ink); }
 
 /* ---------- hero ---------- */
 .hero{
@@ -386,6 +397,55 @@ a{ color:inherit; text-decoration:none; }
   border-radius: 4px;
   cursor: pointer;
 }
+.entry .meta .stars{
+  display: flex;
+  gap: 3px;
+  margin-top: 10px;
+}
+.entry .meta .stars button{
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  line-height: 0;
+}
+.entry .meta .stars svg{ width: 15px; height: 15px; }
+.entry .meta .stars svg .star-fill{ fill: var(--star); stroke: var(--star); }
+.entry .meta .stars svg .star-empty{ fill: none; stroke: var(--ink-faint); stroke-width: 1.5; }
+.entry .meta .stars button:hover svg .star-empty{ stroke: var(--ink-soft); }
+
+mark.hl{
+  background: var(--hl-pink);
+  color: #1a0013;
+  border-radius: 2px;
+  padding: 0 1px;
+  cursor: pointer;
+}
+.hl-popup{
+  position: fixed;
+  z-index: 200;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--kr);
+  font-weight: 300;
+  font-size: 12.5px;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+}
+.hl-popup::after{
+  content: "";
+  position: absolute;
+  left: 50%; top: 100%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--ink);
+}
+.hl-zone{ cursor: text; }
+
 .entry .body .wrong{
   position: relative;
   font-family: var(--en);
@@ -472,7 +532,11 @@ footer{
         <svg viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
-    <div class="dotcluster"><span></span><span></span><span></span></div>
+    <div class="starnav" id="starNav">
+      <button type="button" class="starnav-btn" data-n="3" aria-label="별 3개 표시한 문장"></button>
+      <button type="button" class="starnav-btn" data-n="2" aria-label="별 2개 표시한 문장"></button>
+      <button type="button" class="starnav-btn" data-n="1" aria-label="별 1개 표시한 문장"></button>
+    </div>
   </div>
 </header>
 
@@ -514,6 +578,32 @@ footer{
 
 </main>
 
+<script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore-compat.js"></script>
+<script>
+  var firebaseConfig = {
+    apiKey: "AIzaSyBBWSFt4KBHBz6mPTdNs9v3iN6F1HL9k_k",
+    authDomain: "grammar-archive.firebaseapp.com",
+    projectId: "grammar-archive",
+    storageBucket: "grammar-archive.firebasestorage.app",
+    messagingSenderId: "756302847323",
+    appId: "1:756302847323:web:734c071b8f16944a614e7e"
+  };
+  // If the Firebase SDK failed to load (ad-blocker, offline, network hiccup,
+  // Firestore outage...) the site must still work using localStorage only --
+  // it should never take the whole page down. `db` stays null in that case,
+  // and the app code below checks for that before touching it.
+  var db = null;
+  try {
+    if (typeof firebase !== 'undefined') {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+    }
+  } catch (e) {
+    console.error('Firebase unavailable, continuing in local-only mode:', e);
+    db = null;
+  }
+</script>
 <script>
 // ---------------------------------------------------------------
 // DATA
@@ -597,6 +687,105 @@ const DATA = {
 (function () {
   var state = DATA;
 
+  // ---------------------------------------------------------------
+  // Persistence for highlights & star ratings.
+  // localStorage = instant local cache (works offline, no lag on click).
+  // Firestore = the shared source of truth that syncs across devices --
+  // a single fixed document that only this site's own code reads/writes.
+  // Every device that opens the page subscribes to that document, so a
+  // highlight made on one device shows up on the others within a second
+  // or two (no refresh needed, thanks to onSnapshot).
+  // ---------------------------------------------------------------
+  var SYNC_DOC = db ? db.collection('sync').doc('grammar-archive') : null;
+
+  function makeStore(storageKey) {
+    var cache = null;
+    function load() {
+      if (cache) return cache;
+      try { cache = JSON.parse(localStorage.getItem(storageKey) || '{}'); }
+      catch (e) { cache = {}; }
+      return cache;
+    }
+    function save() {
+      try { localStorage.setItem(storageKey, JSON.stringify(cache)); } catch (e) { /* storage unavailable */ }
+    }
+    function replaceAll(data) {
+      cache = data || {};
+      save();
+    }
+    return { load: load, save: save, replaceAll: replaceAll };
+  }
+
+  var HStore = makeStore('grammar-archive-highlights-v1');
+  var SStore = makeStore('grammar-archive-stars-v1');
+
+  var pushTimer = null;
+  function pushToCloud() {
+    if (!SYNC_DOC) return; // no cloud connection -- local-only mode, already saved above
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(function () {
+      SYNC_DOC.set({
+        highlights: HStore.load(),
+        stars: SStore.load(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).catch(function (err) {
+        console.error('Sync write failed (staying local-only for now):', err);
+      });
+    }, 400);
+  }
+
+  var Highlights = {
+    get: function (entryId, field) {
+      var d = HStore.load();
+      return (d[entryId] && d[entryId][field]) || [];
+    },
+    add: function (entryId, field, start, end) {
+      var d = HStore.load();
+      if (!d[entryId]) d[entryId] = {};
+      if (!d[entryId][field]) d[entryId][field] = [];
+      d[entryId][field].push({ start: start, end: end });
+      d[entryId][field] = mergeRanges(d[entryId][field]);
+      HStore.save();
+      pushToCloud();
+    },
+    removeAt: function (entryId, field, start, end) {
+      var d = HStore.load();
+      if (!d[entryId] || !d[entryId][field]) return;
+      d[entryId][field] = d[entryId][field].filter(function (r) { return !(r.start === start && r.end === end); });
+      if (!d[entryId][field].length) delete d[entryId][field];
+      if (Object.keys(d[entryId]).length === 0) delete d[entryId];
+      HStore.save();
+      pushToCloud();
+    }
+  };
+
+  function mergeRanges(ranges) {
+    var sorted = ranges.slice().sort(function (a, b) { return a.start - b.start; });
+    var out = [];
+    sorted.forEach(function (r) {
+      var last = out[out.length - 1];
+      if (last && r.start <= last.end) { last.end = Math.max(last.end, r.end); }
+      else { out.push({ start: r.start, end: r.end }); }
+    });
+    return out;
+  }
+
+  var Stars = {
+    get: function (entryId) { return SStore.load()[entryId] || 0; },
+    set: function (entryId, n) {
+      var d = SStore.load();
+      if (n <= 0) delete d[entryId]; else d[entryId] = n;
+      SStore.save();
+      pushToCloud();
+    }
+  };
+
+  function starIconSvg(filled) {
+    return filled
+      ? '<svg viewBox="0 0 24 24"><path class="star-fill" d="M12 2.5l2.9 6.3 6.9.7-5.2 4.7 1.5 6.8L12 17.6l-6.1 3.4 1.5-6.8-5.2-4.7 6.9-.7z"/></svg>'
+      : '<svg viewBox="0 0 24 24"><path class="star-empty" d="M12 2.5l2.9 6.3 6.9.7-5.2 4.7 1.5 6.8L12 17.6l-6.1 3.4 1.5-6.8-5.2-4.7 6.9-.7z"/></svg>';
+  }
+
   // 9 pastel colors spread evenly around the hue wheel (avoiding washed-out yellow)
   // with enough saturation/lightness contrast to stay distinguishable at a glance.
   var PALETTE = [
@@ -633,31 +822,64 @@ const DATA = {
     return { prefix: prefix, middleWrong: middleWrong, suffix: suffix, middleCorrect: middleCorrect };
   }
 
+  // Splits text into non-overlapping segments at every highlight/struck boundary,
+  // then wraps each segment with whichever of <mark class="hl"> / <span class="struck">
+  // actually apply to it. Handles arbitrary overlap between a user's highlight drag
+  // and the auto-computed struck range.
+  function renderAnnotatedText(text, highlightRanges, struckRange, fixText) {
+    var points = {};
+    points[0] = true; points[text.length] = true;
+    (highlightRanges || []).forEach(function (r) { points[r.start] = true; points[r.end] = true; });
+    if (struckRange) { points[struckRange.start] = true; points[struckRange.end] = true; }
+    var sorted = Object.keys(points).map(Number).sort(function (a, b) { return a - b; });
+
+    var html = '';
+    for (var k = 0; k < sorted.length - 1; k++) {
+      var s = sorted[k], e = sorted[k + 1];
+      if (s >= e) continue;
+      var seg = text.slice(s, e);
+      var isHi = (highlightRanges || []).some(function (r) { return s >= r.start && e <= r.end; });
+      var isStruck = struckRange && s >= struckRange.start && e <= struckRange.end;
+      var open = '', close = '';
+      if (isHi) { open += '<mark class="hl" data-start="' + s + '" data-end="' + e + '">'; close = '</mark>' + close; }
+      if (isStruck) {
+        open += (fixText != null) ? '<span class="struck" data-fix="' + escapeHtml(fixText) + '">' : '<span class="struck">';
+        close = '</span>' + close;
+      }
+      html += open + escapeHtml(seg) + close;
+    }
+    return html;
+  }
+
   // Two rendering modes:
   // - "inline": only part of the sentence changed -> struck word(s) get a small
   //   proofreading-style note positioned precisely under them via JS (positionCorrectionNotes).
   // - "full": the whole sentence changed -> no shared anchor point exists, so the
   //   correction is shown as a normal in-flow line below (nothing overlaps, ever).
-  function buildWrongBlock(wrong, correct) {
+  function buildWrongBlock(entryId, wrong, correct) {
     var d = diffWords(wrong, correct);
     var isFullRewrite = d.prefix.length === 0 && d.suffix.length === 0;
+    var hlRanges = Highlights.get(entryId, 'wrong');
+    var zoneAttrs = ' class="wrong hl-zone" data-entry-id="' + escapeHtml(entryId) + '" data-field="wrong"';
 
     if (isFullRewrite) {
+      var struckRange = { start: 0, end: wrong.length };
       return (
-        '<div class="wrong"><span class="struck">' + escapeHtml(wrong) + '</span></div>' +
+        '<div' + zoneAttrs + '>' + renderAnnotatedText(wrong, hlRanges, struckRange, null) + '</div>' +
         '<div class="full-correction">' + escapeHtml(correct) + '</div>'
       );
     }
 
-    var parts = [];
-    if (d.prefix.length) parts.push(escapeHtml(d.prefix.join(' ')));
-    parts.push(
-      '<span class="struck" data-fix="' + escapeHtml(d.middleCorrect.join(' ')) + '">' +
-        escapeHtml(d.middleWrong.join(' ')) +
-      '</span>'
-    );
-    if (d.suffix.length) parts.push(escapeHtml(d.suffix.join(' ')));
-    return '<div class="wrong">' + parts.join(' ') + '</div>';
+    var prefixStr = d.prefix.join(' ');
+    var middleStr = d.middleWrong.join(' ');
+    var suffixStr = d.suffix.join(' ');
+    var reconstructed = [prefixStr, middleStr, suffixStr].filter(function (s) { return s.length; }).join(' ');
+    var mStart = prefixStr.length ? prefixStr.length + 1 : 0;
+    var mEnd = mStart + middleStr.length;
+
+    return '<div' + zoneAttrs + '>' +
+      renderAnnotatedText(reconstructed, hlRanges, { start: mStart, end: mEnd }, d.middleCorrect.join(' ')) +
+      '</div>';
   }
 
   // Measures each struck word's actual on-screen position and places its
@@ -719,15 +941,38 @@ const DATA = {
     return null;
   }
 
-  // flatten all entries across essays, each tagged with its parent essay id
+  // flatten all entries across essays, each tagged with its parent essay id.
+  // "id" is essayId + array-index -- stable regardless of how a view later sorts
+  // the list for display, so highlights/stars always point at the right sentence.
   function allEntries() {
     var out = [];
     state.essays.forEach(function (essay) {
-      essay.entries.forEach(function (e) {
-        out.push(Object.assign({}, e, { essayId: essay.id, essayTitle: essay.title, date: essay.date }));
+      essay.entries.forEach(function (e, idx) {
+        out.push(Object.assign({}, e, {
+          id: essay.id + '-' + idx,
+          essayId: essay.id,
+          essayTitle: essay.title,
+          date: essay.date
+        }));
       });
     });
     return out;
+  }
+
+  // Finds where an entry's "wrong" excerpt sits inside the essay's original text,
+  // so entries can be shown in the order the person actually wrote them —
+  // not the order they happen to appear in the data array. Falls back to
+  // progressively shorter prefixes in case the excerpt diverges from the raw
+  // original (e.g. a typo was normalized when the excerpt was written).
+  function essayOrderIndex(essay, entry) {
+    if (!essay || !essay.originalText) return Infinity;
+    var original = essay.originalText.replace(/\s+/g, ' ').toLowerCase();
+    var wrong = entry.wrong.replace(/\s+/g, ' ').toLowerCase();
+    for (var len = wrong.length; len >= 10; len -= 5) {
+      var pos = original.indexOf(wrong.slice(0, len));
+      if (pos !== -1) return pos;
+    }
+    return Infinity;
   }
 
   function countFor(catId) {
@@ -740,6 +985,8 @@ const DATA = {
     if (mEssay) return { type: 'essay', essayId: decodeURIComponent(mEssay[1]) };
     var mTag = h.match(/^#\/tag\/(.+)$/);
     if (mTag) return { type: 'tag', tag: decodeURIComponent(mTag[1]) };
+    var mStars = h.match(/^#\/stars\/(\d)$/);
+    if (mStars) return { type: 'stars', n: parseInt(mStars[1], 10) };
     return { type: 'home' };
   }
 
@@ -756,9 +1003,11 @@ const DATA = {
       catSection.style.display = 'none';
       renderEssayHeader(route.essayId);
       var essay = essayById(route.essayId);
-      var list = essay ? essay.entries.map(function (e) {
-        return Object.assign({}, e, { essayId: essay.id, date: essay.date });
+      var list = essay ? essay.entries.map(function (e, idx) {
+        return Object.assign({}, e, { id: essay.id + '-' + idx, essayId: essay.id, date: essay.date });
       }) : [];
+      // reading order: as the sentences actually appear in what was written
+      list.sort(function (x, y) { return essayOrderIndex(essay, x) - essayOrderIndex(essay, y); });
       entryTitle.textContent = essay ? essay.title + ' · 문장별 교정' : '문장별 교정';
       entryCount.textContent = list.length + '건';
       listArea.innerHTML = '';
@@ -769,10 +1018,21 @@ const DATA = {
       var cat = catById(route.tag);
       essayHeaderWrap.innerHTML = buildTagHeaderHtml(cat, route.tag);
       var taglist = allEntries().filter(function (e) { return e.category === route.tag; });
+      // most recent first
+      taglist.sort(function (x, y) { return y.date.localeCompare(x.date); });
       entryTitle.textContent = (cat ? cat.label : route.tag) + ' 실수 목록';
       entryCount.textContent = taglist.length + '건';
       listArea.innerHTML = '';
       listArea.appendChild(buildEntriesEl(taglist, true));
+    } else if (route.type === 'stars') {
+      catSection.style.display = 'none';
+      essayHeaderWrap.innerHTML = buildStarsHeaderHtml(route.n);
+      var starlist = allEntries().filter(function (e) { return Stars.get(e.id) === route.n; });
+      starlist.sort(function (x, y) { return y.date.localeCompare(x.date); });
+      entryTitle.textContent = '별 ' + route.n + '개 표시한 문장';
+      entryCount.textContent = starlist.length + '건';
+      listArea.innerHTML = '';
+      listArea.appendChild(buildEntriesEl(starlist, true));
     } else {
       catSection.style.display = '';
       essayHeaderWrap.innerHTML = '';
@@ -788,6 +1048,10 @@ const DATA = {
     document.getElementById('lastUpdated').textContent = dates.length ? ('last entry · ' + dates[dates.length - 1]) : '';
     positionCorrectionNotes(listArea);
     updateNavButtons();
+    document.querySelectorAll('.starnav-btn').forEach(function (btn) {
+      var n = parseInt(btn.getAttribute('data-n'), 10);
+      btn.classList.toggle('active', route.type === 'stars' && route.n === n);
+    });
   }
 
   function buildTagHeaderHtml(cat, tagId) {
@@ -802,11 +1066,63 @@ const DATA = {
     );
   }
 
-  // simple browser-history back/forward controls (top-left)
-  document.getElementById('navBack').addEventListener('click', function () { window.history.back(); });
-  document.getElementById('navForward').addEventListener('click', function () { window.history.forward(); });
+  function buildStarsHeaderHtml(n) {
+    var stars = '';
+    for (var i = 0; i < 3; i++) stars += starIconSvg(i < n);
+    return (
+      '<div class="essay-header">' +
+        '<div>' +
+          '<div class="meta-line">IMPORTANT SENTENCES</div>' +
+          '<h3 style="display:flex;gap:4px;align-items:center">' +
+            '<span style="display:flex;gap:3px">' + stars.replace(/<svg/g, '<svg style="width:20px;height:20px"') + '</span>' +
+          '</h3>' +
+          '<a href="#/" class="back">← 전체 글 목록으로</a>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  // Internal-only back/forward: a stack of hashes visited inside this site.
+  // Deliberately NOT window.history.back()/forward() -- that could walk past
+  // the very first visit and leave the site entirely (e.g. back to whatever
+  // page linked here). On first load, both buttons start disabled.
+  var navStack = [window.location.hash || '#/'];
+  var navIndex = 0;
+  var isProgrammaticNav = false;
+
+  function navBack() {
+    if (navIndex <= 0) return;
+    navIndex--;
+    isProgrammaticNav = true;
+    window.location.hash = navStack[navIndex];
+  }
+  function navForward() {
+    if (navIndex >= navStack.length - 1) return;
+    navIndex++;
+    isProgrammaticNav = true;
+    window.location.hash = navStack[navIndex];
+  }
+  function onHashChangeForNav() {
+    var hash = window.location.hash || '#/';
+    if (isProgrammaticNav) {
+      isProgrammaticNav = false; // this change came from navBack/navForward -- stack already points at it
+    } else {
+      // a real navigation (clicking a link inside the site) -- drop any
+      // "forward" entries and record this as a new step
+      navStack = navStack.slice(0, navIndex + 1);
+      if (navStack[navStack.length - 1] !== hash) {
+        navStack.push(hash);
+        navIndex = navStack.length - 1;
+      }
+    }
+    updateNavButtons();
+  }
+
+  document.getElementById('navBack').addEventListener('click', navBack);
+  document.getElementById('navForward').addEventListener('click', navForward);
   function updateNavButtons() {
-    document.getElementById('navBack').disabled = window.history.length <= 1;
+    document.getElementById('navBack').disabled = navIndex <= 0;
+    document.getElementById('navForward').disabled = navIndex >= navStack.length - 1;
   }
 
   function renderCategoryGrid(activeTag) {
@@ -931,20 +1247,31 @@ const DATA = {
     wrap.innerHTML = list.map(function (e) {
       var c = catById(e.category);
       var color = colorFor(e.category);
+      var entryId = e.id;
       var essayLink = (showEssayLink && e.essayId)
         ? '<br><a href="#/essay/' + encodeURIComponent(e.essayId) + '" style="color:var(--ink-faint);text-decoration:underline">' + escapeHtml(e.essayTitle || '') + '</a>'
         : '';
+      var rating = Stars.get(entryId);
+      var starsHtml = '<div class="stars">' +
+        [1, 2, 3].map(function (n) {
+          return '<button type="button" data-star-entry="' + escapeHtml(entryId) + '" data-star-n="' + n + '" aria-label="별 ' + n + '개">' + starIconSvg(n <= rating) + '</button>';
+        }).join('') +
+        '</div>';
+      var explHl = Highlights.get(entryId, 'explanation');
       return (
-        '<div class="entry">' +
+        '<div class="entry" data-entry-id="' + escapeHtml(entryId) + '">' +
           '<div class="meta">' +
             e.date +
             essayLink +
             '<br>' +
             '<a class="tag" href="#/tag/' + encodeURIComponent(e.category) + '" style="background:' + color.bg + ';color:' + color.fg + '">' + (c ? c.label : e.category) + '</a>' +
+            starsHtml +
           '</div>' +
           '<div class="body">' +
-            buildWrongBlock(e.wrong, e.correct) +
-            '<div class="explanation">' + escapeHtml(e.explanation) + '</div>' +
+            buildWrongBlock(entryId, e.wrong, e.correct) +
+            '<div class="explanation hl-zone" data-entry-id="' + escapeHtml(entryId) + '" data-field="explanation">' +
+              renderAnnotatedText(e.explanation, explHl, null, null) +
+            '</div>' +
           '</div>' +
         '</div>'
       );
@@ -959,7 +1286,116 @@ const DATA = {
       .replace(/>/g, '&gt;');
   }
 
+  // ---------------------------------------------------------------
+  // Highlight interaction: drag-select text inside a .hl-zone -> a small
+  // "하이라이트" button appears -> click it to mark that range hot pink.
+  // Click an existing mark -> a "취소하기" button appears to remove it.
+  // ---------------------------------------------------------------
+  var popupEl = null;
+  function ensurePopup() {
+    if (!popupEl) {
+      popupEl = document.createElement('div');
+      popupEl.className = 'hl-popup';
+      popupEl.style.display = 'none';
+      document.body.appendChild(popupEl);
+    }
+    return popupEl;
+  }
+  function showPopup(rect, label, onClick) {
+    var p = ensurePopup();
+    p.textContent = label;
+    p.style.display = 'block';
+    p.style.left = (rect.left + rect.width / 2) + 'px';
+    p.style.top = (rect.top - 10) + 'px';
+    p.onclick = function (ev) { ev.stopPropagation(); onClick(); };
+  }
+  function hidePopup() {
+    if (popupEl) popupEl.style.display = 'none';
+  }
+
+  function getTextOffsetInZone(zone, node, nodeOffset) {
+    var walker = document.createTreeWalker(zone, NodeFilter.SHOW_TEXT, null);
+    var offset = 0, n;
+    while ((n = walker.nextNode())) {
+      if (n === node) return offset + nodeOffset;
+      offset += n.textContent.length;
+    }
+    return offset;
+  }
+
+  function handleSelectionEnd(ev) {
+    if (!ev.target || !ev.target.closest) return;
+    if (ev.target.closest('.hl-popup')) return;
+    if (ev.target.closest('mark.hl')) return; // that's handled by the click-to-remove path instead
+    setTimeout(function () {
+      var sel = window.getSelection();
+      if (!sel || sel.isCollapsed || sel.rangeCount === 0) { hidePopup(); return; }
+      var range = sel.getRangeAt(0);
+      var startEl = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer;
+      var endEl = range.endContainer.nodeType === 3 ? range.endContainer.parentElement : range.endContainer;
+      var startZone = startEl.closest('.hl-zone');
+      var endZone = endEl.closest('.hl-zone');
+      if (!startZone || startZone !== endZone) { hidePopup(); return; }
+
+      var start = getTextOffsetInZone(startZone, range.startContainer, range.startOffset);
+      var end = getTextOffsetInZone(startZone, range.endContainer, range.endOffset);
+      if (start === end) { hidePopup(); return; }
+      var lo = Math.min(start, end), hi = Math.max(start, end);
+      var rect = range.getBoundingClientRect();
+      var entryId = startZone.getAttribute('data-entry-id');
+      var field = startZone.getAttribute('data-field');
+
+      showPopup(rect, '하이라이트', function () {
+        Highlights.add(entryId, field, lo, hi);
+        sel.removeAllRanges();
+        hidePopup();
+        render();
+      });
+    }, 10);
+  }
+  document.addEventListener('mouseup', handleSelectionEnd);
+  document.addEventListener('touchend', handleSelectionEnd);
+  document.addEventListener('mousedown', function (ev) {
+    if (!ev.target || !ev.target.closest) return;
+    if (!ev.target.closest('.hl-popup') && !ev.target.closest('mark.hl')) hidePopup();
+  });
+
+  // clicks inside the results list: star buttons + highlight marks (event
+  // delegation on the container, since its contents are fully rebuilt on every render)
+  document.getElementById('listArea').addEventListener('click', function (ev) {
+    var starBtn = ev.target.closest('[data-star-entry]');
+    if (starBtn) {
+      var id = starBtn.getAttribute('data-star-entry');
+      var n = parseInt(starBtn.getAttribute('data-star-n'), 10);
+      Stars.set(id, n); // fills 1..n from the left
+      render();
+      return;
+    }
+    var markEl = ev.target.closest('mark.hl');
+    if (markEl) {
+      var zoneEl = markEl.closest('.hl-zone');
+      var start = parseInt(markEl.getAttribute('data-start'), 10);
+      var end = parseInt(markEl.getAttribute('data-end'), 10);
+      var rect = markEl.getBoundingClientRect();
+      showPopup(rect, '취소하기', function () {
+        Highlights.removeAt(zoneEl.getAttribute('data-entry-id'), zoneEl.getAttribute('data-field'), start, end);
+        hidePopup();
+        render();
+      });
+    }
+  });
+
+  // top-left star-tier filter buttons (3 / 2 / 1 stars, right-aligned in the topbar)
+  document.querySelectorAll('.starnav-btn').forEach(function (btn) {
+    var n = parseInt(btn.getAttribute('data-n'), 10);
+    var html = '';
+    for (var i = 0; i < 3; i++) html += starIconSvg(i < n);
+    btn.innerHTML = html;
+    btn.addEventListener('click', function () { window.location.hash = '#/stars/' + n; });
+  });
+
   render();
+  window.addEventListener('hashchange', onHashChangeForNav);
   window.addEventListener('hashchange', render);
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function () { positionCorrectionNotes(document.getElementById('listArea')); });
@@ -967,6 +1403,23 @@ const DATA = {
   window.addEventListener('resize', function () {
     positionCorrectionNotes(document.getElementById('listArea'));
   });
+
+  // Live sync: whenever the shared cloud document changes -- including from
+  // a *different* device -- pull it in and re-render. hasPendingWrites=true
+  // means this snapshot is our own optimistic local echo (we already have
+  // this data), so we skip re-rendering for that one specifically.
+  if (SYNC_DOC) {
+    SYNC_DOC.onSnapshot(function (doc) {
+      if (doc.metadata.hasPendingWrites) return;
+      if (!doc.exists) return;
+      var data = doc.data() || {};
+      HStore.replaceAll(data.highlights || {});
+      SStore.replaceAll(data.stars || {});
+      render();
+    }, function (err) {
+      console.error('Sync read failed (staying local-only):', err);
+    });
+  }
 })();
 </script>
 </body>
