@@ -387,12 +387,13 @@ a{ color:inherit; text-decoration:none; }
   cursor: pointer;
 }
 .entry .body .wrong{
+  position: relative;
   font-family: var(--en);
   font-weight: 400;
   font-size: 15.5px;
   color: var(--ink-soft);
-  line-height: 2.6;
-  margin-bottom: 20px;
+  line-height: 1.7;
+  margin-bottom: 4px;
 }
 .entry .body .wrong .struck{
   text-decoration: line-through;
@@ -400,22 +401,23 @@ a{ color:inherit; text-decoration:none; }
   text-decoration-thickness: 1.5px;
   color: var(--ink-faint);
 }
-.correction-wrap{
-  position: relative;
-  display: inline-block;
-}
 .correction-note{
   position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
+  transform: translateX(-50%);
   font-family: var(--hand);
   font-size: 17px;
   line-height: 1.15;
   color: var(--red-deep);
   white-space: normal;
-  text-align: left;
+  text-align: center;
   pointer-events: none;
+}
+.full-correction{
+  font-family: var(--hand);
+  font-size: 19px;
+  line-height: 1.3;
+  color: var(--red-deep);
+  margin: 2px 0 14px;
 }
 .entry .body .explanation{
   font-family: var(--kr);
@@ -631,22 +633,70 @@ const DATA = {
     return { prefix: prefix, middleWrong: middleWrong, suffix: suffix, middleCorrect: middleCorrect };
   }
 
-  // proofreading-mark style: the fix sits directly under the struck word(s),
-  // not as a separate full-sentence line.
-  function renderWrong(wrong, correct) {
+  // Two rendering modes:
+  // - "inline": only part of the sentence changed -> struck word(s) get a small
+  //   proofreading-style note positioned precisely under them via JS (positionCorrectionNotes).
+  // - "full": the whole sentence changed -> no shared anchor point exists, so the
+  //   correction is shown as a normal in-flow line below (nothing overlaps, ever).
+  function buildWrongBlock(wrong, correct) {
     var d = diffWords(wrong, correct);
-    var parts = [];
-    if (d.prefix.length) parts.push(escapeHtml(d.prefix.join(' ')));
-    if (d.middleWrong.length) {
-      parts.push(
-        '<span class="correction-wrap">' +
-          '<span class="struck">' + escapeHtml(d.middleWrong.join(' ')) + '</span>' +
-          '<span class="correction-note">' + escapeHtml(d.middleCorrect.join(' ')) + '</span>' +
-        '</span>'
+    var isFullRewrite = d.prefix.length === 0 && d.suffix.length === 0;
+
+    if (isFullRewrite) {
+      return (
+        '<div class="wrong"><span class="struck">' + escapeHtml(wrong) + '</span></div>' +
+        '<div class="full-correction">' + escapeHtml(correct) + '</div>'
       );
     }
+
+    var parts = [];
+    if (d.prefix.length) parts.push(escapeHtml(d.prefix.join(' ')));
+    parts.push(
+      '<span class="struck" data-fix="' + escapeHtml(d.middleCorrect.join(' ')) + '">' +
+        escapeHtml(d.middleWrong.join(' ')) +
+      '</span>'
+    );
     if (d.suffix.length) parts.push(escapeHtml(d.suffix.join(' ')));
-    return parts.join(' ');
+    return '<div class="wrong">' + parts.join(' ') + '</div>';
+  }
+
+  // Measures each struck word's actual on-screen position and places its
+  // correction note flush left under it, then reserves exactly enough space
+  // below so the note never overlaps the explanation text that follows.
+  var NOTE_GAP = 4; // fixed, consistent gap between the strikethrough and the correction note
+
+  function positionCorrectionNotes(root) {
+    // idempotent: safe to call again (e.g. after web fonts finish loading, or on resize)
+    root.querySelectorAll('.correction-note').forEach(function (n) { n.remove(); });
+
+    var wrongs = root.querySelectorAll('.wrong');
+    wrongs.forEach(function (wrongEl) {
+      wrongEl.style.paddingBottom = '';
+      var struck = wrongEl.querySelector('.struck[data-fix]');
+      if (!struck) return;
+      var wrongRect = wrongEl.getBoundingClientRect();
+      var rects = struck.getClientRects();
+      var firstRect = rects[0];
+      if (!firstRect) return;
+
+      var center = firstRect.left + firstRect.width / 2 - wrongRect.left;
+      var top = firstRect.bottom - wrongRect.top + NOTE_GAP;
+      var maxW = 2 * Math.min(center, wrongRect.width - center);
+
+      var note = document.createElement('div');
+      note.className = 'correction-note';
+      note.textContent = struck.getAttribute('data-fix');
+      note.style.left = center + 'px';
+      note.style.top = top + 'px';
+      note.style.maxWidth = Math.max(maxW, 60) + 'px';
+      wrongEl.appendChild(note);
+
+      var noteRect = note.getBoundingClientRect();
+      var neededHeight = (noteRect.bottom - wrongRect.top) - wrongEl.offsetHeight;
+      if (neededHeight > 0) {
+        wrongEl.style.paddingBottom = (neededHeight + 4) + 'px';
+      }
+    });
   }
 
   function colorFor(id) {
@@ -736,6 +786,7 @@ const DATA = {
 
     var dates = allEntries().map(function (e) { return e.date; }).sort();
     document.getElementById('lastUpdated').textContent = dates.length ? ('last entry · ' + dates[dates.length - 1]) : '';
+    positionCorrectionNotes(listArea);
     updateNavButtons();
   }
 
@@ -892,7 +943,7 @@ const DATA = {
             '<a class="tag" href="#/tag/' + encodeURIComponent(e.category) + '" style="background:' + color.bg + ';color:' + color.fg + '">' + (c ? c.label : e.category) + '</a>' +
           '</div>' +
           '<div class="body">' +
-            '<div class="wrong">' + renderWrong(e.wrong, e.correct) + '</div>' +
+            buildWrongBlock(e.wrong, e.correct) +
             '<div class="explanation">' + escapeHtml(e.explanation) + '</div>' +
           '</div>' +
         '</div>'
@@ -910,6 +961,12 @@ const DATA = {
 
   render();
   window.addEventListener('hashchange', render);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { positionCorrectionNotes(document.getElementById('listArea')); });
+  }
+  window.addEventListener('resize', function () {
+    positionCorrectionNotes(document.getElementById('listArea'));
+  });
 })();
 </script>
 </body>
