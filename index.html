@@ -387,6 +387,14 @@ a{ color:inherit; text-decoration:none; }
   color: var(--ink-faint);
   padding-top: 3px;
 }
+.entry .meta .meta-row{ display: block; }
+.entry .meta .meta-date{ display: block; }
+.entry .meta .meta-essaylink{
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-faint);
+  text-decoration: underline;
+}
 .entry .meta .tag{
   display:inline-block;
   margin-top: 8px;
@@ -483,7 +491,6 @@ mark.hl{
   font-size: 13.5px;
   color: var(--ink-soft);
   line-height: 1.6;
-  max-width: 64ch;
 }
 
 .empty{
@@ -506,7 +513,11 @@ footer{
 @media (max-width: 760px){
   .cat-grid{ grid-template-columns: repeat(2, 1fr); }
   .entry{ grid-template-columns: 1fr; gap: 6px; }
-  .entry .meta{ display:flex; align-items:center; gap:10px; padding-top:0; }
+  .entry .meta{ padding-top:0; }
+  .entry .meta .meta-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .entry .meta .meta-date{ white-space:nowrap; }
+  .entry .meta .tag{ margin-top:0; }
+  .entry .meta .stars{ margin-top:0; }
   .hero{ padding: 24px 0 22px; }
   .essay-card{ grid-template-columns: 1fr; }
   .essay-card .score{ text-align:left; }
@@ -896,11 +907,16 @@ const DATA = {
       if (!struck) return;
       var wrongRect = wrongEl.getBoundingClientRect();
       var rects = struck.getClientRects();
-      var firstRect = rects[0];
-      if (!firstRect) return;
+      // anchor to the LAST visual line of the struck text, not the first --
+      // on a single line these are the same rect (so desktop is unaffected),
+      // but if the struck phrase wraps onto 2+ lines (narrow / mobile widths),
+      // anchoring to the first line would place the note on top of the
+      // text's own remaining wrapped lines.
+      var anchorRect = rects[rects.length - 1];
+      if (!anchorRect) return;
 
-      var center = firstRect.left + firstRect.width / 2 - wrongRect.left;
-      var top = firstRect.bottom - wrongRect.top + NOTE_GAP;
+      var center = anchorRect.left + anchorRect.width / 2 - wrongRect.left;
+      var top = anchorRect.bottom - wrongRect.top + NOTE_GAP;
       var maxW = 2 * Math.min(center, wrongRect.width - center);
 
       var note = document.createElement('div');
@@ -1246,7 +1262,7 @@ const DATA = {
       var color = colorFor(e.category);
       var entryId = e.id;
       var essayLink = (showEssayLink && e.essayId)
-        ? '<br><a href="#/essay/' + encodeURIComponent(e.essayId) + '" style="color:var(--ink-faint);text-decoration:underline">' + escapeHtml(e.essayTitle || '') + '</a>'
+        ? '<a class="meta-essaylink" href="#/essay/' + encodeURIComponent(e.essayId) + '">' + escapeHtml(e.essayTitle || '') + '</a>'
         : '';
       var rating = Stars.get(entryId);
       var starsHtml = '<div class="stars">' +
@@ -1258,11 +1274,12 @@ const DATA = {
       return (
         '<div class="entry" data-entry-id="' + escapeHtml(entryId) + '">' +
           '<div class="meta">' +
-            e.date +
+            '<div class="meta-row">' +
+              '<span class="meta-date">' + e.date + '</span>' +
+              '<a class="tag" href="#/tag/' + encodeURIComponent(e.category) + '" style="background:' + color.bg + ';color:' + color.fg + '">' + (c ? c.label : e.category) + '</a>' +
+              starsHtml +
+            '</div>' +
             essayLink +
-            '<br>' +
-            '<a class="tag" href="#/tag/' + encodeURIComponent(e.category) + '" style="background:' + color.bg + ';color:' + color.fg + '">' + (c ? c.label : e.category) + '</a>' +
-            starsHtml +
           '</div>' +
           '<div class="body">' +
             buildWrongBlock(entryId, e.wrong, e.correct) +
