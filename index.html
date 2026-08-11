@@ -30,7 +30,7 @@
   --red-deep: #9a2c2c;
   --red-wash: #fbe9e9;
   --star: #ffcd3c;
-  --hl-pink: #ff2ec4;
+  --hl-mint: #ccffff;
   --radius: 12px;
   --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
   --en: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
@@ -98,8 +98,8 @@ a{ color:inherit; text-decoration:none; }
   line-height: 0;
 }
 .starnav-btn svg{ width: 13px; height: 13px; }
-.starnav-btn svg .star-fill{ fill: var(--star); stroke: var(--star); }
-.starnav-btn svg .star-empty{ fill: none; stroke: var(--ink-faint); stroke-width: 1.5; }
+.star-fill{ fill: var(--star); stroke: var(--star); }
+.star-empty{ fill: none; stroke: var(--ink-faint); stroke-width: 1.5; }
 .starnav-btn.active svg .star-empty{ stroke: var(--ink); }
 
 /* ---------- hero ---------- */
@@ -410,13 +410,11 @@ a{ color:inherit; text-decoration:none; }
   line-height: 0;
 }
 .entry .meta .stars svg{ width: 15px; height: 15px; }
-.entry .meta .stars svg .star-fill{ fill: var(--star); stroke: var(--star); }
-.entry .meta .stars svg .star-empty{ fill: none; stroke: var(--ink-faint); stroke-width: 1.5; }
 .entry .meta .stars button:hover svg .star-empty{ stroke: var(--ink-soft); }
 
 mark.hl{
-  background: var(--hl-pink);
-  color: #1a0013;
+  background: var(--hl-mint);
+  color: #073130;
   border-radius: 2px;
   padding: 0 1px;
   cursor: pointer;
@@ -1072,7 +1070,6 @@ const DATA = {
     return (
       '<div class="essay-header">' +
         '<div>' +
-          '<div class="meta-line">IMPORTANT SENTENCES</div>' +
           '<h3 style="display:flex;gap:4px;align-items:center">' +
             '<span style="display:flex;gap:3px">' + stars.replace(/<svg/g, '<svg style="width:20px;height:20px"') + '</span>' +
           '</h3>' +
