@@ -97,7 +97,7 @@ a{ color:inherit; text-decoration:none; }
 }
 .hero h1 span{ display:block; }
 .hero h1 .l1{ font-size: clamp(38px, 6.4vw, 62px); line-height: 1.02; }
-.hero h1 .l2{ font-size: clamp(20px, 3vw, 28px); font-weight: 700; color: var(--ink-soft); margin: 2px 0; }
+.hero h1 .l2{ font-size: clamp(26px, 3.6vw, 36px); font-weight: 300; color: var(--ink); margin: 2px 0; }
 .hero h1 .l3{ font-size: clamp(38px, 6.4vw, 62px); line-height: 1.05; }
 
 /* ---------- legend row (unused, kept out) ---------- */
@@ -696,10 +696,11 @@ const DATA = {
     var listArea = document.getElementById('listArea');
     var entryTitle = document.getElementById('entryTitle');
     var entryCount = document.getElementById('entryCount');
+    var catBanner = document.getElementById('catBanner');
 
     if (route.type === 'essay') {
       catSection.style.display = 'none';
-      document.getElementById('catBanner').classList.remove('show');
+      catBanner.classList.remove('show');
       renderEssayHeader(route.essayId);
       var essay = essayById(route.essayId);
       var list = essay ? essay.entries.map(function (e) {
@@ -709,26 +710,27 @@ const DATA = {
       entryCount.textContent = list.length + '건';
       listArea.innerHTML = '';
       listArea.appendChild(buildEntriesEl(list));
+    } else if (route.type === 'tag') {
+      // focused page: category grid stays hidden, just a compact header + the matching sentences
+      catSection.style.display = 'none';
+      essayHeaderWrap.innerHTML = '';
+      renderBanner(route.tag);
+      var cat = catById(route.tag);
+      var taglist = allEntries().filter(function (e) { return e.category === route.tag; });
+      entryTitle.textContent = (cat ? cat.label : route.tag) + ' 실수 목록';
+      entryCount.textContent = taglist.length + '건';
+      listArea.innerHTML = '';
+      listArea.appendChild(buildEntriesEl(taglist, true));
     } else {
       catSection.style.display = '';
       essayHeaderWrap.innerHTML = '';
-      renderCategoryGrid(route.type === 'tag' ? route.tag : null);
-      renderBanner(route.type === 'tag' ? route.tag : null);
+      catBanner.classList.remove('show');
+      renderCategoryGrid(null);
 
-      var essays = state.essays;
-      if (route.type === 'tag') {
-        var cat = catById(route.tag);
-        var list = allEntries().filter(function (e) { return e.category === route.tag; });
-        entryTitle.textContent = (cat ? cat.label : route.tag) + ' 실수 목록';
-        entryCount.textContent = list.length + '건';
-        listArea.innerHTML = '';
-        listArea.appendChild(buildEntriesEl(list, true));
-      } else {
-        entryTitle.textContent = '기록한 글';
-        entryCount.textContent = essays.length + '개';
-        listArea.innerHTML = '';
-        listArea.appendChild(buildEssayGridEl(essays, null));
-      }
+      entryTitle.textContent = '기록한 글';
+      entryCount.textContent = state.essays.length + '개';
+      listArea.innerHTML = '';
+      listArea.appendChild(buildEssayGridEl(state.essays, null));
     }
 
     var dates = allEntries().map(function (e) { return e.date; }).sort();
