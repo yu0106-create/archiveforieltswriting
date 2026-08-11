@@ -58,7 +58,13 @@ a{ color:inherit; text-decoration:none; }
 }
 
 /* ---------- top bar ---------- */
-.topbar{ padding: 26px 0 0; }
+.topbar{
+  padding: 26px 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--bg);
+}
 .topbar .wrap{
   display:flex; align-items:center; justify-content:space-between;
   padding-bottom: 20px;
@@ -111,6 +117,8 @@ a{ color:inherit; text-decoration:none; }
   margin: 0;
   letter-spacing: -0.01em;
 }
+.hero h1 a{ display:block; transition: opacity .15s ease; }
+.hero h1 a:hover{ opacity: 0.6; }
 .hero h1 span{ display:block; }
 .hero h1 .l1{ font-size: clamp(38px, 6.4vw, 62px); line-height: 1.02; }
 .hero h1 .l2{ font-size: clamp(26px, 3.6vw, 36px); font-weight: 300; color: var(--ink); margin: 2px 0; }
@@ -383,8 +391,8 @@ a{ color:inherit; text-decoration:none; }
   font-weight: 400;
   font-size: 15.5px;
   color: var(--ink-soft);
-  line-height: 2.5;
-  margin-bottom: 10px;
+  line-height: 2.6;
+  margin-bottom: 20px;
 }
 .entry .body .wrong .struck{
   text-decoration: line-through;
@@ -399,13 +407,14 @@ a{ color:inherit; text-decoration:none; }
 .correction-note{
   position: absolute;
   top: 100%;
-  left: 2px;
+  left: 0;
+  width: 100%;
   font-family: var(--hand);
   font-size: 17px;
-  line-height: 1;
+  line-height: 1.15;
   color: var(--red-deep);
-  white-space: nowrap;
-  transform: rotate(-2deg);
+  white-space: normal;
+  text-align: left;
   pointer-events: none;
 }
 .entry .body .explanation{
@@ -471,9 +480,11 @@ footer{
     <div>
       <div class="eyebrow">Grammar Archive · IELTS Writing</div>
       <h1>
-        <span class="l1">ARCHIVE</span>
-        <span class="l2">for</span>
-        <span class="l3">IELTS WRITING</span>
+        <a href="#/">
+          <span class="l1">ARCHIVE</span>
+          <span class="l2">for</span>
+          <span class="l3">IELTS WRITING</span>
+        </a>
       </h1>
     </div>
   </section>
