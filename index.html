@@ -383,7 +383,8 @@ a{ color:inherit; text-decoration:none; }
   font-weight: 400;
   font-size: 15.5px;
   color: var(--ink-soft);
-  margin-bottom: 4px;
+  line-height: 2.5;
+  margin-bottom: 10px;
 }
 .entry .body .wrong .struck{
   text-decoration: line-through;
@@ -391,14 +392,22 @@ a{ color:inherit; text-decoration:none; }
   text-decoration-thickness: 1.5px;
   color: var(--ink-faint);
 }
-.entry .body .correct{
-  font-family: var(--hand);
-  font-size: 21px;
-  color: var(--red-deep);
-  transform: rotate(-0.4deg);
-  margin-bottom: 8px;
+.correction-wrap{
+  position: relative;
+  display: inline-block;
 }
-.entry .body .correct::before{ content: "→ "; }
+.correction-note{
+  position: absolute;
+  top: 100%;
+  left: 2px;
+  font-family: var(--hand);
+  font-size: 17px;
+  line-height: 1;
+  color: var(--red-deep);
+  white-space: nowrap;
+  transform: rotate(-2deg);
+  pointer-events: none;
+}
 .entry .body .explanation{
   font-family: var(--kr);
   font-weight: 300;
@@ -604,17 +613,27 @@ const DATA = {
       a[a.length - 1 - j].toLowerCase() === b[b.length - 1 - j].toLowerCase()
     ) j++;
     var prefix = a.slice(0, i);
-    var middle = a.slice(i, a.length - j);
+    var middleWrong = a.slice(i, a.length - j);
     var suffix = a.slice(a.length - j);
-    if (!middle.length) { middle = a.slice(i); suffix = []; }
-    return { prefix: prefix, middle: middle, suffix: suffix };
+    var middleCorrect = b.slice(i, b.length - j);
+    if (!middleWrong.length) { middleWrong = a.slice(i); suffix = []; middleCorrect = b.slice(i); }
+    return { prefix: prefix, middleWrong: middleWrong, suffix: suffix, middleCorrect: middleCorrect };
   }
 
+  // proofreading-mark style: the fix sits directly under the struck word(s),
+  // not as a separate full-sentence line.
   function renderWrong(wrong, correct) {
     var d = diffWords(wrong, correct);
     var parts = [];
     if (d.prefix.length) parts.push(escapeHtml(d.prefix.join(' ')));
-    if (d.middle.length) parts.push('<span class="struck">' + escapeHtml(d.middle.join(' ')) + '</span>');
+    if (d.middleWrong.length) {
+      parts.push(
+        '<span class="correction-wrap">' +
+          '<span class="struck">' + escapeHtml(d.middleWrong.join(' ')) + '</span>' +
+          '<span class="correction-note">' + escapeHtml(d.middleCorrect.join(' ')) + '</span>' +
+        '</span>'
+      );
+    }
     if (d.suffix.length) parts.push(escapeHtml(d.suffix.join(' ')));
     return parts.join(' ');
   }
@@ -863,7 +882,6 @@ const DATA = {
           '</div>' +
           '<div class="body">' +
             '<div class="wrong">' + renderWrong(e.wrong, e.correct) + '</div>' +
-            '<div class="correct">' + escapeHtml(e.correct) + '</div>' +
             '<div class="explanation">' + escapeHtml(e.explanation) + '</div>' +
           '</div>' +
         '</div>'
