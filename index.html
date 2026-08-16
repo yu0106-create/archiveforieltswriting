@@ -395,7 +395,6 @@ a{ color:inherit; text-decoration:none; }
   text-transform: uppercase;
   color: var(--ink-faint);
 }
-.notes-head .stars{ justify-content: flex-end; }
 .notes-head-right{ display:flex; align-items:center; gap:14px; }
 .notes-edit-btn{
   width: 26px; height: 26px;
@@ -426,6 +425,13 @@ a{ color:inherit; text-decoration:none; }
   padding: 16px 18px;
   background: #fbfbfb;
 }
+.notes-section-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
 .notes-section-title{
   font-family: var(--en);
   font-weight: 700;
@@ -433,11 +439,11 @@ a{ color:inherit; text-decoration:none; }
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--red-deep);
-  margin-bottom: 10px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
+.notes-section-title-empty::before{ background: var(--ink-faint); }
 .notes-section-title::before{
   content: "";
   width: 14px; height: 2px;
@@ -445,6 +451,7 @@ a{ color:inherit; text-decoration:none; }
   display: inline-block;
   flex: none;
 }
+.notes-section-head .stars{ flex: none; }
 .notes-section-body{
   font-family: var(--kr);
   font-weight: 300;
@@ -1726,16 +1733,11 @@ const DATA = {
 
   // "알아두기" -- a free-form note attached to the whole essay (not one sentence),
   // shown at the bottom of the essay page. Each "━━━ 제목 ━━━" block renders as
-  // its own bordered box with a unified title style; highlighting works per box
-  // (data-field is "notes-<index>" so each box's text offsets stay independent).
+  // its own bordered box with a unified title style; highlighting AND star
+  // rating both work per box (their own entry id / field, independent of
+  // the other boxes in the same card).
   function buildNotesCard(essay) {
-    var entryId = essay.id + '-notes';
-    var rating = Stars.get(entryId);
-    var starsHtml = '<div class="stars">' +
-      [1, 2, 3].map(function (n) {
-        return '<button type="button" data-star-entry="' + escapeHtml(entryId) + '" data-star-n="' + n + '" aria-label="별 ' + n + '개">' + starIconSvg(n <= rating) + '</button>';
-      }).join('') +
-      '</div>';
+    var baseId = essay.id + '-notes';
     var text = Notes.get(essay.id, essay.notes);
     var card = document.createElement('div');
     card.className = 'notes-card';
@@ -1749,11 +1751,21 @@ const DATA = {
       bodyHtml = '<div class="notes-content">' +
         sections.map(function (sec, idx) {
           var field = 'notes-' + idx;
-          var hl = Highlights.get(entryId, field);
-          var titleHtml = sec.title ? '<div class="notes-section-title">' + escapeHtml(sec.title) + '</div>' : '';
+          var hl = Highlights.get(baseId, field);
+          var sectionEntryId = baseId + '-' + idx;
+          var rating = Stars.get(sectionEntryId);
+          var starsHtml = '<div class="stars">' +
+            [1, 2, 3].map(function (n) {
+              return '<button type="button" data-star-entry="' + escapeHtml(sectionEntryId) + '" data-star-n="' + n + '" aria-label="별 ' + n + '개">' + starIconSvg(n <= rating) + '</button>';
+            }).join('') +
+            '</div>';
+          var titleHtml = sec.title ? '<div class="notes-section-title">' + escapeHtml(sec.title) + '</div>' : '<div class="notes-section-title notes-section-title-empty"></div>';
           return '<div class="notes-section">' +
-            titleHtml +
-            '<div class="notes-section-body hl-zone" data-entry-id="' + escapeHtml(entryId) + '" data-field="' + field + '">' +
+            '<div class="notes-section-head">' +
+              titleHtml +
+              starsHtml +
+            '</div>' +
+            '<div class="notes-section-body hl-zone" data-entry-id="' + escapeHtml(baseId) + '" data-field="' + field + '">' +
               renderNotesBody(sec.body, hl) +
             '</div>' +
           '</div>';
@@ -1765,7 +1777,6 @@ const DATA = {
       '<div class="notes-head">' +
         '<div class="eyebrow">알아두기</div>' +
         '<div class="notes-head-right">' +
-          starsHtml +
           '<button type="button" class="notes-edit-btn" aria-label="편집">' +
             '<svg viewBox="0 0 24 24" fill="none"><path d="M4 20h4L18.5 9.5a2 2 0 0 0 0-2.8l-1.2-1.2a2 2 0 0 0-2.8 0L4 15v5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>' +
           '</button>' +
