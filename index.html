@@ -1376,6 +1376,13 @@ const DATA = {
   // flatten all entries across essays, each tagged with its parent essay id.
   // "id" is essayId + array-index -- stable regardless of how a view later sorts
   // the list for display, so highlights/stars always point at the right sentence.
+  function essayIndexOf(essayId) {
+    for (var i = 0; i < state.essays.length; i++) {
+      if (state.essays[i].id === essayId) return i;
+    }
+    return -1;
+  }
+
   function allEntries() {
     var out = [];
     state.essays.forEach(function (essay) {
@@ -1451,8 +1458,8 @@ const DATA = {
       var cat = catById(route.tag);
       essayHeaderWrap.innerHTML = buildTagHeaderHtml(cat, route.tag);
       var taglist = allEntries().filter(function (e) { return e.category === route.tag; });
-      // most recent first
-      taglist.sort(function (x, y) { return y.date.localeCompare(x.date); });
+      // most recent first (same-date ties broken by essay recency, then position within the essay)
+      taglist.sort(function (x, y) { return y.date.localeCompare(x.date) || essayIndexOf(y.essayId) - essayIndexOf(x.essayId); });
       entryTitle.textContent = (cat ? cat.label : route.tag) + ' 실수 목록';
       entryCount.textContent = taglist.length + '건';
       listArea.innerHTML = '';
@@ -1461,7 +1468,7 @@ const DATA = {
       catSection.style.display = 'none';
       essayHeaderWrap.innerHTML = buildStarsHeaderHtml(route.n);
       var starlist = allEntries().filter(function (e) { return Stars.get(e.id) === route.n; });
-      starlist.sort(function (x, y) { return y.date.localeCompare(x.date); });
+      starlist.sort(function (x, y) { return y.date.localeCompare(x.date) || essayIndexOf(y.essayId) - essayIndexOf(x.essayId); });
       entryTitle.textContent = '별 ' + route.n + '개 표시한 문장';
       entryCount.textContent = starlist.length + '건';
       listArea.innerHTML = '';
@@ -1640,7 +1647,15 @@ const DATA = {
       grid.innerHTML = '<div class="empty">아직 기록된 글이 없음.</div>';
       return grid;
     }
-    essays.slice().sort(function (a, b) { return b.date.localeCompare(a.date); }).forEach(function (essay) {
+    essays
+      .map(function (essay, idx) { return { essay: essay, idx: idx }; })
+      .sort(function (a, b) {
+        var byDate = b.essay.date.localeCompare(a.essay.date);
+        if (byDate !== 0) return byDate;
+        return b.idx - a.idx; // same date: more recently added (later in the array) comes first
+      })
+      .map(function (x) { return x.essay; })
+      .forEach(function (essay) {
       var cats = {};
       essay.entries.forEach(function (e) { cats[e.category] = (cats[e.category] || 0) + 1; });
       var tagRow = Object.keys(cats).map(function (catId) {
