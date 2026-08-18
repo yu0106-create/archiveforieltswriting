@@ -102,9 +102,47 @@ a{ color:inherit; text-decoration:none; }
 .star-empty{ fill: none; stroke: var(--ink-faint); stroke-width: 1.5; }
 .starnav-btn.active svg .star-empty{ stroke: var(--ink); }
 
+.topbar-brand{
+  font-family: var(--en);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity .3s ease, transform .3s ease;
+}
+.topbar-brand span{
+  font-weight: 300;
+  font-size: 11.5px;
+  color: var(--ink-faint);
+}
+.topbar-brand:hover{ opacity: 0.65; }
+body:not(.is-home) .topbar-brand{
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+body:not(.is-home) .topbar-brand:hover{ opacity: 0.65; }
+
 /* ---------- hero ---------- */
 .hero{
   padding: 34px 0 30px;
+  overflow: hidden;
+  max-height: 320px;
+  opacity: 1;
+  transition: max-height .35s ease, opacity .25s ease, padding .35s ease;
+}
+body:not(.is-home) .hero{
+  max-height: 0;
+  opacity: 0;
+  padding: 0;
+  pointer-events: none;
 }
 .hero .eyebrow{
   font-family: var(--en);
@@ -723,6 +761,7 @@ footer{
         <svg viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
+    <a href="#/" class="topbar-brand">ARCHIVE<span>for IELTS WRITING</span></a>
     <div class="starnav" id="starNav">
       <button type="button" class="starnav-btn" data-n="3" aria-label="별 3개 표시한 문장"></button>
       <button type="button" class="starnav-btn" data-n="2" aria-label="별 2개 표시한 문장"></button>
@@ -755,6 +794,8 @@ footer{
   </div>
 
   <div id="essayHeaderWrap"></div>
+
+  <div id="guideArea"></div>
 
   <div class="section-head">
     <h2 id="entryTitle">기록한 글</h2>
@@ -1479,12 +1520,15 @@ const DATA = {
 
   function render() {
     var route = parseRoute();
+    document.body.classList.toggle('is-home', route.type === 'home');
 
     var catSection = document.getElementById('catSection');
     var essayHeaderWrap = document.getElementById('essayHeaderWrap');
+    var guideArea = document.getElementById('guideArea');
     var listArea = document.getElementById('listArea');
     var entryTitle = document.getElementById('entryTitle');
     var entryCount = document.getElementById('entryCount');
+    guideArea.innerHTML = '';
 
     if (route.type === 'essay') {
       catSection.style.display = 'none';
@@ -1497,8 +1541,8 @@ const DATA = {
       list.sort(function (x, y) { return essayOrderIndex(essay, x) - essayOrderIndex(essay, y); });
       entryTitle.textContent = essay ? essay.title + ' · 문장별 교정' : '문장별 교정';
       entryCount.textContent = list.length + '건';
+      if (essay) guideArea.appendChild(buildNotesCard(essay));
       listArea.innerHTML = '';
-      if (essay) listArea.appendChild(buildNotesCard(essay));
       listArea.appendChild(buildEntriesEl(list));
     } else if (route.type === 'tag') {
       // focused page: category grid stays hidden, only the matching sentences show
@@ -1510,10 +1554,10 @@ const DATA = {
       taglist.sort(function (x, y) { return y.date.localeCompare(x.date) || essayIndexOf(y.essayId) - essayIndexOf(x.essayId); });
       entryTitle.textContent = (cat ? cat.label : route.tag) + ' 실수 목록';
       entryCount.textContent = taglist.length + '건';
-      listArea.innerHTML = '';
       if (cat && Notes.get('cat-guide-' + cat.id, cat.guide)) {
-        listArea.appendChild(buildCategoryGuideCard(cat));
+        guideArea.appendChild(buildCategoryGuideCard(cat));
       }
+      listArea.innerHTML = '';
       listArea.appendChild(buildEntriesEl(taglist, true));
     } else if (route.type === 'stars') {
       catSection.style.display = 'none';
@@ -1537,6 +1581,7 @@ const DATA = {
 
     var dates = allEntries().map(function (e) { return e.date; }).sort();
     document.getElementById('lastUpdated').textContent = dates.length ? ('last entry · ' + dates[dates.length - 1]) : '';
+    positionCorrectionNotes(guideArea);
     positionCorrectionNotes(listArea);
     updateNavButtons();
     document.querySelectorAll('.starnav-btn').forEach(function (btn) {
@@ -2100,7 +2145,7 @@ const DATA = {
 
   // clicks inside the results list: star buttons + highlight marks (event
   // delegation on the container, since its contents are fully rebuilt on every render)
-  document.getElementById('listArea').addEventListener('click', function (ev) {
+  document.querySelector('main.wrap').addEventListener('click', function (ev) {
     var starBtn = ev.target.closest('[data-star-entry]');
     if (starBtn) {
       var id = starBtn.getAttribute('data-star-entry');
