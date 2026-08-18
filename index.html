@@ -378,12 +378,10 @@ a{ color:inherit; text-decoration:none; }
   border: 1px solid var(--line);
   border-left: 3px solid var(--ink);
   padding: 22px 26px;
-  margin-top: 30px;
+  margin-bottom: 30px;
 }
 .guide-card{
   border-left-color: var(--red-deep);
-  margin-top: 0;
-  margin-bottom: 30px;
 }
 .notes-head{
   display: flex;
@@ -1500,8 +1498,8 @@ const DATA = {
       entryTitle.textContent = essay ? essay.title + ' · 문장별 교정' : '문장별 교정';
       entryCount.textContent = list.length + '건';
       listArea.innerHTML = '';
-      listArea.appendChild(buildEntriesEl(list));
       if (essay) listArea.appendChild(buildNotesCard(essay));
+      listArea.appendChild(buildEntriesEl(list));
     } else if (route.type === 'tag') {
       // focused page: category grid stays hidden, only the matching sentences show
       catSection.style.display = 'none';
