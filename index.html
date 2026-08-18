@@ -131,18 +131,32 @@ body:not(.is-home) .topbar-brand{
 body:not(.is-home) .topbar-brand:hover{ opacity: 0.65; }
 
 /* ---------- hero ---------- */
+/* Collapses via a CSS-grid row (1fr -> 0fr) rather than max-height: a
+   max-height transition animates against an arbitrary cap, not the content's
+   real height, so it visually snaps shut early and eases out over empty
+   space -- this grid technique animates the actual track size instead, so
+   the motion tracks the real content height and reads as smooth, not janky. */
+.hero-collapse{
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows .3s ease;
+}
+body:not(.is-home) .hero-collapse{
+  grid-template-rows: 0fr;
+  pointer-events: none;
+}
+.hero-collapse-inner{
+  overflow: hidden;
+  min-height: 0;
+}
 .hero{
   padding: 34px 0 30px;
-  overflow: hidden;
-  max-height: 320px;
   opacity: 1;
-  transition: max-height .35s ease, opacity .25s ease, padding .35s ease;
+  transition: opacity .18s ease;
 }
 body:not(.is-home) .hero{
-  max-height: 0;
   opacity: 0;
-  padding: 0;
-  pointer-events: none;
+  transition: opacity .12s ease;
 }
 .hero .eyebrow{
   font-family: var(--en);
@@ -772,6 +786,7 @@ footer{
 
 <main class="wrap">
 
+  <div class="hero-collapse"><div class="hero-collapse-inner">
   <section class="hero">
     <div>
       <div class="eyebrow">Grammar Archive · IELTS Writing</div>
@@ -784,6 +799,7 @@ footer{
       </h1>
     </div>
   </section>
+  </div></div>
 
   <div id="catSection">
     <div class="section-head">
@@ -1581,8 +1597,15 @@ const DATA = {
 
     var dates = allEntries().map(function (e) { return e.date; }).sort();
     document.getElementById('lastUpdated').textContent = dates.length ? ('last entry · ' + dates[dates.length - 1]) : '';
-    positionCorrectionNotes(guideArea);
-    positionCorrectionNotes(listArea);
+    // Deferred to the next frame so the browser can paint the route-change
+    // (and the hero collapse/expand transition) before doing this layout-
+    // reading work -- otherwise the getBoundingClientRect calls inside run
+    // synchronously in the same tick as the DOM rebuild and visibly stall
+    // the first frame of the transition.
+    requestAnimationFrame(function () {
+      positionCorrectionNotes(guideArea);
+      positionCorrectionNotes(listArea);
+    });
     updateNavButtons();
     document.querySelectorAll('.starnav-btn').forEach(function (btn) {
       var n = parseInt(btn.getAttribute('data-n'), 10);
