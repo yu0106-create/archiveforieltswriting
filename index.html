@@ -380,6 +380,11 @@ a{ color:inherit; text-decoration:none; }
   padding: 22px 26px;
   margin-top: 30px;
 }
+.guide-card{
+  border-left-color: var(--red-deep);
+  margin-top: 0;
+  margin-bottom: 30px;
+}
 .notes-head{
   display: flex;
   align-items: center;
@@ -798,7 +803,8 @@ const DATA = {
       "label": "\ubb38\uc7a5 \uad6c\uc870",
       "eyebrow": "STRUCTURE",
       "description": "as, because \uac19\uc740 \uc885\uc18d\uc811\uc18d\uc0ac\ub85c \uc2dc\uc791\ud55c \uc808\uc5d0\ub294 \ubc18\ub4dc\uc2dc \uc8fc\uc808\uc774 \uc774\uc5b4\uc838\uc57c \uc644\uc804\ud55c \ubb38\uc7a5\uc774 \ub428. \uc8fc\uc808 \uc5c6\uc774 \ub05d\ub098\uba74 '\uc870\uac01 \ubb38\uc7a5(fragment)'\uc774 \ub428.",
-      "note": "\ube44\uad50 \ub300\uc0c1\uc774 \ubd88\uba85\ud655\ud558\uac70\ub098 \uc5b4\uc21c\uc774 \uc5b4\uc0c9\ud55c \uacbd\uc6b0\ub3c4 \ud3ec\ud568."
+      "note": "\ube44\uad50 \ub300\uc0c1\uc774 \ubd88\uba85\ud655\ud558\uac70\ub098 \uc5b4\uc21c\uc774 \uc5b4\uc0c9\ud55c \uacbd\uc6b0\ub3c4 \ud3ec\ud568.",
+      "guide": "\u2501\u2501\u2501 \ubaa9\uc801\uaca9\ubcf4\uc5b4\uc5d0 as\uac00 \ubd99\uc9c0 \uc54a\ub294 \ub3d9\uc0ac \u2501\u2501\u2501\n\n\ubaa9\uc801\uc5b4\ub97c '~\ub77c\uace0 \ubd80\ub974\ub2e4/\uc5ec\uae30\ub2e4/\ub9cc\ub4e4\ub2e4'\ub77c\ub294 \uc758\ubbf8\ub85c \ucde8\uae09\ud558\ub294 \ub3d9\uc0ac\ub294 \ubaa9\uc801\uaca9 \ubcf4\uc5b4(\uba85\uc0ac\u00b7\ud615\uc6a9\uc0ac)\uac00 as \uc5c6\uc774 \ubc14\ub85c \uc634.\n\n1) \uba85\uba85\u00b7\uce6d\ud638 \ub3d9\uc0ac (\uc774\ub984/\uce6d\ud638\ub97c \ubd99\uc774\ub2e4)\n   \uc124\uba85: \ubaa9\uc801\uc5b4\ub97c '~\ub77c\uace0 \ubd80\ub974\ub2e4/\uc774\ub984 \uc9d3\ub2e4'\ub77c\ub294 \uc758\ubbf8\ub85c \uc4f8 \ub54c, \ubaa9\uc801\uaca9 \ubcf4\uc5b4\ub85c \uba85\uc0ac\uac00 as \uc5c6\uc774 \ubc14\ub85c \uc634.\n   Ex) call him John / name the baby Sarah / entitle the book XYZ / label him a traitor / nickname her Sunny\n\n2) \uc120\ucd9c\u00b7\uc784\uba85 \ub3d9\uc0ac (\uc9c1\ucc45/\uc9c0\uc704\uc5d0 \uc549\ud788\ub2e4)\n   \uc124\uba85: \ubaa9\uc801\uc5b4\ub97c \ud2b9\uc815 \uc9c1\ucc45\uc774\ub098 \uc9c0\uc704(\uba85\uc0ac)\ub85c \ub9cc\ub4e4\uac70\ub098 \ubf51\uc744 \ub54c \uc4f0\ub294 \ub3d9\uc0ac.\n   Ex) appoint him director / elect her president / make him captain / crown him king\n\n3) \uc0ac\uace0\u00b7\uc778\uc2dd \ub3d9\uc0ac (~\ub77c\uace0 \uc0dd\uac01\ud558\ub2e4/\uc5ec\uae30\ub2e4)\n   \uc124\uba85: \ubaa9\uc801\uc5b4\uc758 \uc0c1\ud0dc\ub098 \uc815\uccb4\ub97c \uba85\uc0ac\u00b7\ud615\uc6a9\uc0ac \ubcf4\uc5b4\ub85c \ud310\ub2e8\ud560 \ub54c \uc4f0\ub294 \ub3d9\uc0ac.\n   Ex) consider it an honor / find the movie interesting / think him honest / believe her capable / deem it necessary\n\n4) \uc0c1\ud0dc \ubcc0\ud654\u00b7\uc720\uc9c0 \ub3d9\uc0ac (~\ud55c \uc0c1\ud0dc\ub85c \ub9cc\ub4e4\ub2e4/\uc720\uc9c0\ud558\ub2e4)\n   \uc124\uba85: \ubaa9\uc801\uc5b4\uc758 \uc0c1\ud0dc\ub97c \ub098\ud0c0\ub0b4\ub294 \ud615\uc6a9\uc0ac \ubcf4\uc5b4\uac00 \ubc14\ub85c \ub4a4\ub530\ub984.\n   Ex) keep the door open / leave him alone / make me happy / drive him crazy\n\n\u2501\u2501\u2501 \uc0ac\uace0\u00b7\uc778\uc2dd \ub3d9\uc0ac \uc8fc\uc758\uc0ac\ud56d \u2501\u2501\u2501\n\n1) consider\ub294 \ubc18\ub4dc\uc2dc as \uc5c6\uc774 \uc500\n   \uc124\uba85: \"consider him as a genius\"\ucc98\ub7fc \uad6c\uc5b4\uc5d0\uc11c\ub294 \uc885\uc885 \uc4f0\uc774\uc9c0\ub9cc, \uaca9\uc2dd\uccb4 \uae00(IELTS \ub4f1)\uc5d0\uc11c\ub294 \uc624\ub958\ub85c \uc9c0\uc801\ub418\ub294 \ub300\ud45c\uc801\uc778 \ud328\ud134\uc784.\n   Ex) consider him a genius (O) / consider him as a genius (X, \uaca9\uc2dd\uccb4\uc5d0\uc11c)\n\n2) think, believe + \ubaa9\uc801\uc5b4 + \ud615\uc6a9\uc0ac\ub294 \ubb38\ubc95\uc740 \ub9de\uc9c0\ub9cc \uc608\uc2a4\ub7ec\uc6b4 \ubb38\uc5b4\uccb4 \ud45c\ud604\n   \uc124\uba85: Think him honest, Believe her capable\ucc98\ub7fc \ubaa9\uc801\uc5b4 \ub4a4\uc5d0 \ud615\uc6a9\uc0ac\uac00 \ubc14\ub85c \uc624\ub294 \uad6c\ubb38\uc740 \ubb38\ubc95\uc801\uc73c\ub85c\ub294 \ub9de\uc9c0\ub9cc \uc2e4\uc81c \uae00\uc5d0\uc11c\ub294 \uc798 \uc548 \uc500. \uc544\ub798 \ud45c\ud604\uc774 \ub354 \uc790\uc5f0\uc2a4\ub7ec\uc6c0.\n   Ex) think that he is honest / believe her to be capable / think of him as honest\n\n\u2501\u2501\u2501 as \uc0dd\ub7b5\u00b7\ud3ec\ud568 \ubaa8\ub450 \uac00\ub2a5\ud55c \ub3d9\uc0ac \u2501\u2501\u2501\n\nlabel, appoint, elect, nominate\ub294 as\ub97c \ubd99\uc5ec\ub3c4 \ub418\uace0 \uc548 \ubd99\uc5ec\ub3c4 \ub418\ub294 \ub3d9\uc0ac\uc784. \ub2e4\ub9cc call, name, make, crown, deem\uc740 as\ub97c \ubd99\uc774\uba74 \uc624\ud788\ub824 \ud2c0\ub9b0 \ud45c\ud604\uc774 \ub418\ubbc0\ub85c \uc774 \ub458\uc744 \uad6c\ubd84\ud574\uc11c \uae30\uc5b5\ud574\uc57c \ud568.\n\n- label him a traitor = label him as a traitor (\uc2e0\ubb38 \uae30\uc0ac\uccb4\uc5d0\uc11c\ub294 \uc624\ud788\ub824 as\ub97c \ub123\ub294 \uacbd\uc6b0\uac00 \ub354 \ub9ce\uc74c)\n- appoint him director = appoint him as director\n- elect her president = elect her as president (as \uc5c6\ub294 \ucabd\uc774 \uc880 \ub354 \uac04\uacb0\ud55c \ub290\ub08c)\n\n\u2501\u2501\u2501 \ubc18\ub4dc\uc2dc as\uac00 \ud544\uc694\ud55c \ub3d9\uc0ac \u2501\u2501\u2501\n\n\uc704 \ub3d9\uc0ac\ub4e4\uacfc \ud55c\uad6d\uc5b4 \ud574\uc11d\uc774 \ube44\uc2b7\ud574 \ubcf4\uc5ec\ub3c4, \uc544\ub798\ub294 \uc804\uce58\uc0ac as\uac00 \ubc18\ub4dc\uc2dc \ud544\uc694\ud55c \ub3d9\uc0ac(\uad6c)\uc784. \uc5d0\uc138\uc774\uc5d0\uc11c\ub294 treat, view, see, define\ucc98\ub7fc \uc544\ub798\ucabd \ub3d9\uc0ac\uac00 \ud6e8\uc52c \uc790\uc8fc \uc4f0\uc784.\n\n- refer to A as B: A\ub97c B\ub77c\uace0 \ubd80\ub974\ub2e4/\uc5b8\uae09\ud558\ub2e4\n- regard A as B: A\ub97c B\ub85c \uc5ec\uae30\ub2e4\n- describe A as B: A\ub97c B\ub77c\uace0 \ubb18\uc0ac\ud558\ub2e4\n- treat A as B: A\ub97c B\ub85c \ucde8\uae09\ud558\ub2e4 (treat failure as a learning opportunity \u2014 \uc5d0\uc138\uc774\uc5d0\uc11c \ub9e4\uc6b0 \uc790\uc8fc \uc500)\n- view A as B / see A as B: A\ub97c B\ub85c \ubcf4\ub2e4 (look upon\ubcf4\ub2e4 \ud6e8\uc52c \ud754\ud558\uac8c \uc4f0\ub294 \ud45c\ud604)\n- define A as B: A\ub97c B\ub85c \uc815\uc758\ud558\ub2e4\n- classify A as B: A\ub97c B\ub85c \ubd84\ub958\ud558\ub2e4\n- perceive A as B: A\ub97c B\ub85c \uc778\uc2dd\ud558\ub2e4\n- look upon A as B: A\ub97c B\ub85c \ubcf4\ub2e4 (\ub2e4\uc18c \uc608\uc2a4\ub7ec\uc6b4 \ud45c\ud604\uc774\ub77c \uc694\uc998 \uae00\uc5d0\uc11c\ub294 view\ub098 see\ub85c \ub300\uccb4\ud558\ub294 \uacbd\uc6b0\uac00 \ub9ce\uc74c)"
     },
     {
       "id": "comparison",
@@ -1463,6 +1469,9 @@ const DATA = {
       entryTitle.textContent = (cat ? cat.label : route.tag) + ' 실수 목록';
       entryCount.textContent = taglist.length + '건';
       listArea.innerHTML = '';
+      if (cat && Notes.get('cat-guide-' + cat.id, cat.guide)) {
+        listArea.appendChild(buildCategoryGuideCard(cat));
+      }
       listArea.appendChild(buildEntriesEl(taglist, true));
     } else if (route.type === 'stars') {
       catSection.style.display = 'none';
@@ -1866,6 +1875,53 @@ const DATA = {
     return card;
   }
 
+  // "문법 가이드" -- an optional reference block attached to a whole category
+  // (not one essay), shown above the sentence list on a category page.
+  // Reuses the same "━━━ 제목 ━━━" box + hanging-indent line rendering as
+  // buildNotesCard, and the same edit/save wiring (its id is namespaced with
+  // "cat-guide-" so it doesn't collide with any essay id). No star rating --
+  // it's reference material, not a mistake to rate.
+  function buildCategoryGuideCard(cat) {
+    var guideId = 'cat-guide-' + cat.id;
+    var baseId = guideId + '-notes';
+    var text = Notes.get(guideId, cat.guide);
+    var card = document.createElement('div');
+    card.className = 'notes-card guide-card';
+    card.setAttribute('data-essay-id', guideId);
+
+    var bodyHtml;
+    if (!text) {
+      bodyHtml = '<div class="notes-content"><span class="notes-placeholder">아직 작성한 가이드가 없음 — 편집 아이콘을 눌러 추가할 수 있음.</span></div>';
+    } else {
+      var sections = splitNotesSections(text);
+      bodyHtml = '<div class="notes-content">' +
+        sections.map(function (sec, idx) {
+          var field = 'notes-' + idx;
+          var hl = Highlights.get(baseId, field);
+          var titleHtml = sec.title ? '<div class="notes-section-title">' + escapeHtml(sec.title) + '</div>' : '<div class="notes-section-title notes-section-title-empty"></div>';
+          return '<div class="notes-section">' +
+            '<div class="notes-section-head">' + titleHtml + '</div>' +
+            '<div class="notes-section-body hl-zone" data-entry-id="' + escapeHtml(baseId) + '" data-field="' + field + '">' +
+              renderNotesBody(sec.body, hl) +
+            '</div>' +
+          '</div>';
+        }).join('') +
+        '</div>';
+    }
+
+    card.innerHTML =
+      '<div class="notes-head">' +
+        '<div class="eyebrow">문법 가이드</div>' +
+        '<div class="notes-head-right">' +
+          '<button type="button" class="notes-edit-btn" aria-label="편집">' +
+            '<svg viewBox="0 0 24 24" fill="none"><path d="M4 20h4L18.5 9.5a2 2 0 0 0 0-2.8l-1.2-1.2a2 2 0 0 0-2.8 0L4 15v5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+      bodyHtml;
+    return card;
+  }
+
   function escapeHtml(s) {
     return String(s)
       .replace(/&/g, '&amp;')
@@ -1993,10 +2049,21 @@ const DATA = {
     }
   });
 
+  // The fallback/default text for a notes-card: an essay's "notes" field,
+  // or -- for a category guide card, whose id is namespaced "cat-guide-<id>" --
+  // that category's "guide" field.
+  function defaultNotesText(id) {
+    if (id.indexOf('cat-guide-') === 0) {
+      var cat = catById(id.slice('cat-guide-'.length));
+      return cat ? (cat.guide || '') : '';
+    }
+    var essay = essayById(id);
+    return essay ? (essay.notes || '') : '';
+  }
+
   function enterNotesEditMode(card) {
     var essayId = card.getAttribute('data-essay-id');
-    var essay = essayById(essayId);
-    var current = Notes.get(essayId, essay ? essay.notes : '');
+    var current = Notes.get(essayId, defaultNotesText(essayId));
     var contentEl = card.querySelector('.notes-content');
     contentEl.outerHTML =
       '<textarea class="notes-editarea">' + escapeHtml(current) + '</textarea>' +
