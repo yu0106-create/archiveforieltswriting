@@ -1290,7 +1290,8 @@ const DATA = {
   // then wraps each segment with whichever of <mark class="hl"> / <span class="struck">
   // actually apply to it. Handles arbitrary overlap between a user's highlight drag
   // and the auto-computed struck range.
-  function renderAnnotatedText(text, highlightRanges, struckRange, fixText) {
+  function renderAnnotatedText(text, highlightRanges, struckRange, fixText, baseOffset) {
+    baseOffset = baseOffset || 0;
     var points = {};
     points[0] = true; points[text.length] = true;
     (highlightRanges || []).forEach(function (r) { points[r.start] = true; points[r.end] = true; });
@@ -1305,7 +1306,11 @@ const DATA = {
       var isHi = (highlightRanges || []).some(function (r) { return s >= r.start && e <= r.end; });
       var isStruck = struckRange && s >= struckRange.start && e <= struckRange.end;
       var open = '', close = '';
-      if (isHi) { open += '<mark class="hl" data-start="' + s + '" data-end="' + e + '">'; close = '</mark>' + close; }
+      // data-start/data-end must stay in the same coordinate space Highlights
+      // stores ranges in (the whole hl-zone's text, per getTextOffsetInZone) --
+      // callers that render a smaller fragment of a zone (e.g. one line of a
+      // notes box) pass baseOffset so the click-to-cancel lookup still matches.
+      if (isHi) { open += '<mark class="hl" data-start="' + (s + baseOffset) + '" data-end="' + (e + baseOffset) + '">'; close = '</mark>' + close; }
       if (isStruck) {
         open += (fixText != null) ? '<span class="struck" data-fix="' + escapeHtml(fixText) + '">' : '<span class="struck">';
         close = '</span>' + close;
@@ -1867,7 +1872,7 @@ const DATA = {
           var headHl = hlRanges
             .filter(function (r) { return r.start < li0.end && r.end > li0.start; })
             .map(function (r) { return { start: Math.max(r.start, li0.start) - li0.start, end: Math.min(r.end, li0.end) - li0.start }; });
-          return '<div class="notes-subhead">' + renderAnnotatedText(soleMatch[1], headHl, null, null) + '</div>';
+          return '<div class="notes-subhead">' + renderAnnotatedText(soleMatch[1], headHl, null, null, li0.start) + '</div>';
         }
       }
       var linesHtml = block.map(function (li) {
@@ -1890,9 +1895,9 @@ const DATA = {
           .map(function (r) { return { start: Math.max(r.start, labelText.length) - labelText.length, end: r.end - labelText.length }; });
 
         var labelSpan = labelText
-          ? '<span class="notes-line-label">' + renderAnnotatedText(labelText, labelHl, null, null) + '</span>'
+          ? '<span class="notes-line-label">' + renderAnnotatedText(labelText, labelHl, null, null, li.start) + '</span>'
           : '';
-        var textSpan = '<span class="notes-line-text">' + renderAnnotatedText(contentText, contentHl, null, null) + '</span>';
+        var textSpan = '<span class="notes-line-text">' + renderAnnotatedText(contentText, contentHl, null, null, li.start + labelText.length) + '</span>';
 
         return '<div class="notes-line">' + labelSpan + textSpan + '</div>';
       }).join('');
