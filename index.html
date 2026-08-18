@@ -1811,38 +1811,62 @@ const DATA = {
 
   function renderNotesBody(bodyText, hlRanges) {
     hlRanges = hlRanges || [];
-    var lines = bodyText.split('\n');
-    var lineInfos = [];
-    var offset = 0;
-    lines.forEach(function (line) {
-      var start = offset;
-      var end = start + line.length;
-      lineInfos.push({ text: line, start: start, end: end });
-      offset = end; // no text node represents the '\n' itself in the rendered DOM
-    });
+    var rawLines = bodyText.split('\n');
 
+    // Group into blocks (arrays of raw line indices) separated by blank lines,
+    // same grouping the renderer below uses -- needed up front because a
+    // sub-heading block's *visible* text (its title, "## " stripped) is
+    // shorter than its raw text, and every offset after it must account for
+    // that difference or highlights on later lines land in the wrong spot.
     var blocks = [];
     var current = [];
-    lineInfos.forEach(function (li) {
-      if (li.text === '') {
+    rawLines.forEach(function (line, i) {
+      if (line === '') {
         if (current.length) { blocks.push(current); current = []; }
       } else {
-        current.push(li);
+        current.push(i);
       }
     });
     if (current.length) blocks.push(current);
 
-    return blocks.map(function (block) {
+    var isSubheadLine = {};
+    blocks.forEach(function (idxs) {
+      if (idxs.length === 1 && NOTES_SUBHEAD_RE.test(rawLines[idxs[0]])) {
+        isSubheadLine[idxs[0]] = true;
+      }
+    });
+
+    var lineInfos = [];
+    var offset = 0;
+    rawLines.forEach(function (line, i) {
+      var visibleText = isSubheadLine[i] ? line.match(NOTES_SUBHEAD_RE)[1] : line;
+      var start = offset;
+      var end = start + visibleText.length;
+      lineInfos.push({ text: line, visibleText: visibleText, start: start, end: end });
+      offset = end; // no text node represents the '\n' itself in the rendered DOM
+    });
+
+    var lineBlocks = [];
+    current = [];
+    lineInfos.forEach(function (li) {
+      if (li.text === '') {
+        if (current.length) { lineBlocks.push(current); current = []; }
+      } else {
+        current.push(li);
+      }
+    });
+    if (current.length) lineBlocks.push(current);
+
+    return lineBlocks.map(function (block) {
       // A block that's just a single "## 제목" line renders as a sub-heading,
       // not as a hanging-indent line.
       if (block.length === 1) {
         var soleMatch = block[0].text.match(NOTES_SUBHEAD_RE);
         if (soleMatch) {
+          var li0 = block[0];
           var headHl = hlRanges
-            .filter(function (r) { return r.start < block[0].end && r.end > block[0].start; })
-            .map(function (r) { return { start: Math.max(r.start, block[0].start) - block[0].start, end: Math.min(r.end, block[0].end) - block[0].start }; })
-            .filter(function (r) { return r.start >= 3; }) // skip the "## " prefix itself
-            .map(function (r) { return { start: r.start - 3, end: r.end - 3 }; });
+            .filter(function (r) { return r.start < li0.end && r.end > li0.start; })
+            .map(function (r) { return { start: Math.max(r.start, li0.start) - li0.start, end: Math.min(r.end, li0.end) - li0.start }; });
           return '<div class="notes-subhead">' + renderAnnotatedText(soleMatch[1], headHl, null, null) + '</div>';
         }
       }
@@ -1940,6 +1964,13 @@ const DATA = {
   // buildNotesCard, and the same edit/save wiring (its id is namespaced with
   // "cat-guide-" so it doesn't collide with any essay id). No star rating --
   // it's reference material, not a mistake to rate.
+  // Which guide chips are expanded, keyed by "<guideId>::<sectionIdx>". Purely
+  // in-memory UI state (not persisted to storage) -- but it must survive a
+  // render() call, since render() runs after every highlight/star change and
+  // otherwise every guide chip would snap back to collapsed the moment the
+  // person tried to highlight something inside an expanded one.
+  var guideSectionExpanded = {};
+
   function buildCategoryGuideCard(cat) {
     var guideId = 'cat-guide-' + cat.id;
     var baseId = guideId + '-notes';
@@ -1959,7 +1990,8 @@ const DATA = {
           var hl = Highlights.get(baseId, field);
           var titleHtml = sec.title ? '<div class="notes-section-title">' + escapeHtml(sec.title) + '</div>' : '<div class="notes-section-title notes-section-title-empty"></div>';
           var chevron = '<svg class="notes-section-chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-          return '<div class="notes-section collapsible is-collapsed">' +
+          var expanded = !!guideSectionExpanded[guideId + '::' + idx];
+          return '<div class="notes-section collapsible' + (expanded ? '' : ' is-collapsed') + '" data-guide-idx="' + idx + '">' +
             '<div class="notes-section-head">' + titleHtml + chevron + '</div>' +
             '<div class="notes-section-body hl-zone" data-entry-id="' + escapeHtml(baseId) + '" data-field="' + field + '">' +
               renderNotesBody(sec.body, hl) +
@@ -2092,7 +2124,13 @@ const DATA = {
 
     var toggleHead = ev.target.closest('.notes-section.collapsible > .notes-section-head');
     if (toggleHead) {
-      toggleHead.closest('.notes-section').classList.toggle('is-collapsed');
+      var toggledSection = toggleHead.closest('.notes-section');
+      var toggledCard = toggledSection.closest('.notes-card');
+      var toggledGuideId = toggledCard.getAttribute('data-essay-id');
+      var toggledIdx = toggledSection.getAttribute('data-guide-idx');
+      var toggledKey = toggledGuideId + '::' + toggledIdx;
+      guideSectionExpanded[toggledKey] = !guideSectionExpanded[toggledKey];
+      toggledSection.classList.toggle('is-collapsed');
       return;
     }
 
