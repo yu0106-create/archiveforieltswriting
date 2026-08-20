@@ -1841,7 +1841,7 @@ const DATA = {
               '<a href="#/" class="back">← 홈으로</a>' +
             '</div>' +
           '</div>';
-        entryTitle.textContent = '저장한 표현집';
+        entryTitle.textContent = '표현집 목록';
         entryCount.textContent = (state.wordDocs || []).length + '개';
         var wdGrid = document.createElement('div');
         wdGrid.className = 'cat-grid';
@@ -1878,7 +1878,7 @@ const DATA = {
                   '<a href="#/words" class="back">← 표현집 목록으로</a>' +
                 '</div>' +
               '</div>';
-            entryTitle.textContent = wdoc.title;
+            entryTitle.textContent = wdoc.title + ' · 그룹 목록';
             entryCount.textContent = wdSections.length + '개 그룹';
             var secGrid = document.createElement('div');
             secGrid.className = 'cat-grid';
@@ -1908,7 +1908,7 @@ const DATA = {
                 '</div>' +
               '</div>';
             var wItemCount = wsec ? (wsec.body.match(/^\d+\)\s+/gm) || []).length : 0;
-            entryTitle.textContent = wsec ? wsec.title : '';
+            entryTitle.textContent = wsec ? wsec.title + ' · 표현 목록' : '';
             entryCount.textContent = wItemCount + '개';
             if (wsec) {
               var wBaseId = 'worddoc-' + wdoc.id + '-notes';
