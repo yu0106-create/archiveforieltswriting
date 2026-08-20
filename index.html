@@ -431,57 +431,92 @@ body:not(.is-home) .hero{
 
 /* ---------- notes card ("알아두기") ---------- */
 /* ---------- word/expression doc sidebar + "PDF popup" modal ---------- */
-.worddoc-sidebar{
-  position: fixed;
-  left: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 40;
+.topbar-right{
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: flex-end;
+  gap: 10px;
 }
-.worddoc-sidebar-btn{
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.worddoc-launcher-wrap{ position: relative; }
+.worddoc-launcher{
+  width: 30px; height: 30px;
+  border-radius: 50%;
   border: 1px solid var(--line);
   background: var(--card);
-  border-radius: 999px;
-  padding: 9px 9px;
+  font-size: 15px;
+  line-height: 1;
+  display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-  color: var(--ink);
-  transition: padding .18s ease, border-color .18s ease;
-  overflow: hidden;
-  max-width: 40px;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
 }
-.worddoc-sidebar-btn svg{ width: 17px; height: 17px; flex: none; color: var(--red-deep); }
-.worddoc-sidebar-btn span{
-  font-family: var(--kr);
-  font-size: 12.5px;
-  font-weight: 500;
-  white-space: nowrap;
+.worddoc-launcher:hover{ transform: scale(1.08); box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-color: var(--ink); }
+
+.worddoc-flyout{
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  transform: translateY(-6px);
+  min-width: 230px;
+  max-width: 290px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 12px 34px rgba(0,0,0,0.14);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   opacity: 0;
-  transition: opacity .15s ease;
+  pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease;
+  z-index: 45;
 }
-.worddoc-sidebar-btn:hover{
-  max-width: 240px;
-  padding: 9px 16px 9px 9px;
-  border-color: var(--ink);
+.worddoc-launcher-wrap:hover .worddoc-flyout,
+.topbar-right.is-open .worddoc-flyout{
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
-.worddoc-sidebar-btn:hover span{ opacity: 1; }
+.worddoc-flyout-label{
+  font-family: var(--en);
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 6px 10px 4px;
+}
+.worddoc-flyout-item{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  border: none;
+  background: none;
+  font-family: var(--kr);
+}
+.worddoc-flyout-item:hover{ background: var(--line-soft, #f4f1ec); }
+.worddoc-flyout-item .doc-title{ font-weight: 600; font-size: 13.5px; color: var(--ink); }
+.worddoc-flyout-item .doc-sub{ font-size: 11px; color: var(--ink-faint); margin-top: 1px; }
 
 .worddoc-modal-overlay{
   position: fixed;
   inset: 0;
   background: rgba(20,18,16,0.45);
   z-index: 60;
-  display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
 }
+/* An own-stylesheet display rule on this class would otherwise beat the
+   browser's built-in "[hidden] -> display:none" rule (same specificity,
+   author stylesheet wins the tie) -- so display:flex must be scoped to the
+   *visible* state only, or the modal renders open on every page load. */
+.worddoc-modal-overlay:not([hidden]){ display: flex; }
 .worddoc-modal{
   position: relative;
   width: min(720px, 100%);
@@ -509,15 +544,17 @@ body:not(.is-home) .hero{
   width: 100%;
   max-height: 100%;
   margin: 0;
+  padding: 30px 34px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.25);
   overflow: hidden;
 }
-.worddoc-card .notes-head{ flex: none; }
+.worddoc-card .notes-head{ flex: none; margin-bottom: 20px; }
 .worddoc-card .notes-content{
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: 6px;
+  gap: 10px;
 }
 .worddoc-modal-subtitle{
   font-family: var(--kr);
@@ -527,10 +564,82 @@ body:not(.is-home) .hero{
 }
 body.worddoc-modal-open{ overflow: hidden; }
 
-@media (max-width: 720px){
-  .worddoc-sidebar{ left: 10px; }
-  .worddoc-sidebar-btn span{ display: none; }
-  .worddoc-sidebar-btn:hover{ max-width: 40px; padding: 9px; }
+/* Refined "reference sheet" look for the word-doc modal specifically.
+   Collapsed chips keep the shared pill look used everywhere else on the site
+   (same click-to-expand interaction people already know) -- but once
+   expanded, the content reads like a clean glossary page rather than a
+   stack of gray admin boxes: no box fill, a hairline rule between groups,
+   dashed rules between entries, and each entry's own typographic hierarchy
+   (bold pattern / italic example / small vocab caption) instead of uniform
+   body text. */
+.worddoc-card .notes-section{
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+.worddoc-card .notes-section.is-collapsed{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 9px 14px;
+}
+.worddoc-card .notes-section:not(.is-collapsed){
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+.worddoc-card .notes-section:not(.is-collapsed) + .notes-section{
+  margin-top: 22px;
+}
+.worddoc-card .notes-section:not(.is-collapsed) .notes-section-head{ margin-bottom: 18px; }
+.worddoc-card .notes-section-title{ font-size: 12.5px; }
+
+.worddoc-card .notes-block{
+  padding: 14px 2px;
+  border-bottom: 1px dashed var(--line);
+}
+.worddoc-card .notes-block:last-child{ border-bottom: none; padding-bottom: 0; }
+.worddoc-card .notes-block:first-child{ padding-top: 0; }
+
+.worddoc-card .notes-line + .notes-line{ margin-top: 5px; }
+.worddoc-card .notes-line[data-marker="num"] .notes-line-label{
+  font-weight: 700;
+  color: var(--red-deep);
+}
+.worddoc-card .notes-line[data-marker="num"] .notes-line-text{
+  font-weight: 700;
+  font-size: 15.5px;
+  color: var(--ink);
+}
+.worddoc-card .notes-line[data-marker="ex"] .notes-line-label{
+  font-family: var(--en);
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.worddoc-card .notes-line[data-marker="ex"] .notes-line-text{
+  font-style: italic;
+  color: var(--ink-soft);
+}
+.worddoc-card .notes-line[data-marker="vocab"] .notes-line-label,
+.worddoc-card .notes-line[data-marker="vocab"] .notes-line-text{
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+.worddoc-card .notes-line[data-marker="desc"] .notes-line-label{
+  font-family: var(--en);
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.worddoc-card .notes-line[data-marker="desc"] .notes-line-text{ color: var(--ink-soft); }
+
+@media (max-width: 480px){
+  .worddoc-flyout{ max-width: calc(100vw - 40px); }
 }
 
 .notes-card{
@@ -884,10 +993,16 @@ footer{
       </button>
     </div>
     <a href="#/" class="topbar-brand">ARCHIVE<span class="tb-for">for</span><span>IELTS WRITING</span></a>
-    <div class="starnav" id="starNav">
-      <button type="button" class="starnav-btn" data-n="3" aria-label="별 3개 표시한 문장"></button>
-      <button type="button" class="starnav-btn" data-n="2" aria-label="별 2개 표시한 문장"></button>
-      <button type="button" class="starnav-btn" data-n="1" aria-label="별 1개 표시한 문장"></button>
+    <div class="topbar-right" id="wordDocSidebar">
+      <div class="worddoc-launcher-wrap">
+        <button type="button" class="worddoc-launcher" id="wordDocLauncher" aria-label="저장한 표현집 목록 열기">🤯</button>
+        <div class="worddoc-flyout" id="wordDocFlyout"></div>
+      </div>
+      <div class="starnav" id="starNav">
+        <button type="button" class="starnav-btn" data-n="3" aria-label="별 3개 표시한 문장"></button>
+        <button type="button" class="starnav-btn" data-n="2" aria-label="별 2개 표시한 문장"></button>
+        <button type="button" class="starnav-btn" data-n="1" aria-label="별 1개 표시한 문장"></button>
+      </div>
     </div>
   </div>
 </header>
@@ -933,11 +1048,6 @@ footer{
   </footer>
 
 </main>
-
-<!-- Floating left sidebar: one button per word/expression doc (buildWordDocSidebar
-     fills this in from DATA.wordDocs, so adding a new doc automatically gets a
-     button here -- no HTML changes needed). -->
-<nav id="wordDocSidebar" class="worddoc-sidebar" aria-label="표현집"></nav>
 
 <!-- The "PDF popup" -- a highlightable text document rendered with the same
      collapsible-chip boxes as a category guide, just opened in a modal
@@ -2028,6 +2138,23 @@ const DATA = {
   var NOTES_MARKER_RE = /^(-\s+|\d+\)\s+|Ex\)\s+|비교\s?예시:\s*|비교\)\s+|예시\s?오류:\s*|요약:\s*|설명:\s*|단어:\s*|→\s*)/;
   var NOTES_SUBHEAD_RE = /^##\s*(.+)$/;
 
+  // Classifies a matched marker so callers (mainly the word-doc modal's CSS)
+  // can style e.g. an "Ex)" example line differently from a "단어:" vocab
+  // line, without the renderer itself knowing anything about that styling.
+  function markerType(marker) {
+    if (!marker) return 'plain';
+    if (/^-\s*/.test(marker)) return 'dash';
+    if (/^\d+\)/.test(marker)) return 'num';
+    if (/^Ex\)/.test(marker)) return 'ex';
+    if (/^단어:/.test(marker)) return 'vocab';
+    if (/^설명:/.test(marker)) return 'desc';
+    if (/^요약:/.test(marker)) return 'summary';
+    if (/^비교/.test(marker)) return 'compare';
+    if (/^예시\s?오류:/.test(marker)) return 'wrongex';
+    if (/^→/.test(marker)) return 'arrow';
+    return 'plain';
+  }
+
   function renderNotesBody(bodyText, hlRanges) {
     hlRanges = hlRanges || [];
     var rawLines = bodyText.split('\n');
@@ -2113,7 +2240,7 @@ const DATA = {
           : '';
         var textSpan = '<span class="notes-line-text">' + renderAnnotatedText(contentText, contentHl, null, null, li.start + labelText.length) + '</span>';
 
-        return '<div class="notes-line">' + labelSpan + textSpan + '</div>';
+        return '<div class="notes-line" data-marker="' + markerType(marker) + '">' + labelSpan + textSpan + '</div>';
       }).join('');
       return '<div class="notes-block">' + linesHtml + '</div>';
     }).join('');
@@ -2376,8 +2503,24 @@ const DATA = {
       return;
     }
 
-    var sidebarBtn = ev.target.closest('.worddoc-sidebar-btn');
-    if (sidebarBtn) { openWordDocModal(sidebarBtn.getAttribute('data-doc-id')); return; }
+    var flyoutItem = ev.target.closest('.worddoc-flyout-item');
+    if (flyoutItem) {
+      openWordDocModal(flyoutItem.getAttribute('data-doc-id'));
+      document.getElementById('wordDocSidebar').classList.remove('is-open');
+      return;
+    }
+
+    var launcherBtn = ev.target.closest('#wordDocLauncher');
+    if (launcherBtn) {
+      document.getElementById('wordDocSidebar').classList.toggle('is-open');
+      return;
+    }
+
+    // click anywhere outside the sidebar closes the tap-opened flyout
+    // (hover-opened flyouts on desktop don't need this -- CSS :hover handles them)
+    if (!ev.target.closest('#wordDocSidebar')) {
+      document.getElementById('wordDocSidebar').classList.remove('is-open');
+    }
 
     var wordDocCloseBtn = ev.target.closest('#wordDocCloseBtn');
     if (wordDocCloseBtn) { closeWordDocModal(); return; }
@@ -2392,7 +2535,8 @@ const DATA = {
 
   // ---------------------------------------------------------------
   // Word/expression docs -- the left floating sidebar + "PDF popup" modal.
-  // Each doc in DATA.wordDocs gets one sidebar button; clicking it opens the
+  // The sidebar is a single 🤯 launcher; hovering (or tapping, on touch)
+  // reveals a flyout list built from DATA.wordDocs. Picking one opens the
   // doc's text (same "━━━ 제목 ━━━" + collapsible-chip format as a category
   // guide) in a modal, reusing the exact same edit/highlight/toggle plumbing.
   // ---------------------------------------------------------------
@@ -2408,14 +2552,17 @@ const DATA = {
 
   function buildWordDocSidebar() {
     var nav = document.getElementById('wordDocSidebar');
+    var flyout = document.getElementById('wordDocFlyout');
     var docs = state.wordDocs || [];
     if (!docs.length) { nav.style.display = 'none'; return; }
-    nav.innerHTML = docs.map(function (doc) {
-      return '<button type="button" class="worddoc-sidebar-btn" data-doc-id="' + escapeHtml(doc.id) + '" title="' + escapeHtml(doc.title) + '">' +
-        '<svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>' +
-        '<span>' + escapeHtml(doc.title) + '</span>' +
-      '</button>';
-    }).join('');
+    flyout.innerHTML =
+      '<div class="worddoc-flyout-label">저장한 표현집</div>' +
+      docs.map(function (doc) {
+        return '<button type="button" class="worddoc-flyout-item" data-doc-id="' + escapeHtml(doc.id) + '">' +
+          '<span class="doc-title">' + escapeHtml(doc.title) + '</span>' +
+          (doc.subtitle ? '<span class="doc-sub">' + escapeHtml(doc.subtitle) + '</span>' : '') +
+        '</button>';
+      }).join('');
   }
 
   function renderWordDocModalBody(docId) {
