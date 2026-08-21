@@ -595,7 +595,11 @@ body:not(.is-home) .hero{
    "단어:") so all of a block's text lines start at one shared left edge,
    the way the first line's text starts right after its big number. */
 .worddoc-card .notes-line{ align-items: baseline; }
-.worddoc-card .notes-line-label{ min-width: 42px; }
+.worddoc-card .notes-line-label{
+  flex: 0 0 46px;
+  width: 46px;
+  overflow: hidden;
+}
 .worddoc-card .notes-line + .notes-line{ margin-top: 6px; }
 .worddoc-card .notes-line[data-marker="num"] .notes-line-label{
   font-family: var(--en);
