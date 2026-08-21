@@ -902,6 +902,15 @@ mark.hl{
   border-radius: 2px;
   padding: 0 1px;
   cursor: pointer;
+  position: relative;
+}
+mark.hl.has-note::after{
+  content: "";
+  position: absolute;
+  top: -3px; right: -3px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--red-deep);
 }
 .hl-popup{
   position: fixed;
@@ -911,12 +920,14 @@ mark.hl{
   font-family: var(--kr);
   font-weight: 300;
   font-size: 12.5px;
-  padding: 7px 12px;
+  padding: 4px;
   border-radius: 6px;
-  cursor: pointer;
   white-space: nowrap;
   transform: translate(-50%, -100%);
   box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 .hl-popup::after{
   content: "";
@@ -926,6 +937,63 @@ mark.hl{
   border: 5px solid transparent;
   border-top-color: var(--ink);
 }
+.hl-popup-btn{
+  border: none;
+  background: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 300;
+  cursor: pointer;
+  padding: 5px 9px;
+  border-radius: 4px;
+}
+.hl-popup-btn:hover{ background: rgba(255,255,255,0.15); }
+.hl-popup-sep{ width: 1px; height: 14px; background: rgba(255,255,255,0.25); flex: none; }
+
+.hl-memo-panel{
+  position: fixed;
+  z-index: 200;
+  width: 240px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+  padding: 8px;
+}
+.hl-memo-textarea{
+  width: 100%;
+  min-height: 70px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px;
+  font-family: var(--kr);
+  font-weight: 300;
+  font-size: 12.5px;
+  color: var(--ink);
+  box-sizing: border-box;
+}
+.hl-memo-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 6px;
+}
+.hl-memo-actions button{
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-family: var(--kr);
+  font-weight: 300;
+  font-size: 12px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.hl-memo-actions button:hover{ border-color: var(--ink); color: var(--ink); }
+.hl-memo-actions .hl-memo-save{ background: var(--ink); color: #fff; border-color: var(--ink); }
+.hl-memo-actions .hl-memo-save:hover{ opacity: 0.85; }
 .hl-zone{ cursor: text; }
 
 .entry .body .wrong{
@@ -1543,6 +1611,21 @@ const DATA = {
       if (Object.keys(d[entryId]).length === 0) delete d[entryId];
       HStore.save();
       pushToCloud();
+    },
+    // attaches (or clears, if note is empty) a memo to an existing highlight
+    // range, identified by its exact start/end.
+    setNote: function (entryId, field, start, end, note) {
+      var d = HStore.load();
+      if (!d[entryId] || !d[entryId][field]) return;
+      var ranges = d[entryId][field];
+      for (var i = 0; i < ranges.length; i++) {
+        if (ranges[i].start === start && ranges[i].end === end) {
+          if (note) ranges[i].note = note; else delete ranges[i].note;
+          break;
+        }
+      }
+      HStore.save();
+      pushToCloud();
     }
   };
 
@@ -1551,8 +1634,15 @@ const DATA = {
     var out = [];
     sorted.forEach(function (r) {
       var last = out[out.length - 1];
-      if (last && r.start <= last.end) { last.end = Math.max(last.end, r.end); }
-      else { out.push({ start: r.start, end: r.end }); }
+      if (last && r.start <= last.end) {
+        last.end = Math.max(last.end, r.end);
+        if (!last.note && r.note) last.note = r.note;
+      }
+      else {
+        var copy = { start: r.start, end: r.end };
+        if (r.note) copy.note = r.note;
+        out.push(copy);
+      }
     });
     return out;
   }
@@ -1626,14 +1716,20 @@ const DATA = {
       var s = sorted[k], e = sorted[k + 1];
       if (s >= e) continue;
       var seg = text.slice(s, e);
-      var isHi = (highlightRanges || []).some(function (r) { return s >= r.start && e <= r.end; });
+      var hiRange = (highlightRanges || []).filter(function (r) { return s >= r.start && e <= r.end; })[0];
+      var isHi = !!hiRange;
       var isStruck = struckRange && s >= struckRange.start && e <= struckRange.end;
       var open = '', close = '';
       // data-start/data-end must stay in the same coordinate space Highlights
       // stores ranges in (the whole hl-zone's text, per getTextOffsetInZone) --
       // callers that render a smaller fragment of a zone (e.g. one line of a
       // notes box) pass baseOffset so the click-to-cancel lookup still matches.
-      if (isHi) { open += '<mark class="hl" data-start="' + (s + baseOffset) + '" data-end="' + (e + baseOffset) + '">'; close = '</mark>' + close; }
+      if (isHi) {
+        var noteAttr = hiRange.note ? ' data-note="' + escapeHtml(hiRange.note) + '" title="' + escapeHtml(hiRange.note) + '"' : '';
+        var noteClass = hiRange.note ? ' has-note' : '';
+        open += '<mark class="hl' + noteClass + '" data-start="' + (s + baseOffset) + '" data-end="' + (e + baseOffset) + '"' + noteAttr + '>';
+        close = '</mark>' + close;
+      }
       if (isStruck) {
         open += (fixText != null) ? '<span class="struck" data-fix="' + escapeHtml(fixText) + '">' : '<span class="struck">';
         close = '</span>' + close;
@@ -2326,7 +2422,7 @@ const DATA = {
           var li0 = block[0];
           var headHl = hlRanges
             .filter(function (r) { return r.start < li0.end && r.end > li0.start; })
-            .map(function (r) { return { start: Math.max(r.start, li0.start) - li0.start, end: Math.min(r.end, li0.end) - li0.start }; });
+            .map(function (r) { return { start: Math.max(r.start, li0.start) - li0.start, end: Math.min(r.end, li0.end) - li0.start, note: r.note }; });
           return '<div class="notes-subhead">' + renderAnnotatedText(soleMatch[1], headHl, null, null, li0.start) + '</div>';
         }
       }
@@ -2341,13 +2437,13 @@ const DATA = {
 
         var lineHl = hlRanges
           .filter(function (r) { return r.start < li.end && r.end > li.start; })
-          .map(function (r) { return { start: Math.max(r.start, li.start) - li.start, end: Math.min(r.end, li.end) - li.start }; });
+          .map(function (r) { return { start: Math.max(r.start, li.start) - li.start, end: Math.min(r.end, li.end) - li.start, note: r.note }; });
         var labelHl = lineHl
           .filter(function (r) { return r.start < labelText.length; })
-          .map(function (r) { return { start: r.start, end: Math.min(r.end, labelText.length) }; });
+          .map(function (r) { return { start: r.start, end: Math.min(r.end, labelText.length), note: r.note }; });
         var contentHl = lineHl
           .filter(function (r) { return r.end > labelText.length; })
-          .map(function (r) { return { start: Math.max(r.start, labelText.length) - labelText.length, end: r.end - labelText.length }; });
+          .map(function (r) { return { start: Math.max(r.start, labelText.length) - labelText.length, end: r.end - labelText.length, note: r.note }; });
 
         var labelSpan = labelText
           ? '<span class="notes-line-label">' + renderAnnotatedText(labelText, labelHl, null, null, li.start) + '</span>'
@@ -2484,7 +2580,9 @@ const DATA = {
   // ---------------------------------------------------------------
   // Highlight interaction: drag-select text inside a .hl-zone -> a small
   // "하이라이트" button appears -> click it to mark that range hot pink.
-  // Click an existing mark -> a "취소하기" button appears to remove it.
+  // Click an existing mark -> "메모"/"삭제" buttons appear; "메모" opens the
+  // small floating textarea below (memoPanel) to attach a note to that
+  // specific highlight (shown afterwards as a tooltip + a small dot marker).
   // ---------------------------------------------------------------
   var popupEl = null;
   function ensurePopup() {
@@ -2496,13 +2594,62 @@ const DATA = {
     }
     return popupEl;
   }
-  function showPopup(rect, label, onClick) {
+
+  var memoPanelEl = null;
+  var memoState = null; // { entryId, field, start, end }
+  function ensureMemoPanel() {
+    if (!memoPanelEl) {
+      memoPanelEl = document.createElement('div');
+      memoPanelEl.className = 'hl-memo-panel';
+      memoPanelEl.hidden = true;
+      memoPanelEl.innerHTML =
+        '<textarea class="hl-memo-textarea" placeholder="메모를 남겨보세요"></textarea>' +
+        '<div class="hl-memo-actions">' +
+          '<button type="button" class="hl-memo-cancel">취소</button>' +
+          '<button type="button" class="hl-memo-save">저장</button>' +
+        '</div>';
+      document.body.appendChild(memoPanelEl);
+      memoPanelEl.querySelector('.hl-memo-cancel').addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        closeMemoPanel();
+      });
+      memoPanelEl.querySelector('.hl-memo-save').addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        if (!memoState) return;
+        var text = memoPanelEl.querySelector('.hl-memo-textarea').value.trim();
+        Highlights.setNote(memoState.entryId, memoState.field, memoState.start, memoState.end, text);
+        closeMemoPanel();
+        render();
+      });
+    }
+    return memoPanelEl;
+  }
+  function openMemoPanel(rect, entryId, field, start, end, currentNote) {
+    var panel = ensureMemoPanel();
+    memoState = { entryId: entryId, field: field, start: start, end: end };
+    panel.querySelector('.hl-memo-textarea').value = currentNote || '';
+    panel.hidden = false;
+    var top = rect.bottom + 10;
+    var left = Math.min(Math.max(rect.left, 8), window.innerWidth - 268);
+    panel.style.top = top + 'px';
+    panel.style.left = left + 'px';
+    panel.querySelector('.hl-memo-textarea').focus();
+  }
+  function closeMemoPanel() {
+    memoState = null;
+    if (memoPanelEl) memoPanelEl.hidden = true;
+  }
+  function showPopup(rect, actions) {
     var p = ensurePopup();
-    p.textContent = label;
-    p.style.display = 'block';
+    p.innerHTML = actions.map(function (a, i) {
+      return '<button type="button" class="hl-popup-btn" data-idx="' + i + '">' + escapeHtml(a.label) + '</button>';
+    }).join('<span class="hl-popup-sep"></span>');
+    p.style.display = 'flex';
     p.style.left = (rect.left + rect.width / 2) + 'px';
     p.style.top = (rect.top - 10) + 'px';
-    p.onclick = function (ev) { ev.stopPropagation(); onClick(); };
+    Array.prototype.forEach.call(p.querySelectorAll('.hl-popup-btn'), function (btn, i) {
+      btn.onclick = function (ev) { ev.stopPropagation(); actions[i].onClick(); };
+    });
   }
   function hidePopup() {
     if (popupEl) popupEl.style.display = 'none';
@@ -2540,12 +2687,12 @@ const DATA = {
       var entryId = startZone.getAttribute('data-entry-id');
       var field = startZone.getAttribute('data-field');
 
-      showPopup(rect, '하이라이트', function () {
+      showPopup(rect, [{ label: '하이라이트', onClick: function () {
         Highlights.add(entryId, field, lo, hi);
         sel.removeAllRanges();
         hidePopup();
         render();
-      });
+      } }]);
     }, 10);
   }
   document.addEventListener('mouseup', handleSelectionEnd);
@@ -2553,6 +2700,10 @@ const DATA = {
   document.addEventListener('mousedown', function (ev) {
     if (!ev.target || !ev.target.closest) return;
     if (!ev.target.closest('.hl-popup') && !ev.target.closest('mark.hl')) hidePopup();
+    if (!ev.target.closest('.hl-memo-panel') && !ev.target.closest('mark.hl')) closeMemoPanel();
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') { hidePopup(); closeMemoPanel(); }
   });
 
   // clicks inside the results list: star buttons + highlight marks (event
@@ -2570,15 +2721,25 @@ const DATA = {
     }
     var markEl = ev.target.closest('mark.hl');
     if (markEl) {
+      closeMemoPanel();
       var zoneEl = markEl.closest('.hl-zone');
       var start = parseInt(markEl.getAttribute('data-start'), 10);
       var end = parseInt(markEl.getAttribute('data-end'), 10);
+      var entryId = zoneEl.getAttribute('data-entry-id');
+      var field = zoneEl.getAttribute('data-field');
+      var existingNote = markEl.getAttribute('data-note') || '';
       var rect = markEl.getBoundingClientRect();
-      showPopup(rect, '취소하기', function () {
-        Highlights.removeAt(zoneEl.getAttribute('data-entry-id'), zoneEl.getAttribute('data-field'), start, end);
-        hidePopup();
-        render();
-      });
+      showPopup(rect, [
+        { label: existingNote ? '메모 수정' : '메모 추가', onClick: function () {
+            hidePopup();
+            openMemoPanel(rect, entryId, field, start, end, existingNote);
+          } },
+        { label: '삭제', onClick: function () {
+            Highlights.removeAt(entryId, field, start, end);
+            hidePopup();
+            render();
+          } }
+      ]);
       return;
     }
 
