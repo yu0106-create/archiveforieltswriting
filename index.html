@@ -17,204 +17,326 @@
   font-weight: 700;
   font-display: swap;
 }
-*{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap');
+
+:root{
+  --red-deep: #9a2c2c;
+  --ink: #2b2622;
+  --ink-soft: #6b6156;
+  --paper: #faf6ec;
+  --paper-line: #e7ddc8;
+  --env-front: #cdb98c;
+  --env-shadow: #8f7c56;
+  --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, sans-serif;
+  --hand: 'Caveat', cursive;
+  --mono: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+*{ box-sizing:border-box; }
 html, body{
   margin:0; padding:0;
-  width:100%; height:100%;
-  overflow:hidden;
-  font-family: 'BookkGothic', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-family: var(--kr);
   font-weight: 300;
+  color: var(--ink);
+  overflow-x: hidden; /* the tilted paper layers rotate past the viewport
+    edge on narrow screens -- that's just visual bleed, not real content,
+    so clip it horizontally instead of letting it create a scrollbar. */
 }
-.desktop{
-  position: fixed;
-  inset: 0;
+body{
   background-image: url('bg-home.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-attachment: fixed;
 }
-/* soft top scrim so icon labels stay legible against any part of the photo */
-.desktop::before{
-  content:"";
-  position:absolute; inset:0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.14) 0%, rgba(0,0,0,0) 22%);
-  pointer-events:none;
+a{ color:inherit; text-decoration:none; }
+img{ -webkit-user-drag:none; user-select:none; }
+
+/* ===================== SECTION 1 -- the letter ===================== */
+.sec-letter{
+  min-height: 100vh;
+  display:flex;
+  align-items:center;
+  justify-content: flex-end;
+  padding: 56px 7vw 40px 20px;
+  position: relative;
 }
-.corner-label{
+.letter-stack{
+  position: relative;
+  width: clamp(380px, 36vw, 480px);
+}
+/* the pink scrap sits behind, peeking out from the edges. Rendered via
+   border-image (9-slice) rather than a stretched background: the torn
+   edges keep their real pixel detail and only the plain middle stretches,
+   so growing the note tall doesn't smear/warp the paper texture. */
+.paper-pink{
   position:absolute;
-  left: 18px; bottom: 14px;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: rgba(255,255,255,0.78);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.45);
-  user-select:none;
-  pointer-events:none;
+  top: -22px; left: -26px; right: 12px; bottom: -26px;
+  border-style: solid;
+  border-width: 60px;
+  border-image: url('paper-pink.png') 60 fill / 60px;
+  transform: rotate(-5deg);
+  z-index: 1;
+  filter: drop-shadow(0 14px 22px rgba(30,15,10,0.30));
+  transition: transform .5s cubic-bezier(.34,1.4,.4,1);
 }
-.icon{
+/* the cream note sits on top. Its 9-slice corners are sized to keep the
+   paperclip artwork (top-right corner of the source image) pixel-exact
+   however tall the note ends up -- only the edges/middle stretch. */
+.paper-cream{
+  position: relative;
+  z-index: 2;
+  border-style: solid;
+  border-width: 125px 115px 45px 25px;
+  border-image: url('paper-cream.png') 125 115 45 25 fill / 125px 115px 45px 25px;
+  padding: 4px 6px 10px 6px;
+  transform: rotate(2deg);
+  transition: transform .45s cubic-bezier(.34,1.4,.4,1);
+}
+.letter-stack:hover .paper-pink{ animation: wiggle-pink .6s ease-in-out; }
+.letter-stack:hover .paper-cream{ animation: wiggle-cream .6s ease-in-out; }
+/* two different keyframe shapes (different rotation range + timing)
+   so the two scraps visibly move out of sync with each other, not as
+   one rigid unit. */
+@keyframes wiggle-pink{
+  0%   { transform: rotate(-5deg) translate(0,0); }
+  25%  { transform: rotate(-8deg) translate(-3px, 1px); }
+  55%  { transform: rotate(-2deg) translate(2px, -1px); }
+  80%  { transform: rotate(-6deg) translate(-1px, 1px); }
+  100% { transform: rotate(-5deg) translate(0,0); }
+}
+@keyframes wiggle-cream{
+  0%   { transform: rotate(2deg) translate(0,0); }
+  20%  { transform: rotate(-1deg) translate(2px, -2px); }
+  50%  { transform: rotate(4deg) translate(-2px, 1px); }
+  75%  { transform: rotate(0deg) translate(1px, 2px); }
+  100% { transform: rotate(2deg) translate(0,0); }
+}
+.letter-dateline{
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.letter-body{
+  font-family: var(--hand);
+  color: var(--red-deep);
+  font-size: 19px;
+  line-height: 1.3;
+}
+.letter-body p{ margin: 0 0 9px; }
+.letter-body p:last-child{ margin-bottom: 0; }
+.letter-sign{ margin-top: 3px; }
+
+.scroll-hint{
   position:absolute;
-  width: 108px;
+  bottom: 18px; left: 50%;
+  transform: translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  color: rgba(255,255,255,0.85);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  animation: bob 1.8s ease-in-out infinite;
+}
+.scroll-hint svg{ width:16px; height:16px; }
+@keyframes bob{
+  0%, 100%{ transform: translate(-50%, 0); }
+  50%{ transform: translate(-50%, 6px); }
+}
+@media (max-width: 760px){
+  .sec-letter{ justify-content:center; padding: 56px 20px 40px; }
+  .letter-stack{ width: min(340px, 82vw); }
+  .paper-cream{
+    border-width: 92px 84px 34px 20px;
+    border-image: url('paper-cream.png') 125 115 45 25 fill / 92px 84px 34px 20px;
+  }
+  .paper-pink{ border-width: 44px; border-image: url('paper-pink.png') 60 fill / 44px; }
+  .letter-body{ font-size: 18px; }
+}
+
+/* ===================== SECTION 2 -- envelopes ===================== */
+.sec-envelopes{
+  min-height: 100vh;
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap: 7px;
+  justify-content:center;
+  gap: 28px;
+  padding: 40px 20px 70px;
+}
+.env-heading{
+  color: rgba(255,255,255,0.92);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.env-row{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 46px;
+  justify-content:center;
+}
+
+.env{
+  position: relative;
+  width: 250px;
+  height: 168px;
   cursor: pointer;
-  touch-action: none;
-  user-select: none;
-  transform: translate(-50%, -50%);
-}
-.icon-art{
-  width: 84px; height: 84px;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.30), 0 1px 0 rgba(255,255,255,0.25) inset;
-  border: 1px solid rgba(255,255,255,0.35);
-  transition: transform .12s ease, box-shadow .12s ease;
-  background: #fff;
-}
-.icon-art img{
-  width:100%; height:100%;
-  object-fit: cover;
+  margin-top: 150px;
   display:block;
+}
+/* At rest, the letter's box must sit entirely within the envelope's own
+   0..168px height so the opaque .env-body (z-index 2, covers the full
+   container) hides it completely -- only on hover does it translate
+   upward past the container's top edge, into the unmasked area above,
+   where it actually becomes visible ("pulled out" of the envelope). */
+.env-letter{
+  position:absolute;
+  left: 9%;
+  right: 9%;
+  height: 118px;
+  top: 50px; /* 168 (env height) - 118 = 50, so its bottom lands exactly on the envelope's bottom edge */
+  background: var(--paper);
+  border: 1px solid #e3d8bd;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.22);
+  z-index: 1;
+  transform: translateY(0);
+  transition: transform .45s cubic-bezier(.2,.8,.2,1);
+  padding: 16px 14px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center;
+  gap: 8px;
+}
+.env-letter .to{
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+.env-letter .go{
+  font-family: var(--hand);
+  color: var(--red-deep);
+  font-size: 21px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .35s ease .1s, transform .35s ease .1s;
+}
+.env:hover .env-letter{ transform: translateY(-172px) rotate(-1.5deg); }
+.env:hover .env-letter .go{ opacity: 1; transform: translateY(0); }
+
+.env-body{
+  position:absolute; inset:0;
+  z-index: 2;
+  background: var(--env-front);
+  box-shadow: 0 10px 24px rgba(30,20,5,0.35);
+}
+.env-flap{
+  position:absolute;
+  top:0; left:0; right:0;
+  height: 60%;
+  z-index: 3;
+  background: linear-gradient(135deg, #ddc79a 0%, var(--env-front) 60%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.08) inset;
+}
+.env-address{
+  position:absolute;
+  left: 16px; right: 16px; bottom: 14px;
+  z-index: 4;
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: #3a2f1c;
+  line-height: 1.5;
   pointer-events: none;
-  -webkit-user-drag: none;
 }
-.icon:hover .icon-art{
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(0,0,0,0.34), 0 1px 0 rgba(255,255,255,0.25) inset;
+.env-address .label{
+  display:block;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  color: #6b5a37;
+  text-transform: uppercase;
+  margin-bottom: 3px;
 }
-.icon.dragging .icon-art{
-  transform: scale(1.05);
-  box-shadow: 0 14px 26px rgba(0,0,0,0.38);
+.env-address .name{ font-weight: 700; font-size: 14.5px; }
+.env-stamp{
+  position:absolute;
+  top: 12px; right: 12px;
+  z-index: 4;
+  width: 34px; height: 42px;
+  background: #efe6cf;
+  border: 1.5px dashed #a5895a;
+  display:flex; align-items:center; justify-content:center;
+  pointer-events:none;
 }
-.icon-label{
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #fff;
-  text-align: center;
-  line-height: 1.3;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.55), 0 0 1px rgba(0,0,0,0.4);
-  padding: 2px 8px;
-  max-width: 100%;
-}
-@media (max-width: 480px){
-  .icon{ width: 88px; }
-  .icon-art{ width: 68px; height: 68px; border-radius: 16px; }
-  .icon-label{ font-size: 11.5px; }
+.env-stamp svg{ width:16px; height:16px; color:#a5895a; }
+
+@media (max-width: 600px){
+  .letter-card{ padding: 30px 24px 26px; }
+  .letter-body{ font-size: 20px; }
+  .env-row{ gap: 30px; }
+  .env{ width: 84vw; max-width: 280px; }
 }
 </style>
 </head>
 <body>
 
-<div class="desktop" id="desktop">
-  <div class="icon" id="icon-ielts" data-href="ielts.html">
-    <div class="icon-art"><img src="icon-ielts.jpg" alt="" draggable="false"></div>
-    <div class="icon-label">IELTS Writing</div>
+<section class="sec-letter">
+  <div class="letter-stack">
+    <div class="paper-pink"></div>
+    <div class="paper-cream">
+      <div class="letter-dateline">The Hague &middot; Sunday, 3 September 1882</div>
+      <div class="letter-body">
+        <p>My dear Theo,</p>
+        <p>I am writing to you in a great hurry, but I want to send you a word or two anyway.</p>
+        <p>First, I must tell you that I received the money you sent, for which I thank you very much. I had to pay several things at once, including my rent, so it came in very handy.</p>
+        <p>I am again going through a period of working hard and then suddenly becoming slack, of patient waiting and then impatience, of hope and then despair&mdash;it is repeating itself again. Still, if I keep on trying, I shall understand watercolors better. If it were easy, one would take no pleasure in it. So I must go on painting.</p>
+        <p>I have been working on several watercolors lately, trying to get more life into them. It is no easy task, and sometimes I feel quite discouraged, but then I remember that nothing worthwhile comes easily.</p>
+        <p>I hope you are well and that your work is going satisfactorily. Do write to me again as soon as you have a moment to spare.</p>
+        <p class="letter-sign">With a handshake in thought,<br>Ever yours,<br>Vincent</p>
+      </div>
+    </div>
   </div>
-  <div class="icon" id="icon-verbs" data-href="verbs.html">
-    <div class="icon-art"><img src="icon-verbs.jpg" alt="" draggable="false"></div>
-    <div class="icon-label">Phrasal Verbs Dump</div>
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <svg viewBox="0 0 24 24" fill="none"><path d="M12 4v14M6 13l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
-  <div class="corner-label">personal study desktop</div>
-</div>
+</section>
 
-<script>
-(function () {
-  var STORE_KEY = 'desktopIconPositions.v1';
-  // default positions, expressed as % of viewport so the layout scales
-  // sensibly across screen sizes -- a simple top-left vertical stack, like
-  // a fresh macOS desktop before you've touched anything.
-  var DEFAULTS = {
-    'icon-ielts': { x: 10, y: 14 },
-    'icon-verbs': { x: 10, y: 32 }
-  };
+<section class="sec-envelopes">
+  <div class="env-heading">choose where to go</div>
+  <div class="env-row">
+    <a class="env" href="ielts.html" aria-label="IELTS Writing\uc73c\ub85c \uc774\ub3d9">
+      <div class="env-letter">
+        <span class="to">open</span>
+        <span class="go">IELTS Writing</span>
+      </div>
+      <div class="env-body"></div>
+      <div class="env-flap"></div>
+      <div class="env-stamp"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6l8 6 8-6M4 6h16v12H4V6z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="env-address"><span class="label">to</span><span class="name">IELTS Writing</span></div>
+    </a>
+    <a class="env" href="verbs.html" aria-label="Phrasal Verbs Dump\ub85c \uc774\ub3d9">
+      <div class="env-letter">
+        <span class="to">open</span>
+        <span class="go">Phrasal Verbs</span>
+      </div>
+      <div class="env-body"></div>
+      <div class="env-flap"></div>
+      <div class="env-stamp"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6l8 6 8-6M4 6h16v12H4V6z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="env-address"><span class="label">to</span><span class="name">Phrasal Verbs Dump</span></div>
+    </a>
+  </div>
+</section>
 
-  function loadPositions() {
-    try {
-      var raw = localStorage.getItem(STORE_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch (e) { return {}; }
-  }
-  function savePositions(pos) {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(pos)); } catch (e) {}
-  }
-
-  var positions = loadPositions();
-  var desktop = document.getElementById('desktop');
-
-  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-
-  function applyPosition(el, xPct, yPct) {
-    var rect = desktop.getBoundingClientRect();
-    var half = el.offsetWidth / 2;
-    // keep the whole icon (art + label) inside the viewport with a small margin
-    var minXPct = (half + 8) / rect.width * 100;
-    var maxXPct = 100 - minXPct;
-    var minYPct = (half + 8) / rect.height * 100;
-    var maxYPct = 100 - minYPct;
-    xPct = clamp(xPct, minXPct, maxXPct);
-    yPct = clamp(yPct, minYPct, maxYPct);
-    el.style.left = xPct + '%';
-    el.style.top = yPct + '%';
-    return { x: xPct, y: yPct };
-  }
-
-  document.querySelectorAll('.icon').forEach(function (el) {
-    var id = el.id;
-    var saved = positions[id] || DEFAULTS[id] || { x: 12, y: 14 };
-    applyPosition(el, saved.x, saved.y);
-
-    var dragging = false, moved = false;
-    var startX, startY, startLeftPct, startTopPct;
-
-    el.addEventListener('pointerdown', function (ev) {
-      dragging = true; moved = false;
-      el.setPointerCapture(ev.pointerId);
-      var rect = desktop.getBoundingClientRect();
-      startX = ev.clientX; startY = ev.clientY;
-      var curRect = el.getBoundingClientRect();
-      startLeftPct = ((curRect.left + curRect.width / 2) - rect.left) / rect.width * 100;
-      startTopPct = ((curRect.top + curRect.height / 2) - rect.top) / rect.height * 100;
-    });
-
-    el.addEventListener('pointermove', function (ev) {
-      if (!dragging) return;
-      var dx = ev.clientX - startX, dy = ev.clientY - startY;
-      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
-        moved = true;
-        el.classList.add('dragging');
-      }
-      if (!moved) return;
-      var rect = desktop.getBoundingClientRect();
-      var xPct = startLeftPct + (dx / rect.width) * 100;
-      var yPct = startTopPct + (dy / rect.height) * 100;
-      var applied = applyPosition(el, xPct, yPct);
-      positions[id] = applied;
-    });
-
-    function endDrag(ev) {
-      if (!dragging) return;
-      dragging = false;
-      el.classList.remove('dragging');
-      if (moved) {
-        savePositions(positions);
-      } else {
-        // no meaningful movement -> treat as a click/tap: navigate
-        var href = el.getAttribute('data-href');
-        if (href) window.location.href = href;
-      }
-    }
-    el.addEventListener('pointerup', endDrag);
-    el.addEventListener('pointercancel', endDrag);
-  });
-
-  window.addEventListener('resize', function () {
-    document.querySelectorAll('.icon').forEach(function (el) {
-      var id = el.id;
-      var saved = positions[id] || DEFAULTS[id];
-      applyPosition(el, saved.x, saved.y);
-    });
-  });
-})();
-</script>
 </body>
 </html>
