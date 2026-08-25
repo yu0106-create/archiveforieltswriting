@@ -43,14 +43,43 @@ html, body{
     so clip it horizontally instead of letting it create a scrollbar. */
 }
 body{
-  background-image: url('bg-home.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  position: relative;
+  /* cropped so its top/bottom edge falls in the blank gap between ruled
+     lines (not through one), so repeat-y tiles seamlessly however tall
+     the page ends up. Sized to 100% viewport width with auto height so
+     the line pitch stays proportional to the tile width at any screen
+     size, and repeats downward with the page (not fixed) so it reads as
+     one continuous sheet of paper rather than a static backdrop. */
+  background-image: url('bg-notes.png');
+  background-repeat: repeat-y;
+  background-position: top center;
+  background-size: 100% auto;
 }
 a{ color:inherit; text-decoration:none; }
 img{ -webkit-user-drag:none; user-select:none; }
+
+/* the two nav links sit right on the 2nd/3rd ruled lines of the very
+   first background tile, in the open margin area to the left of the
+   letter (which is right-aligned) -- positioned relative to the page's
+   own top edge (not the viewport), in the same vw unit the background
+   tile scales with, so they stay glued to their lines at any width. */
+.margin-link{
+  position: absolute;
+  z-index: 10;
+  left: 17%;
+  font-family: var(--hand);
+  color: var(--red-deep);
+  font-size: clamp(18px, 2.1vw, 25px);
+  transform: translateY(-78%);
+  transition: transform .2s ease, opacity .2s ease;
+  opacity: 0.88;
+}
+.margin-link:hover{ opacity: 1; transform: translateY(-78%) scale(1.05); }
+.link-ielts{ top: 5.17vw; }
+.link-verbs{ top: 8.83vw; }
+@media (max-width: 760px){
+  .margin-link{ left: 19%; font-size: 16px; }
+}
 
 /* ===================== SECTION 1 -- the letter ===================== */
 .sec-letter{
@@ -63,7 +92,7 @@ img{ -webkit-user-drag:none; user-select:none; }
 }
 .letter-stack{
   position: relative;
-  width: clamp(430px, 40vw, 540px);
+  width: clamp(380px, 36vw, 480px);
 }
 /* the pink scrap sits behind, peeking out from the edges. Rendered via
    border-image (9-slice) rather than a stretched background: the torn
@@ -81,21 +110,23 @@ img{ -webkit-user-drag:none; user-select:none; }
   transition: transform .5s cubic-bezier(.34,1.4,.4,1);
 }
 /* the cream note sits on top. Its 9-slice corners are sized to keep the
-   paperclip artwork (top-right corner of the source image) pixel-exact
-   however tall the note ends up -- only the edges/middle stretch. */
+   paperclip artwork (top-right corner of the source image) undistorted
+   however tall the note ends up -- only the edges/middle stretch. The
+   corner render size is intentionally shrunk well below the source
+   slice size (a smaller paperclip) so the total left/right inset can
+   stay narrow and equal, instead of the paperclip forcing a wide gutter
+   on the right. */
 .paper-cream{
   position: relative;
   z-index: 2;
   border-style: solid;
-  border-width: 125px 115px 45px 25px;
-  border-image: url('paper-cream.png') 125 115 45 25 fill / 125px 115px 45px 25px;
-  /* the source paper's right border is much wider than its left (it has
-     to leave room for the paperclip art), so without compensating here
-     the text would sit visibly closer to the left edge. Padding-left is
-     bumped up by roughly that same 90px difference so the *total* inset
-     (border + padding) ends up equal on both sides and the text block
-     reads as centered on the paper. */
-  padding: 4px 20px 10px 110px;
+  border-width: 56px 52px 20px 12px;
+  border-image: url('paper-cream.png') 125 115 45 25 fill / 56px 52px 20px 12px;
+  /* border-right(52) is still a bit wider than border-left(12) because
+     of the clip, so padding makes up the ~40px difference -- keeping
+     the *total* inset narrow (~58px) and equal on both sides, rather
+     than centering with a lot of empty margin. */
+  padding: 6px 8px 10px 48px;
   transform: rotate(2deg);
   transition: transform .45s cubic-bezier(.34,1.4,.4,1);
 }
@@ -135,32 +166,13 @@ img{ -webkit-user-drag:none; user-select:none; }
 .letter-body p{ margin: 0 0 9px; }
 .letter-body p:last-child{ margin-bottom: 0; }
 .letter-sign{ margin-top: 3px; }
-
-.scroll-hint{
-  position:absolute;
-  bottom: 18px; left: 50%;
-  transform: translateX(-50%);
-  display:flex; flex-direction:column; align-items:center; gap:6px;
-  color: rgba(255,255,255,0.85);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-  font-family: var(--mono);
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  animation: bob 1.8s ease-in-out infinite;
-}
-.scroll-hint svg{ width:16px; height:16px; }
-@keyframes bob{
-  0%, 100%{ transform: translate(-50%, 0); }
-  50%{ transform: translate(-50%, 6px); }
-}
 @media (max-width: 760px){
   .sec-letter{ justify-content:center; padding: 56px 20px 40px; }
   .letter-stack{ width: min(360px, 86vw); }
   .paper-cream{
-    border-width: 92px 84px 34px 20px;
-    border-image: url('paper-cream.png') 125 115 45 25 fill / 92px 84px 34px 20px;
-    padding: 4px 14px 8px 78px;
+    border-width: 41px 38px 15px 9px;
+    border-image: url('paper-cream.png') 125 115 45 25 fill / 41px 38px 15px 9px;
+    padding: 5px 6px 8px 35px;
   }
   .paper-pink{ border-width: 44px; border-image: url('paper-pink.png') 60 fill / 44px; }
   .letter-body{ font-size: 18px; }
@@ -198,46 +210,12 @@ img{ -webkit-user-drag:none; user-select:none; }
 @media (max-width: 760px){
   .cheese-peek{ width: clamp(170px, 46vw, 240px); }
 }
-
-/* ===================== SECTION 2 -- the notebook page ===================== */
-/* Sized in vw (with px caps for very wide screens) rather than vh, so the
-   "only 2/3 of the note shows" ratio holds regardless of the viewport's
-   height -- the section's own height IS that 2/3 crop line, and since
-   nothing follows it in the document, the page simply ends there with
-   no leftover blank scroll space underneath. */
-.sec-notebook{
-  position: relative;
-  width: 100%;
-  height: min(84.9vw, 1199px);
-  overflow: hidden;
-}
-.notebook-frame{
-  position: relative;
-  width: min(92vw, 1300px);
-  margin: 0 auto;
-}
-.notebook-img{
-  display:block;
-  width: 100%;
-  -webkit-user-drag:none;
-  user-select:none;
-}
-.notebook-link{
-  position: absolute;
-  left: 15%;
-  font-family: var(--hand);
-  color: var(--red-deep);
-  font-size: clamp(20px, 2.6vw, 32px);
-  transform: translateY(-100%);
-  transition: transform .2s ease, opacity .2s ease;
-  opacity: 0.92;
-}
-.notebook-link:hover{ transform: translateY(-100%) scale(1.04); opacity: 1; }
-.notebook-link.link-ielts{ top: 20.4%; }
-.notebook-link.link-verbs{ top: 26.6%; }
 </style>
 </head>
 <body>
+
+<a class="margin-link link-ielts" href="ielts.html">IELTS Writing</a>
+<a class="margin-link link-verbs" href="verbs.html">Phrasal Verbs Dump</a>
 
 <section class="sec-letter">
   <div class="letter-stack">
@@ -260,16 +238,6 @@ img{ -webkit-user-drag:none; user-select:none; }
 <div class="cheese-peek">
   <img src="cheese.jpg" alt="">
 </div>
-
-<section class="sec-notebook">
-  <div class="notebook-frame">
-    <img class="notebook-img" src="notebook.png" alt="">
-    <a class="notebook-link link-ielts" href="ielts.html">IELTS Writing</a>
-    <a class="notebook-link link-verbs" href="verbs.html">Phrasal Verbs Dump</a>
-  </div>
-</section>
-
-
 
 </body>
 </html>
