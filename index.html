@@ -31,6 +31,7 @@
   --red-wash: #fbe9e9;
   --star: #ffcd3c;
   --hl-mint: #ccffff;
+  --subhead: #fc3468;
   --radius: 12px;
   --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
   --en: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
@@ -791,7 +792,7 @@ body:not(.is-home) .hero{
   font-family: var(--kr);
   font-weight: 700;
   font-size: 17px;
-  color: var(--ink);
+  color: var(--subhead);
   background: #f0efec;
   padding: 9px 12px;
   border-radius: 6px;
@@ -932,6 +933,13 @@ mark.hl{
   box-shadow: 0 8px 24px rgba(0,0,0,0.14);
   padding: 12px 14px;
 }
+.hl-memo-view-head{
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-bottom: 8px;
+}
 .hl-memo-view-text{
   font-family: var(--kr);
   font-weight: 300;
@@ -939,22 +947,24 @@ mark.hl{
   line-height: 1.65;
   color: var(--ink);
   white-space: pre-wrap;
-  margin-bottom: 8px;
 }
-.hl-memo-view-edit{
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border: none;
-  background: none;
-  padding: 0;
-  font-family: var(--kr);
-  font-weight: 300;
-  font-size: 11.5px;
+.hl-memo-view-edit,
+.hl-memo-view-close{
+  width: 22px; height: 22px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  display: flex; align-items: center; justify-content: center;
   color: var(--ink-faint);
   cursor: pointer;
+  padding: 0;
+  transition: border-color .15s ease, color .15s ease;
 }
-.hl-memo-view-edit:hover{ color: var(--red-deep); }
+.hl-memo-view-edit svg,
+.hl-memo-view-close svg{ width: 11px; height: 11px; }
+.hl-memo-view-edit:hover{ border-color: var(--red-deep); color: var(--red-deep); }
+.hl-memo-view-close:hover{ border-color: var(--ink); color: var(--ink); }
 .hl-popup{
   position: absolute;
   z-index: 200;
@@ -2485,27 +2495,18 @@ const DATA = {
     hlRanges = hlRanges || [];
     var rawLines = bodyText.split('\n');
 
-    // Group into blocks (arrays of raw line indices) separated by blank lines,
-    // same grouping the renderer below uses -- needed up front because a
-    // sub-heading block's *visible* text (its title, "## " stripped) is
-    // shorter than its raw text, and every offset after it must account for
-    // that difference or highlights on later lines land in the wrong spot.
-    var blocks = [];
-    var current = [];
-    rawLines.forEach(function (line, i) {
-      if (line === '') {
-        if (current.length) { blocks.push(current); current = []; }
-      } else {
-        current.push(i);
-      }
-    });
-    if (current.length) blocks.push(current);
-
+    // A "## 제목" line is always a sub-heading, regardless of whether the
+    // source text happens to have blank lines around it -- author formatting
+    // is inconsistent (a "## " line sometimes butts right up against a list
+    // item with no blank line between), so detection is per-line, not
+    // dependent on the line being isolated in its own blank-line-separated
+    // block. Needed up front because a sub-heading's *visible* text (its
+    // title, "## " stripped) is shorter than its raw text, and every offset
+    // after it must account for that difference or highlights on later
+    // lines land in the wrong spot.
     var isSubheadLine = {};
-    blocks.forEach(function (idxs) {
-      if (idxs.length === 1 && NOTES_SUBHEAD_RE.test(rawLines[idxs[0]])) {
-        isSubheadLine[idxs[0]] = true;
-      }
+    rawLines.forEach(function (line, i) {
+      if (NOTES_SUBHEAD_RE.test(line)) isSubheadLine[i] = true;
     });
 
     var lineInfos = [];
@@ -2518,14 +2519,23 @@ const DATA = {
       offset = end; // no text node represents the '\n' itself in the rendered DOM
     });
 
+    // Grouped by blank lines as usual, but a "## " sub-heading line always
+    // breaks out into its own isolated block first (even mid-block, with no
+    // blank line on either side) so the sub-heading styling below always
+    // applies to it.
     var lineBlocks = [];
-    current = [];
-    lineInfos.forEach(function (li) {
+    var current = [];
+    lineInfos.forEach(function (li, i) {
       if (li.text === '') {
         if (current.length) { lineBlocks.push(current); current = []; }
-      } else {
-        current.push(li);
+        return;
       }
+      if (isSubheadLine[i]) {
+        if (current.length) { lineBlocks.push(current); current = []; }
+        lineBlocks.push([li]);
+        return;
+      }
+      current.push(li);
     });
     if (current.length) lineBlocks.push(current);
 
@@ -2775,11 +2785,15 @@ const DATA = {
   function openMemoView(rect, noteText, onEdit) {
     var panel = ensureMemoView();
     panel.innerHTML =
-      '<div class="hl-memo-view-text"></div>' +
-      '<button type="button" class="hl-memo-view-edit">' +
-        '<svg viewBox="0 0 24 24" fill="none" width="11" height="11"><path d="M4 20h4L18.5 9.5a2 2 0 0 0 0-2.8l-1.2-1.2a2 2 0 0 0-2.8 0L4 15v5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
-        '수정' +
-      '</button>';
+      '<div class="hl-memo-view-head">' +
+        '<button type="button" class="hl-memo-view-edit" aria-label="수정">' +
+          '<svg viewBox="0 0 24 24" fill="none"><path d="M4 20h4L18.5 9.5a2 2 0 0 0 0-2.8l-1.2-1.2a2 2 0 0 0-2.8 0L4 15v5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
+        '</button>' +
+        '<button type="button" class="hl-memo-view-close" aria-label="닫기">' +
+          '<svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+        '</button>' +
+      '</div>' +
+      '<div class="hl-memo-view-text"></div>';
     panel.querySelector('.hl-memo-view-text').textContent = noteText;
     // Reveal (off-position) first so offsetHeight reflects real rendered
     // height -- needed because positioning is now document-relative (top,
@@ -2798,6 +2812,10 @@ const DATA = {
       ev.stopPropagation();
       closeMemoView();
       onEdit();
+    };
+    panel.querySelector('.hl-memo-view-close').onclick = function (ev) {
+      ev.stopPropagation();
+      closeMemoView();
     };
   }
   function closeMemoView() {
