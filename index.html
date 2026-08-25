@@ -2795,6 +2795,10 @@ const DATA = {
   }
 
   var memoViewEl = null;
+  // The dot <button> the currently-open memo view is anchored to (null when
+  // closed). Kept around so positionMemoView() can re-measure the dot's live
+  // position on resize instead of relying on a rect captured once at open time.
+  var memoViewAnchorEl = null;
   function ensureMemoView() {
     if (!memoViewEl) {
       memoViewEl = document.createElement('div');
@@ -2804,10 +2808,24 @@ const DATA = {
     }
     return memoViewEl;
   }
+  // Anchor point is the dot's own top-right corner: the memo rectangle's
+  // bottom-left corner sits there (with a small gap so it doesn't cover the
+  // dot). Re-run on resize (see the window resize listener below) so the
+  // panel tracks the dot's live on-screen position instead of staying at
+  // whatever document coordinates were computed when it was first opened --
+  // that mismatch is what made it look "stuck" oddly after a window resize.
+  function positionMemoView() {
+    if (!memoViewEl || memoViewEl.hidden || !memoViewAnchorEl) return;
+    var rect = memoViewAnchorEl.getBoundingClientRect();
+    var top = rect.top + window.scrollY - memoViewEl.offsetHeight - 8;
+    var left = Math.min(rect.right, window.innerWidth - 500 - 12) + window.scrollX;
+    memoViewEl.style.top = top + 'px';
+    memoViewEl.style.left = left + 'px';
+  }
   // Read-only callout shown when the small red dot on a highlight is
   // clicked. Its "수정" button hands off to the same openMemoPanel() editor
   // used from the highlight's own click menu, so there's one edit flow.
-  function openMemoView(rect, noteText, onEdit) {
+  function openMemoView(anchorEl, noteText, onEdit) {
     var panel = ensureMemoView();
     panel.innerHTML =
       '<div class="hl-memo-view-head">' +
@@ -2821,18 +2839,15 @@ const DATA = {
       '<div class="hl-memo-view-text"></div>';
     panel.querySelector('.hl-memo-view-text').textContent = noteText;
     // Reveal (off-position) first so offsetHeight reflects real rendered
-    // height -- needed because positioning is now document-relative (top,
-    // not viewport-relative bottom), so the panel's own height has to be
-    // known up front to sit it flush above the dot.
+    // height -- needed because positionMemoView() needs the panel's own
+    // height up front to sit its bottom edge flush above the dot.
     panel.style.bottom = 'auto';
     panel.hidden = false;
-    // Anchored above-and-to-the-right of the dot, in document coordinates
-    // (rect + scroll offset) so the panel scrolls together with the dot
-    // instead of staying pinned to the same spot on screen.
-    var top = rect.top + window.scrollY - panel.offsetHeight - 8;
-    var left = Math.min(rect.left, window.innerWidth - 500 - 12) + window.scrollX;
-    panel.style.top = top + 'px';
-    panel.style.left = left + 'px';
+    memoViewAnchorEl = anchorEl;
+    // Positioned in document coordinates (rect + scroll offset) so the panel
+    // scrolls together with the dot instead of staying pinned to the same
+    // spot on screen while scrolling.
+    positionMemoView();
     panel.querySelector('.hl-memo-view-edit').onclick = function (ev) {
       ev.stopPropagation();
       closeMemoView();
@@ -2845,6 +2860,7 @@ const DATA = {
   }
   function closeMemoView() {
     if (memoViewEl) memoViewEl.hidden = true;
+    memoViewAnchorEl = null;
   }
   function showPopup(rect, actions) {
     var p = ensurePopup();
@@ -2935,8 +2951,7 @@ const DATA = {
       var dotMarkEl = noteDot.closest('mark.hl');
       var dotZoneEl = dotMarkEl.closest('.hl-zone');
       var dotNote = noteDot.getAttribute('data-note') || '';
-      var dotRect = noteDot.getBoundingClientRect();
-      openMemoView(dotRect, dotNote, function () {
+      openMemoView(noteDot, dotNote, function () {
         openMemoPanel(
           dotMarkEl.getBoundingClientRect(),
           dotZoneEl.getAttribute('data-entry-id'),
@@ -3107,6 +3122,7 @@ const DATA = {
   }
   window.addEventListener('resize', function () {
     positionCorrectionNotes(document.getElementById('listArea'));
+    positionMemoView();
   });
 
   // Live sync: whenever the shared cloud document changes -- including from
