@@ -7,204 +7,135 @@
 <style>
 @font-face{
   font-family: 'BookkGothic';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkGothic-Lt.woff2') format('woff2');
-  font-weight: 300;
-  font-display: swap;
-}
-@font-face{
-  font-family: 'BookkGothic';
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkGothic-Bd.woff2') format('woff2');
   font-weight: 700;
   font-display: swap;
 }
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap');
 
 :root{
-  --red-deep: #9a2c2c;
   --ink: #2b2622;
-  --ink-soft: #6b6156;
-  --paper: #faf6ec;
-  --paper-line: #e7ddc8;
-  --env-front: #cdb98c;
-  --env-shadow: #8f7c56;
+  --wall: #5f4541;
   --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, sans-serif;
-  --hand: 'Caveat', cursive;
-  --mono: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
 }
 
 *{ box-sizing:border-box; }
 html, body{
-  margin:0; padding:0;
+  margin:0; padding:0; height:100%;
   font-family: var(--kr);
-  font-weight: 300;
   color: var(--ink);
-  overflow-x: hidden; /* the tilted paper layers rotate past the viewport
-    edge on narrow screens -- that's just visual bleed, not real content,
-    so clip it horizontally instead of letting it create a scrollbar. */
+  overflow: hidden; /* this page is a single fixed scene, not a scroll --
+    the entrance animation is the "reveal", so there's nothing to scroll to. */
+  background: var(--wall);
 }
 body{
-  position: relative;
-  /* cropped so its top/bottom edge falls in the blank gap between ruled
-     lines (not through one), so repeat-y tiles seamlessly however tall
-     the page ends up. Sized to 100% viewport width with auto height so
-     the line pitch stays proportional to the tile width at any screen
-     size, and repeats downward with the page (not fixed) so it reads as
-     one continuous sheet of paper rather than a static backdrop. */
-  background-image: url('bg-notes.png');
-  background-repeat: repeat-y;
-  background-position: top center;
-  background-size: 100% auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 a{ color:inherit; text-decoration:none; }
-img{ -webkit-user-drag:none; user-select:none; }
+img{ -webkit-user-drag:none; user-select:none; display:block; }
 
-/* the two nav links sit right on the 2nd/3rd ruled lines of the very
-   first background tile, in the open margin area to the left of the
-   letter (which is right-aligned) -- positioned relative to the page's
-   own top edge (not the viewport), in the same vw unit the background
-   tile scales with, so they stay glued to their lines at any width. */
-.margin-link{
+/* ===================== the framed picture ===================== */
+/* Sitting on the dark wall color like a framed photo -- a pale mat
+   (passe-partout) around a thin dark inner lip, then the square scene
+   itself. Since the whole thing is now noticeably smaller than a
+   full-bleed background would be, the source photo also reads sharper
+   (less upscaling) than stretching it across the entire viewport did. */
+.frame{
+  background: #f3ede2;
+  padding: 2.6vmin;
+  border: 10px solid #241c18;
+  box-shadow: 0 30px 70px rgba(0,0,0,0.45), 0 2px 0 rgba(255,255,255,0.08) inset;
+}
+
+/* The source photos are a perfect 1:1 square, so the stage keeps that
+   exact aspect ratio -- that keeps the book's and pencil case's
+   percentage-based positions lined up with the background pixel-for-
+   pixel at any screen size. */
+.stage{
+  position: relative;
+  width: min(70vw, 76vh, 640px);
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+@media (max-width: 760px){
+  .frame{ padding: 3.2vmin; border-width: 8px; }
+  .stage{ width: min(88vw, 70vh, 640px); }
+}
+.scene-bg{
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/* ===================== the two corner objects ===================== */
+/* Each is a two-layer element: the outer <a> owns positioning AND the
+   one-time slide-in entrance animation; the inner <img> owns the hover
+   "wiggle". Keeping them on separate elements means hovering never
+   touches the outer's animation-name, so the entrance never re-triggers
+   when the mouse leaves (a single shared animation would restart from
+   its 0% keyframe the moment :hover's computed animation-name changed
+   back, which looks like the object flying back out and in again). */
+.corner-obj{
   position: absolute;
-  z-index: 10;
-  left: 17%;
-  font-family: var(--kr);
-  font-weight: 700;
-  color: var(--red-deep);
-  font-size: clamp(19px, 2.2vw, 27px);
-  transform: translateY(-78%);
-  transition: transform .2s ease, opacity .2s ease;
-  opacity: 0.88;
+  z-index: 5;
+  cursor: pointer;
 }
-.margin-link:hover{ opacity: 1; transform: translateY(-78%) scale(1.05); }
-.link-ielts{ top: 5.17vw; }
-.link-verbs{ top: 8.83vw; }
-@media (max-width: 760px){
-  .margin-link{ left: 19%; font-size: 16px; }
+.corner-obj img{ width: 100%; height: 100%; }
+
+.corner-book{
+  left: 0%; top: 0%;
+  width: 15%; height: 57.8%;
+  animation: slide-in-book 1.05s cubic-bezier(.22,.85,.32,1) both;
+}
+.corner-pencase{
+  left: 57.45%; top: 71.85%;
+  width: 42.55%; height: 28.15%;
+  animation: slide-in-pencase 1.05s cubic-bezier(.22,.85,.32,1) both;
+  animation-delay: 1.15s; /* starts only once the book has finished --
+    "one object at a time", not both sliding in together. */
+}
+@keyframes slide-in-book{
+  0%   { transform: translate(-135%, -135%); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes slide-in-pencase{
+  0%   { transform: translate(135%, 135%); }
+  100% { transform: translate(0, 0); }
 }
 
-/* ===================== SECTION 1 -- the letter ===================== */
-/* No forced min-height:100vh here on purpose -- centering a short card
-   inside a full viewport left a lot of dead space above/below it, which
-   made the page barely scroll at all and felt like a jump rather than a
-   scroll. Sizing to the content with generous padding instead means the
-   scroll distance (if any) actually corresponds to something on screen. */
-.sec-letter{
-  display:flex;
-  justify-content: flex-end;
-  padding: 84px 7vw 90px 20px;
-  position: relative;
+.corner-book:hover img{ animation: wiggle-book .6s ease-in-out; }
+.corner-pencase:hover img{ animation: wiggle-pencase .6s ease-in-out; }
+@keyframes wiggle-book{
+  0%   { transform: rotate(0deg) translate(0,0); }
+  25%  { transform: rotate(-3deg) translate(-2px, 1px); }
+  55%  { transform: rotate(2deg) translate(2px, -1px); }
+  80%  { transform: rotate(-1.5deg) translate(-1px, 1px); }
+  100% { transform: rotate(0deg) translate(0,0); }
 }
-.letter-stack{
-  position: relative;
-  width: clamp(380px, 36vw, 480px);
-}
-/* the pink scrap sits behind, peeking out from the edges. Rendered via
-   border-image (9-slice) rather than a stretched background: the torn
-   edges keep their real pixel detail and only the plain middle stretches,
-   so growing the note tall doesn't smear/warp the paper texture. */
-.paper-pink{
-  position:absolute;
-  top: -22px; left: -26px; right: 12px; bottom: -26px;
-  border-style: solid;
-  border-width: 60px;
-  border-image: url('paper-pink.png') 60 fill / 60px;
-  transform: rotate(-5deg);
-  z-index: 1;
-  filter: drop-shadow(0 14px 22px rgba(30,15,10,0.30));
-  transition: transform .5s cubic-bezier(.34,1.4,.4,1);
-}
-/* the cream note sits on top. Its 9-slice corners are sized to keep the
-   paperclip artwork (top-right corner of the source image) undistorted
-   however tall the note ends up -- only the edges/middle stretch. The
-   corner render size is intentionally shrunk well below the source
-   slice size (a smaller paperclip) so the total left/right inset can
-   stay narrow and equal, instead of the paperclip forcing a wide gutter
-   on the right. */
-.paper-cream{
-  position: relative;
-  z-index: 2;
-  border-style: solid;
-  border-width: 56px 52px 20px 12px;
-  border-image: url('paper-cream.png') 125 115 45 25 fill / 56px 52px 20px 12px;
-  /* border-right(52) is still a bit wider than border-left(12) because
-     of the clip, so padding makes up the ~40px difference -- keeping
-     the *total* inset narrow (~58px) and equal on both sides, rather
-     than centering with a lot of empty margin. */
-  padding: 6px 8px 10px 48px;
-  transform: rotate(2deg);
-  transition: transform .45s cubic-bezier(.34,1.4,.4,1);
-}
-.letter-stack:hover .paper-pink{ animation: wiggle-pink .6s ease-in-out; }
-.letter-stack:hover .paper-cream{ animation: wiggle-cream .6s ease-in-out; }
-/* two different keyframe shapes (different rotation range + timing)
-   so the two scraps visibly move out of sync with each other, not as
-   one rigid unit. */
-@keyframes wiggle-pink{
-  0%   { transform: rotate(-5deg) translate(0,0); }
-  25%  { transform: rotate(-8deg) translate(-3px, 1px); }
-  55%  { transform: rotate(-2deg) translate(2px, -1px); }
-  80%  { transform: rotate(-6deg) translate(-1px, 1px); }
-  100% { transform: rotate(-5deg) translate(0,0); }
-}
-@keyframes wiggle-cream{
-  0%   { transform: rotate(2deg) translate(0,0); }
-  20%  { transform: rotate(-1deg) translate(2px, -2px); }
-  50%  { transform: rotate(4deg) translate(-2px, 1px); }
-  75%  { transform: rotate(0deg) translate(1px, 2px); }
-  100% { transform: rotate(2deg) translate(0,0); }
-}
-.letter-dateline{
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.03em;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-.letter-body{
-  font-family: var(--hand);
-  color: var(--red-deep);
-  font-size: 22px;
-  line-height: 1.32;
-}
-.letter-body p{ margin: 0 0 9px; }
-.letter-body p:last-child{ margin-bottom: 0; }
-.letter-sign{ margin-top: 3px; }
-@media (max-width: 760px){
-  .sec-letter{ justify-content:center; padding: 56px 20px 40px; }
-  .letter-stack{ width: min(360px, 86vw); }
-  .paper-cream{
-    border-width: 41px 38px 15px 9px;
-    border-image: url('paper-cream.png') 125 115 45 25 fill / 41px 38px 15px 9px;
-    padding: 5px 6px 8px 35px;
-  }
-  .paper-pink{ border-width: 44px; border-image: url('paper-pink.png') 60 fill / 44px; }
-  .letter-body{ font-size: 20px; }
+@keyframes wiggle-pencase{
+  0%   { transform: rotate(0deg) translate(0,0); }
+  20%  { transform: rotate(2.5deg) translate(2px, -2px); }
+  50%  { transform: rotate(-2deg) translate(-2px, 1px); }
+  78%  { transform: rotate(1.5deg) translate(1px, 1px); }
+  100% { transform: rotate(0deg) translate(0,0); }
 }
 </style>
 </head>
 <body>
 
-<a class="margin-link link-ielts" href="ielts.html">IELTS Writing</a>
-<a class="margin-link link-verbs" href="verbs.html">Phrasal Verbs Dump</a>
+<div class="frame">
+<div class="stage">
+  <img class="scene-bg" src="scene-bg.jpg" alt="">
 
-<section class="sec-letter">
-  <div class="letter-stack">
-    <div class="paper-pink"></div>
-    <div class="paper-cream">
-      <div class="letter-dateline">The Hague &middot; Sunday, 3 September 1882</div>
-      <div class="letter-body">
-        <p>My dear Theo,</p>
-        <p>I am writing to you in a great hurry, but I want to send you a word or two anyway.</p>
-        <p>First, I must tell you that I received the money you sent, for which I thank you very much. I had to pay several things at once, including my rent, so it came in very handy.</p>
-        <p>I am again going through a period of working hard and then suddenly becoming slack, of patient waiting and then impatience, of hope and then despair&mdash;it is repeating itself again. Still, if I keep on trying, I shall understand watercolors better. If it were easy, one would take no pleasure in it. So I must go on painting.</p>
-        <p>I have been working on several watercolors lately, trying to get more life into them. It is no easy task, and sometimes I feel quite discouraged, but then I remember that nothing worthwhile comes easily.</p>
-        <p>I hope you are well and that your work is going satisfactorily. Do write to me again as soon as you have a moment to spare.</p>
-        <p class="letter-sign">With a handshake in thought,<br>Ever yours,<br>Vincent</p>
-      </div>
-    </div>
-  </div>
-</section>
+  <a class="corner-obj corner-book" href="verbs.html" aria-label="Phrasal Verbs Dump로 이동">
+    <img src="corner-book.png" alt="">
+  </a>
+
+  <a class="corner-obj corner-pencase" href="ielts.html" aria-label="IELTS Writing으로 이동">
+    <img src="corner-pencase.png" alt="">
+  </a>
+</div>
+</div>
 
 </body>
 </html>
