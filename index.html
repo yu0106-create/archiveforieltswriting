@@ -44,22 +44,30 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 .frame{
   background: #f3ede2;
   padding: 2.6vmin;
-  border: 10px solid #241c18;
+  border: 7px solid #c0f6e4;
   box-shadow: 0 30px 70px rgba(0,0,0,0.45), 0 2px 0 rgba(255,255,255,0.08) inset;
 }
 
 /* The source photos are a perfect 1:1 square, so the stage keeps that
    exact aspect ratio -- that keeps the book's and pencil case's
    percentage-based positions lined up with the background pixel-for-
-   pixel at any screen size. */
+   pixel at any screen size. Left deliberately un-clipped: only the
+   background photo itself is clipped to the square (via .scene-clip
+   below) -- the corner objects are siblings of that, not children of
+   it, so a hover wiggle's rotate/translate never gets a hard edge
+   sliced off by the frame boundary. */
 .stage{
   position: relative;
-  width: min(70vw, 76vh, 640px);
+  width: min(56vw, 60.8vh, 512px); /* 80% of the previous min(70vw, 76vh, 640px) */
   aspect-ratio: 1 / 1;
+}
+.scene-clip{
+  position: absolute;
+  inset: 0;
   overflow: hidden;
 }
 @media (max-width: 760px){
-  .frame{ padding: 3.2vmin; border-width: 8px; }
+  .frame{ padding: 3.2vmin; border-width: 6px; }
   .stage{ width: min(88vw, 70vh, 640px); }
 }
 .scene-bg{
@@ -84,12 +92,12 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 
 .corner-book{
   left: 0%; top: 0%;
-  width: 15%; height: 57.8%;
+  width: 18.6%; height: 61.4%;
   animation: slide-in-book 1.05s cubic-bezier(.22,.85,.32,1) both;
 }
 .corner-pencase{
-  left: 57.45%; top: 71.85%;
-  width: 42.55%; height: 28.15%;
+  left: 53.85%; top: 68.25%;
+  width: 46.15%; height: 31.75%;
   animation: slide-in-pencase 1.05s cubic-bezier(.22,.85,.32,1) both;
   animation-delay: 1.15s; /* starts only once the book has finished --
     "one object at a time", not both sliding in together. */
@@ -125,7 +133,9 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 
 <div class="frame">
 <div class="stage">
-  <img class="scene-bg" src="scene-bg.jpg" alt="">
+  <div class="scene-clip">
+    <img class="scene-bg" src="scene-bg.jpg" alt="">
+  </div>
 
   <a class="corner-obj corner-book" href="verbs.html" aria-label="Phrasal Verbs Dump로 이동">
     <img src="corner-book.png" alt="">
