@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHRASAL VERBS DUMP</title>
+<style>
+@font-face{
+  font-family: 'BookkGothic';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkGothic-Lt.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face{
+  font-family: 'BookkGothic';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkGothic-Bd.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root{
+  --bg: #ffffff;
+  --card: #ffffff;
+  --ink: #131315;
+  --ink-soft: #6b7076;
+  --ink-faint: #9aa0a6;
+  --line: #e9e9ea;
+  --red: #c23b3b;
+  --red-deep: #9a2c2c;
+  --subhead: #fc3468;
+  --radius: 12px;
+  --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
+  --en: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
+}
+
+*{ box-sizing:border-box; }
+html{
+  scroll-behavior:smooth;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle, #d7d7d9 1.3px, transparent 1.6px),
+    radial-gradient(circle, #d7d7d9 1.3px, transparent 1.6px);
+  background-size: 26px 26px, 26px 26px;
+  background-position: 0 0, 13px 13px;
+}
+body{
+  margin: 0 auto;
+  max-width: 1040px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--kr);
+  font-weight: 300;
+  line-height: 1.6;
+}
+a{ color:inherit; text-decoration:none; }
+::selection{ background: #fbe9e9; color: var(--red-deep); }
+:focus-visible{ outline: 2px solid var(--red); outline-offset: 3px; }
+
+.wrap{ max-width: 1040px; margin: 0 auto; padding: 0 32px; }
+
+/* ---------- top bar ---------- */
+.topbar{
+  padding: 26px 0 0;
+  position: sticky; top: 0; z-index: 40;
+  background: var(--bg);
+}
+.topbar .wrap{
+  display:flex; align-items:center; justify-content:space-between;
+  padding-bottom: 20px;
+}
+.tb-home{
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  display:flex; align-items:center; justify-content:center;
+  color: var(--ink-soft);
+  transition: border-color .15s ease, color .15s ease;
+}
+.tb-home:hover{ border-color: var(--ink); color: var(--ink); }
+.tb-home svg{ width: 15px; height: 15px; }
+.tb-brand{
+  font-family: var(--en);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+  display:flex; align-items:baseline; gap:7px;
+  white-space: nowrap;
+}
+.tb-brand .tb-for{ font-weight: 300; font-size: 11.5px; color: var(--ink-faint); }
+.tb-spacer{ width: 30px; }
+
+/* ---------- hero ---------- */
+.hero{ padding: 34px 0 30px; }
+.hero .eyebrow{
+  font-family: var(--en);
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+  color: var(--red);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display:flex; align-items:center; gap:8px;
+}
+.hero .eyebrow::before{ content:""; width: 20px; height: 2px; background: var(--red); display:inline-block; }
+.hero h1{
+  font-family: var(--en);
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.hero h1 a{ display:block; transition: opacity .15s ease; }
+.hero h1 a:hover{ opacity: 0.6; }
+.hero h1 span{ display:block; }
+.hero h1 .l1{ font-size: clamp(34px, 5.6vw, 54px); line-height: 1.05; }
+.hero h1 .l2{ font-size: clamp(34px, 5.6vw, 54px); font-weight: 300; margin: 2px 0; }
+
+/* ---------- section headers ---------- */
+.section-head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  margin: 12px 0 18px;
+}
+.section-head h2{
+  font-family: var(--kr); font-size: 13px; font-weight: 700;
+  color: var(--ink-faint); letter-spacing: 0.02em; margin:0;
+}
+.section-head .count{ font-family: var(--en); font-size: 12px; color: var(--ink-faint); }
+
+/* ---------- card grid (docs / groups) ---------- */
+.cat-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.cat-card{
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 18px 18px 16px;
+  cursor:pointer;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+  display:flex; flex-direction:column; gap:10px;
+}
+.cat-card:hover{
+  border-color: #d8d8d9;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  transform: translateY(-2px);
+}
+.cat-card .top-row{ display:flex; align-items:flex-start; justify-content:space-between; }
+.cat-card .eyebrow{
+  font-family: var(--en); font-weight: 700; font-size: 11px;
+  letter-spacing: 0.08em; color: var(--ink-faint);
+}
+.pill{
+  font-family: var(--kr); font-weight: 300; font-size: 11px;
+  padding: 3px 9px; border-radius: 4px; white-space: nowrap;
+  background:#f4f4f5; color:#6b7076;
+}
+.cat-card .label{ font-family: var(--kr); font-weight: 700; font-size: 16.5px; line-height: 1.35; }
+.cat-card .desc{
+  font-family: var(--kr); font-weight: 300; font-size: 12.5px;
+  color: var(--ink-soft); line-height:1.55;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.cat-card .bottom-row{ display:flex; align-items:center; justify-content:space-between; margin-top: auto; padding-top: 4px; }
+.cat-card .arrow{
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  color: var(--ink-faint);
+}
+.cat-card .arrow svg{ width: 11px; height: 11px; display:block; }
+
+/* ---------- detail header ---------- */
+.doc-header{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px 26px;
+  margin: 8px 0 30px;
+}
+.doc-header .meta-line{
+  font-family: var(--en); font-size: 11px; color: var(--ink-faint);
+  letter-spacing: 0.04em; margin-bottom: 8px;
+}
+.doc-header h3{ font-family: var(--kr); font-weight: 700; font-size: 22px; margin: 0 0 6px; }
+.doc-header .back{
+  display:inline-block; margin-top: 10px;
+  font-family: var(--en); font-weight: 600; font-size: 12px;
+  color: var(--ink); border-bottom: 1px solid var(--ink);
+}
+
+/* ---------- word/expression card (ported from the IELTS archive site) ---------- */
+.notes-content{ display:flex; flex-direction:column; gap:14px; }
+.worddoc-card{ padding: 0; margin-bottom: 20px; }
+.worddoc-card .notes-section{ background: transparent; border: none; border-radius: 0; padding: 0; }
+.notes-block{ margin-bottom: 14px; }
+.notes-block:last-child{ margin-bottom: 0; }
+.worddoc-card .notes-block{ padding: 16px 4px 16px 22px; border-bottom: 1px solid var(--line); }
+.worddoc-card .notes-block:last-child{ border-bottom: none; padding-bottom: 4px; }
+.worddoc-card .notes-block:first-child{ padding-top: 4px; }
+.notes-subhead{
+  font-family: var(--kr); font-weight: 700; font-size: 16px; color: var(--subhead);
+  background: #fdeff3; padding: 9px 12px; border-radius: 6px; margin: 14px 0;
+}
+.notes-subhead:first-child{ margin-top: 0; }
+.notes-subhead:last-child{ margin-bottom: 0; }
+.notes-line{ display: flex; align-items: baseline; }
+.notes-line + .notes-line{ margin-top: 6px; }
+.notes-line-label{ white-space: pre; flex: none; flex: 0 0 46px; width: 46px; overflow: hidden; text-align: right; }
+.notes-line-text{ flex: 1 1 auto; min-width: 0; }
+.notes-line[data-marker="num"] .notes-line-label{ font-family: var(--en); font-weight: 500; font-size: 21px; color: var(--ink-faint); }
+.notes-line[data-marker="num"] .notes-line-text{ font-weight: 700; font-size: 15.5px; color: var(--ink); }
+.notes-line[data-marker="ex"] .notes-line-label{
+  font-family: var(--en); font-weight: 700; font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint);
+}
+.notes-line[data-marker="ex"] .notes-line-text{ font-style: italic; font-size: 13px; color: var(--ink-soft); }
+.notes-line[data-marker="vocab"] .notes-line-label,
+.notes-line[data-marker="vocab"] .notes-line-text{ font-size: 12px; color: var(--ink-faint); }
+.notes-line[data-marker="desc"] .notes-line-label{
+  font-family: var(--en); font-weight: 700; font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint);
+}
+.notes-line[data-marker="desc"] .notes-line-text{ color: var(--ink-soft); }
+
+.empty{ font-family: var(--kr); font-weight:300; font-size:14px; color: var(--ink-faint); padding: 40px 0; text-align:center; }
+
+footer{
+  margin: 60px 0 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  display:flex; justify-content:space-between;
+  font-family: var(--en); font-size: 11px; color: var(--ink-faint);
+}
+
+@media (max-width: 760px){
+  .cat-grid{ grid-template-columns: repeat(2, 1fr); }
+  .hero{ padding: 24px 0 22px; }
+}
+@media (max-width: 480px){
+  .cat-grid{ grid-template-columns: 1fr; }
+  .wrap{ padding: 0 20px; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a href="index.html" class="tb-home" aria-label="홈 데스크탑으로" title="홈으로">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 11.5L12 4l8 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10.5V20h5v-5.5h2V20h5v-9.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="#/" class="tb-brand">PHRASAL VERBS<span class="tb-for">·</span><span>DUMP</span></a>
+    <span class="tb-spacer"></span>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">Personal Vocabulary Dump · Phrasal Verbs</div>
+    <h1><a href="#/"><span class="l1">PHRASAL VERBS</span><span class="l2">DUMP</span></a></h1>
+  </section>
+
+  <div id="docHeaderWrap"></div>
+
+  <div class="section-head">
+    <h2 id="listTitle">표현집 목록</h2>
+    <span class="count" id="listCount"></span>
+  </div>
+  <div id="listArea"></div>
+
+  <footer>
+    <span>Personal phrasal verb log</span>
+    <span id="lastUpdated"></span>
+  </footer>
+</main>
+
+<script>
+(function () {
+  // ---------------------------------------------------------------
+  // DATA -- one entry per "dump": a themed batch of phrasal verbs.
+  // Format follows the same "━━━ 그룹 제목 ━━━" convention used across
+  // the whole archive: each doc's `text` is split into groups, and each
+  // group's body is a set of hanging-indent lines ("1) ...", "Ex) ...",
+  // "단어: ..."). This is a starter placeholder doc so the page and its
+  // rendering can be verified end to end -- replace/extend as needed.
+  // ---------------------------------------------------------------
+  var DATA = {
+    verbDocs: [
+      {
+        id: 'starter-set',
+        title: 'Starter Set',
+        subtitle: '샘플 · 2개 그룹',
+        text:
+'━━━ up 계열 ━━━\n' +
+'\n' +
+'1) 그만두다 — give up\n' +
+'   Ex) I won\'t give up on this project even if it gets hard.\n' +
+'   단어: give = 주다 / up = 위로\n' +
+'\n' +
+'2) 준비하다, 설치하다 — set up\n' +
+'   Ex) We need to set up the equipment before the show starts.\n' +
+'\n' +
+'━━━ out 계열 ━━━\n' +
+'\n' +
+'1) 알아내다 — figure out\n' +
+'   Ex) I finally figured out how to fix the bug.\n' +
+'\n' +
+'2) (분량이) 다 떨어지다 — run out (of)\n' +
+'   Ex) We ran out of milk this morning.'
+      }
+    ]
+  };
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // ---- ported verbatim (format-wise) from the IELTS archive site ----
+  function splitNotesSections(text) {
+    var titleRe = /^━+\s*(.+?)\s*━+\s*$/;
+    var lines = (text || '').split('\n');
+    var sections = [];
+    var current = null;
+    lines.forEach(function (line) {
+      var m = line.match(titleRe);
+      if (m) {
+        current = { title: m[1], bodyLines: [] };
+        sections.push(current);
+      } else {
+        if (!current) { current = { title: '', bodyLines: [] }; sections.push(current); }
+        current.bodyLines.push(line);
+      }
+    });
+    return sections.map(function (s) {
+      return { title: s.title, body: s.bodyLines.join('\n').replace(/^\n+|\n+$/g, '') };
+    }).filter(function (s) { return s.title || s.body; });
+  }
+
+  var NOTES_MARKER_RE = /^(-\s+|\d+\)\s+|Ex\)\s+|비교\s?예시:\s*|비교\)\s+|예시\s?오류:\s*|요약:\s*|설명:\s*|단어:\s*|→\s*)/;
+  var NOTES_SUBHEAD_RE = /^##\s*(.+)$/;
+
+  function markerType(marker) {
+    if (!marker) return 'plain';
+    if (/^-\s*/.test(marker)) return 'dash';
+    if (/^\d+\)/.test(marker)) return 'num';
+    if (/^Ex\)/.test(marker)) return 'ex';
+    if (/^단어:/.test(marker)) return 'vocab';
+    if (/^설명:/.test(marker)) return 'desc';
+    if (/^요약:/.test(marker)) return 'summary';
+    if (/^비교/.test(marker)) return 'compare';
+    if (/^예시\s?오류:/.test(marker)) return 'wrongex';
+    if (/^→/.test(marker)) return 'arrow';
+    return 'plain';
+  }
+
+  function renderNotesBody(bodyText) {
+    var rawLines = (bodyText || '').split('\n');
+    var isSubheadLine = {};
+    rawLines.forEach(function (line, i) {
+      if (NOTES_SUBHEAD_RE.test(line)) isSubheadLine[i] = true;
+    });
+    var lineBlocks = [];
+    var current = [];
+    rawLines.forEach(function (line, i) {
+      if (line === '') {
+        if (current.length) { lineBlocks.push(current); current = []; }
+        return;
+      }
+      if (isSubheadLine[i]) {
+        if (current.length) { lineBlocks.push(current); current = []; }
+        lineBlocks.push([{ text: line }]);
+        return;
+      }
+      current.push({ text: line });
+    });
+    if (current.length) lineBlocks.push(current);
+
+    return lineBlocks.map(function (block) {
+      if (block.length === 1) {
+        var soleMatch = block[0].text.match(NOTES_SUBHEAD_RE);
+        if (soleMatch) {
+          return '<div class="notes-subhead">' + escapeHtml(soleMatch[1]) + '</div>';
+        }
+      }
+      var linesHtml = block.map(function (li) {
+        var wsMatch = li.text.match(/^\s*/);
+        var leadingWs = wsMatch[0];
+        var afterWs = li.text.slice(leadingWs.length);
+        var markerMatch = afterWs.match(NOTES_MARKER_RE);
+        var marker = markerMatch ? markerMatch[0] : '';
+        var labelText = leadingWs + marker;
+        var contentText = afterWs.slice(marker.length);
+        var labelSpan = labelText ? '<span class="notes-line-label">' + escapeHtml(labelText) + '</span>' : '';
+        var textSpan = '<span class="notes-line-text">' + escapeHtml(contentText) + '</span>';
+        return '<div class="notes-line" data-marker="' + markerType(marker) + '">' + labelSpan + textSpan + '</div>';
+      }).join('');
+      return '<div class="notes-block">' + linesHtml + '</div>';
+    }).join('');
+  }
+
+  var ARROW_SVG = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M8 16L16 8M10 8H16V14" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '</svg>';
+
+  function findDoc(id) {
+    return DATA.verbDocs.filter(function (d) { return d.id === id; })[0] || null;
+  }
+
+  function parseHash() {
+    var h = window.location.hash.replace(/^#\/?/, '');
+    var parts = h.split('/').filter(Boolean);
+    if (!parts.length) return { docId: null, groupIdx: null };
+    var docId = decodeURIComponent(parts[0]);
+    var groupIdx = parts.length > 1 ? parseInt(parts[1], 10) : null;
+    return { docId: docId, groupIdx: (groupIdx == null || isNaN(groupIdx)) ? null : groupIdx };
+  }
+
+  var docHeaderWrap = document.getElementById('docHeaderWrap');
+  var listTitle = document.getElementById('listTitle');
+  var listCount = document.getElementById('listCount');
+  var listArea = document.getElementById('listArea');
+
+  function render() {
+    var route = parseHash();
+
+    if (route.docId == null) {
+      docHeaderWrap.innerHTML = '';
+      listTitle.textContent = '표현집 목록';
+      listCount.textContent = DATA.verbDocs.length + '개';
+      if (!DATA.verbDocs.length) {
+        listArea.innerHTML = '<div class="empty">아직 저장된 표현집이 없음.</div>';
+        return;
+      }
+      var grid = document.createElement('div');
+      grid.className = 'cat-grid';
+      grid.innerHTML = DATA.verbDocs.map(function (doc) {
+        var sections = splitNotesSections(doc.text);
+        return '<a class="cat-card" href="#/' + encodeURIComponent(doc.id) + '">' +
+          '<div class="top-row">' +
+            '<div class="eyebrow">VERB DUMP</div>' +
+            '<span class="pill">' + sections.length + '개 그룹</span>' +
+          '</div>' +
+          '<div class="label">' + escapeHtml(doc.title) + '</div>' +
+          '<div class="desc">' + escapeHtml(doc.subtitle || '') + '</div>' +
+          '<div class="bottom-row"><span class="pill">표현집</span><span class="arrow">' + ARROW_SVG + '</span></div>' +
+        '</a>';
+      }).join('');
+      listArea.innerHTML = '';
+      listArea.appendChild(grid);
+      return;
+    }
+
+    var doc = findDoc(route.docId);
+    if (!doc) {
+      docHeaderWrap.innerHTML = '';
+      listArea.innerHTML = '<div class="empty">표현집을 찾을 수 없음.</div>';
+      return;
+    }
+    var sections = splitNotesSections(doc.text);
+
+    if (route.groupIdx == null) {
+      docHeaderWrap.innerHTML =
+        '<div class="doc-header">' +
+          '<div class="meta-line">' + escapeHtml(doc.subtitle || '표현집') + '</div>' +
+          '<h3>' + escapeHtml(doc.title) + '</h3>' +
+          '<a href="#/" class="back">← 표현집 목록으로</a>' +
+        '</div>';
+      listTitle.textContent = doc.title + ' · 그룹 목록';
+      listCount.textContent = sections.length + '개 그룹';
+      var secGrid = document.createElement('div');
+      secGrid.className = 'cat-grid';
+      secGrid.innerHTML = sections.map(function (sec, idx) {
+        var itemCount = (sec.body.match(/^\d+\)\s+/gm) || []).length;
+        return '<a class="cat-card" href="#/' + encodeURIComponent(doc.id) + '/' + idx + '">' +
+          '<div class="top-row" style="justify-content:flex-end"><span class="pill">' + itemCount + '개</span></div>' +
+          '<div class="label">' + escapeHtml(sec.title || '(제목 없음)') + '</div>' +
+          '<div class="bottom-row"><span></span><span class="arrow">' + ARROW_SVG + '</span></div>' +
+        '</a>';
+      }).join('');
+      listArea.innerHTML = '';
+      listArea.appendChild(secGrid);
+      return;
+    }
+
+    var sec = sections[route.groupIdx];
+    docHeaderWrap.innerHTML =
+      '<div class="doc-header">' +
+        '<div class="meta-line">' + escapeHtml(doc.title) + '</div>' +
+        '<h3>' + escapeHtml(sec ? sec.title : '') + '</h3>' +
+        '<a href="#/' + encodeURIComponent(doc.id) + '" class="back">← ' + escapeHtml(doc.title) + '로</a>' +
+      '</div>';
+    var itemCount = sec ? (sec.body.match(/^\d+\)\s+/gm) || []).length : 0;
+    listTitle.textContent = sec ? sec.title + ' · 표현 목록' : '';
+    listCount.textContent = itemCount + '개';
+    listArea.innerHTML = '';
+    if (sec) {
+      var card = document.createElement('div');
+      card.className = 'worddoc-card';
+      card.innerHTML = '<div class="notes-content"><div class="notes-section"><div class="notes-section-body">' +
+        renderNotesBody(sec.body) +
+        '</div></div></div>';
+      listArea.appendChild(card);
+    } else {
+      listArea.innerHTML = '<div class="empty">그룹을 찾을 수 없음.</div>';
+    }
+  }
+
+  window.addEventListener('hashchange', render);
+  render();
+})();
+</script>
+</body>
+</html>
