@@ -41,13 +41,19 @@
 *{ box-sizing:border-box; }
 html{
   scroll-behavior:smooth;
-  /* dotted texture fills the gutters outside the centered 1040px column --
-     a repeating radial-gradient tiles seamlessly in every direction, so
-     unlike a raster image dropped in as a background, there's no visible
-     seam where one tile meets the next. */
+  /* dotted texture fills the gutters outside the centered 1040px column.
+     Two identical radial-gradient layers, the second shifted by half a
+     tile both horizontally and vertically, so each dot sits in the gap
+     between the two dots of the row above it (a staggered / brick-offset
+     grid, not a plain square grid) -- and because it's a repeating
+     gradient rather than a dropped-in raster image, it tiles seamlessly
+     with no visible seam. */
   background-color: var(--bg);
-  background-image: radial-gradient(circle, #d7d7d9 1.3px, transparent 1.6px);
-  background-size: 22px 22px;
+  background-image:
+    radial-gradient(circle, #d7d7d9 1.3px, transparent 1.6px),
+    radial-gradient(circle, #d7d7d9 1.3px, transparent 1.6px);
+  background-size: 26px 26px, 26px 26px;
+  background-position: 0 0, 13px 13px;
 }
 
 body{
@@ -803,7 +809,7 @@ body:not(.is-home) .hero{
   font-weight: 700;
   font-size: 16px;
   color: var(--subhead);
-  background: #fbcae0;
+  background: #fdeff3;
   padding: 9px 12px;
   border-radius: 6px;
   /* margin (not just the box's own padding) on both sides, so the gap
@@ -1255,7 +1261,8 @@ const DATA = {
       "id": "subject-verb-agreement",
       "label": "\uc8fc\uc5b4-\ub3d9\uc0ac \uc218 \uc77c\uce58",
       "eyebrow": "AGREEMENT",
-      "description": "\uc8fc\uc5b4\uac00 \ub2e8\uc218\uc778\uc9c0 \ubcf5\uc218\uc778\uc9c0\uc5d0 \ub530\ub77c \ub3d9\uc0ac \ud615\ud0dc\uac00 \ub2ec\ub77c\uc838\uc57c \ud568. \uad00\uacc4\ub300\uba85\uc0ac\uc808 \ub4a4, \uc18c\uc720\uaca9\uc774 \ubd99\uc740 \ubcf5\uc218 \uba85\uc0ac(the teams' scores \ub4f1) \ub4a4\uc5d0\uc11c \ud2b9\ud788 \uc790\uc8fc \ub193\uce68."
+      "description": "\uc8fc\uc5b4\uac00 \ub2e8\uc218\uc778\uc9c0 \ubcf5\uc218\uc778\uc9c0\uc5d0 \ub530\ub77c \ub3d9\uc0ac \ud615\ud0dc\uac00 \ub2ec\ub77c\uc838\uc57c \ud568. \uad00\uacc4\ub300\uba85\uc0ac\uc808 \ub4a4, \uc18c\uc720\uaca9\uc774 \ubd99\uc740 \ubcf5\uc218 \uba85\uc0ac(the teams' scores \ub4f1) \ub4a4\uc5d0\uc11c \ud2b9\ud788 \uc790\uc8fc \ub193\uce68.",
+      "guide": "━━━ the + 비교급 + of 복수명사 · 동사 일치 ━━━\n\n\"the + 비교급 + of + 복수명사\"는 그 복수명사들 중 비교급에 해당하는 \"것들(the ones)\"을 가리키는 표현이며, 의미상 복수이므로 동사도 단수(is)가 아니라 복수(are)로 받는다.\n\n1) the + 비교급 + of + 복수명사 = 그 대상들 중 더 ~한 것들\n   설명: ones, groups 같은 원래 명사가 생략된 형태이며, 가리키는 대상이 여럿이므로 뒤에 오는 동사도 복수형을 씀.\n   Ex) The more important of these groups are shown in the figure above. (O)\n   Ex) The more important of these groups is shown in the figure above. (X, 의미상 복수인데 단수동사를 씀)\n\n2) 가리키는 대상이 하나로 좁혀지는 경우는 예외\n   설명: 문맥상 \"~중 하나\"를 뜻하는 게 아니라 정말 단일 대상 하나만 가리킬 때는 단수로 받을 수 있음 — 몇 개를 가리키는지 먼저 확인해야 함.\n   Ex) The best of these three plans is the third one. (셋 중 최종적으로 하나만 지목하므로 단수)\n\n━━━ the + 형용사 · 복수 보통명사 역할 ━━━\n\n영어에서 \"the + 형용사\"는 그 자체로 \"~한 사람들(people)\" 또는 \"~한 것들(things)\"이라는 복수 명사 역할을 하며, 위에서 다룬 the + 비교급 구조와 같은 원리다.\n\n1) the + 형용사 = ~한 사람들 / ~한 것들 (복수 취급)\n   설명: 형용사가 그 자체로 명사화되어 특정 집단·부류 전체를 가리킴. 뒤에 오는 be동사·일반동사는 항상 복수형으로 받음.\n   Ex) The rich are not always happy. (부유한 사람들 — 복수)\n   Ex) The unemployed need more support. (실업자들 — 복수)\n\n요약: \"the + 형용사/비교급 (+ of 복수명사)\"는 사람이나 사물의 집합을 가리키는 복수 개념이므로, 겉모습이 단수처럼 보여도 동사는 반드시 복수(are/were)로 일치시켜야 한다."
     },
     {
       "id": "tense",
