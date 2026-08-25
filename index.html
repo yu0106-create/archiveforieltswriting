@@ -39,10 +39,20 @@
 }
 
 *{ box-sizing:border-box; }
-html{ scroll-behavior:smooth; }
+html{
+  scroll-behavior:smooth;
+  /* dotted texture fills the gutters outside the centered 1040px column --
+     a repeating radial-gradient tiles seamlessly in every direction, so
+     unlike a raster image dropped in as a background, there's no visible
+     seam where one tile meets the next. */
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, #d7d7d9 1.3px, transparent 1.6px);
+  background-size: 22px 22px;
+}
 
 body{
-  margin:0;
+  margin: 0 auto;
+  max-width: 1040px;
   background: var(--bg);
   color: var(--ink);
   font-family: var(--kr);
@@ -578,7 +588,7 @@ body:not(.is-home) .hero{
   border-top: 1px solid var(--line);
 }
 .worddoc-card .notes-section:not(.is-collapsed) .notes-section-head{ margin-bottom: 14px; }
-.worddoc-card .notes-section-title{ font-size: 12.5px; }
+.worddoc-card .notes-section-title{ font-size: 17px; }
 
 .worddoc-card .notes-content > .notes-section:not(.is-collapsed) .notes-section-body{
   display: flex;
@@ -732,11 +742,11 @@ body:not(.is-home) .hero{
 .notes-section-title{
   font-family: var(--en);
   font-weight: 700;
-  font-size: 13px;
+  font-size: 17px;
   line-height: 1;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--red-deep);
+  color: var(--subhead);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -745,7 +755,7 @@ body:not(.is-home) .hero{
 .notes-section-title::before{
   content: "";
   width: 14px; height: 2px;
-  background: var(--red-deep);
+  background: var(--subhead);
   display: inline-block;
   flex: none;
 }
@@ -791,12 +801,18 @@ body:not(.is-home) .hero{
 .notes-subhead{
   font-family: var(--kr);
   font-weight: 700;
-  font-size: 17px;
+  font-size: 16px;
   color: var(--subhead);
-  background: #f0efec;
+  background: #fbcae0;
   padding: 9px 12px;
   border-radius: 6px;
+  /* margin (not just the box's own padding) on both sides, so the gap
+     above and below collapses symmetrically with neighboring .notes-block
+     margins instead of the box only "absorbing" spacing on one side. */
+  margin: 14px 0;
 }
+.notes-subhead:first-child{ margin-top: 0; }
+.notes-subhead:last-child{ margin-bottom: 0; }
 .notes-line{
   display: flex;
   align-items: flex-start;
