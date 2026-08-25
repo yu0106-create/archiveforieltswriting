@@ -63,7 +63,7 @@ img{ -webkit-user-drag:none; user-select:none; }
 }
 .letter-stack{
   position: relative;
-  width: clamp(380px, 36vw, 480px);
+  width: clamp(430px, 40vw, 540px);
 }
 /* the pink scrap sits behind, peeking out from the edges. Rendered via
    border-image (9-slice) rather than a stretched background: the torn
@@ -89,7 +89,13 @@ img{ -webkit-user-drag:none; user-select:none; }
   border-style: solid;
   border-width: 125px 115px 45px 25px;
   border-image: url('paper-cream.png') 125 115 45 25 fill / 125px 115px 45px 25px;
-  padding: 4px 6px 10px 6px;
+  /* the source paper's right border is much wider than its left (it has
+     to leave room for the paperclip art), so without compensating here
+     the text would sit visibly closer to the left edge. Padding-left is
+     bumped up by roughly that same 90px difference so the *total* inset
+     (border + padding) ends up equal on both sides and the text block
+     reads as centered on the paper. */
+  padding: 4px 20px 10px 110px;
   transform: rotate(2deg);
   transition: transform .45s cubic-bezier(.34,1.4,.4,1);
 }
@@ -150,142 +156,85 @@ img{ -webkit-user-drag:none; user-select:none; }
 }
 @media (max-width: 760px){
   .sec-letter{ justify-content:center; padding: 56px 20px 40px; }
-  .letter-stack{ width: min(340px, 82vw); }
+  .letter-stack{ width: min(360px, 86vw); }
   .paper-cream{
     border-width: 92px 84px 34px 20px;
     border-image: url('paper-cream.png') 125 115 45 25 fill / 92px 84px 34px 20px;
+    padding: 4px 14px 8px 78px;
   }
   .paper-pink{ border-width: 44px; border-image: url('paper-pink.png') 60 fill / 44px; }
   .letter-body{ font-size: 18px; }
 }
 
-/* ===================== SECTION 2 -- envelopes ===================== */
-.sec-envelopes{
-  min-height: 100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap: 28px;
-  padding: 40px 20px 70px;
+/* ===================== the cheese photo, peeking from the corner ===================== */
+.cheese-peek{
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: clamp(220px, 24vw, 320px);
+  /* only ~2/3 of the card should read as "on screen" -- push a third of
+     its own box off past the left/bottom edges rather than anchoring it
+     flush, so it looks tucked into the corner rather than placed in it. */
+  transform: translate(-34%, 34%) rotate(-4deg);
+  z-index: 5;
+  cursor: pointer;
+  transition: transform .5s cubic-bezier(.34,1.4,.4,1);
 }
-.env-heading{
-  color: rgba(255,255,255,0.92);
-  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
-  font-family: var(--mono);
-  font-size: 11.5px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
+.cheese-peek img{
+  display:block;
+  width: 100%;
+  height: auto;
+  box-shadow: 0 18px 34px rgba(20,12,6,0.4);
+  border: 6px solid #fff;
 }
-.env-row{
-  display:flex;
-  flex-wrap: wrap;
-  gap: 46px;
-  justify-content:center;
+.cheese-peek:hover{ animation: wiggle-cheese .6s ease-in-out; }
+@keyframes wiggle-cheese{
+  0%   { transform: translate(-34%, 34%) rotate(-4deg); }
+  22%  { transform: translate(-31%, 33%) rotate(-7deg); }
+  50%  { transform: translate(-36%, 36%) rotate(-1deg); }
+  78%  { transform: translate(-32%, 34%) rotate(-5deg); }
+  100% { transform: translate(-34%, 34%) rotate(-4deg); }
+}
+@media (max-width: 760px){
+  .cheese-peek{ width: clamp(170px, 46vw, 240px); }
 }
 
-.env{
+/* ===================== SECTION 2 -- the notebook page ===================== */
+/* Sized in vw (with px caps for very wide screens) rather than vh, so the
+   "only 2/3 of the note shows" ratio holds regardless of the viewport's
+   height -- the section's own height IS that 2/3 crop line, and since
+   nothing follows it in the document, the page simply ends there with
+   no leftover blank scroll space underneath. */
+.sec-notebook{
   position: relative;
-  width: 250px;
-  height: 168px;
-  cursor: pointer;
-  margin-top: 150px;
+  width: 100%;
+  height: min(84.9vw, 1199px);
+  overflow: hidden;
+}
+.notebook-frame{
+  position: relative;
+  width: min(92vw, 1300px);
+  margin: 0 auto;
+}
+.notebook-img{
   display:block;
+  width: 100%;
+  -webkit-user-drag:none;
+  user-select:none;
 }
-/* At rest, the letter's box must sit entirely within the envelope's own
-   0..168px height so the opaque .env-body (z-index 2, covers the full
-   container) hides it completely -- only on hover does it translate
-   upward past the container's top edge, into the unmasked area above,
-   where it actually becomes visible ("pulled out" of the envelope). */
-.env-letter{
-  position:absolute;
-  left: 9%;
-  right: 9%;
-  height: 118px;
-  top: 50px; /* 168 (env height) - 118 = 50, so its bottom lands exactly on the envelope's bottom edge */
-  background: var(--paper);
-  border: 1px solid #e3d8bd;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.22);
-  z-index: 1;
-  transform: translateY(0);
-  transition: transform .45s cubic-bezier(.2,.8,.2,1);
-  padding: 16px 14px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center;
-  gap: 8px;
-}
-.env-letter .to{
-  font-family: var(--mono);
-  font-size: 9.5px;
-  letter-spacing: 0.06em;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-}
-.env-letter .go{
+.notebook-link{
+  position: absolute;
+  left: 15%;
   font-family: var(--hand);
   color: var(--red-deep);
-  font-size: 21px;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity .35s ease .1s, transform .35s ease .1s;
+  font-size: clamp(20px, 2.6vw, 32px);
+  transform: translateY(-100%);
+  transition: transform .2s ease, opacity .2s ease;
+  opacity: 0.92;
 }
-.env:hover .env-letter{ transform: translateY(-172px) rotate(-1.5deg); }
-.env:hover .env-letter .go{ opacity: 1; transform: translateY(0); }
-
-.env-body{
-  position:absolute; inset:0;
-  z-index: 2;
-  background: var(--env-front);
-  box-shadow: 0 10px 24px rgba(30,20,5,0.35);
-}
-.env-flap{
-  position:absolute;
-  top:0; left:0; right:0;
-  height: 60%;
-  z-index: 3;
-  background: linear-gradient(135deg, #ddc79a 0%, var(--env-front) 60%);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  box-shadow: 0 2px 3px rgba(0,0,0,0.08) inset;
-}
-.env-address{
-  position:absolute;
-  left: 16px; right: 16px; bottom: 14px;
-  z-index: 4;
-  font-family: var(--mono);
-  font-size: 13px;
-  letter-spacing: 0.02em;
-  color: #3a2f1c;
-  line-height: 1.5;
-  pointer-events: none;
-}
-.env-address .label{
-  display:block;
-  font-size: 9.5px;
-  letter-spacing: 0.08em;
-  color: #6b5a37;
-  text-transform: uppercase;
-  margin-bottom: 3px;
-}
-.env-address .name{ font-weight: 700; font-size: 14.5px; }
-.env-stamp{
-  position:absolute;
-  top: 12px; right: 12px;
-  z-index: 4;
-  width: 34px; height: 42px;
-  background: #efe6cf;
-  border: 1.5px dashed #a5895a;
-  display:flex; align-items:center; justify-content:center;
-  pointer-events:none;
-}
-.env-stamp svg{ width:16px; height:16px; color:#a5895a; }
-
-@media (max-width: 600px){
-  .letter-card{ padding: 30px 24px 26px; }
-  .letter-body{ font-size: 20px; }
-  .env-row{ gap: 30px; }
-  .env{ width: 84vw; max-width: 280px; }
-}
+.notebook-link:hover{ transform: translateY(-100%) scale(1.04); opacity: 1; }
+.notebook-link.link-ielts{ top: 20.4%; }
+.notebook-link.link-verbs{ top: 26.6%; }
 </style>
 </head>
 <body>
@@ -306,37 +255,21 @@ img{ -webkit-user-drag:none; user-select:none; }
       </div>
     </div>
   </div>
-  <div class="scroll-hint">
-    <span>scroll</span>
-    <svg viewBox="0 0 24 24" fill="none"><path d="M12 4v14M6 13l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</section>
+
+<div class="cheese-peek">
+  <img src="cheese.jpg" alt="">
+</div>
+
+<section class="sec-notebook">
+  <div class="notebook-frame">
+    <img class="notebook-img" src="notebook.png" alt="">
+    <a class="notebook-link link-ielts" href="ielts.html">IELTS Writing</a>
+    <a class="notebook-link link-verbs" href="verbs.html">Phrasal Verbs Dump</a>
   </div>
 </section>
 
-<section class="sec-envelopes">
-  <div class="env-heading">choose where to go</div>
-  <div class="env-row">
-    <a class="env" href="ielts.html" aria-label="IELTS Writing\uc73c\ub85c \uc774\ub3d9">
-      <div class="env-letter">
-        <span class="to">open</span>
-        <span class="go">IELTS Writing</span>
-      </div>
-      <div class="env-body"></div>
-      <div class="env-flap"></div>
-      <div class="env-stamp"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6l8 6 8-6M4 6h16v12H4V6z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="env-address"><span class="label">to</span><span class="name">IELTS Writing</span></div>
-    </a>
-    <a class="env" href="verbs.html" aria-label="Phrasal Verbs Dump\ub85c \uc774\ub3d9">
-      <div class="env-letter">
-        <span class="to">open</span>
-        <span class="go">Phrasal Verbs</span>
-      </div>
-      <div class="env-body"></div>
-      <div class="env-flap"></div>
-      <div class="env-stamp"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6l8 6 8-6M4 6h16v12H4V6z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="env-address"><span class="label">to</span><span class="name">Phrasal Verbs Dump</span></div>
-    </a>
-  </div>
-</section>
+
 
 </body>
 </html>
