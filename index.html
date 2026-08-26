@@ -41,16 +41,24 @@ a{ color:inherit; text-decoration:none; }
 img{ -webkit-user-drag:none; user-select:none; display:block; }
 
 /* ===================== the framed picture ===================== */
-/* Sitting on the dark wall color like a framed photo -- a pale mat
-   (passe-partout) around a thin dark inner lip, then the square scene
-   itself. Since the whole thing is now noticeably smaller than a
-   full-bleed background would be, the source photo also reads sharper
-   (less upscaling) than stretching it across the entire viewport did. */
-.frame{
-  background: #f3ede2;
-  padding: 2.6vmin;
-  border: 7px solid #c0f6e4;
-  box-shadow: 0 30px 70px rgba(0,0,0,0.45), 0 2px 0 rgba(255,255,255,0.08) inset;
+/* A real photographed picture frame (pink/mauve molded wood) instead of
+   a CSS-drawn border. The frame image's own background AND its inner
+   opening were both flattened to transparent (see pink-frame.png), so
+   it can sit directly on top of the scene: .frame-img is scaled up and
+   shifted so its opening lines up exactly with .stage underneath,
+   using the opening's measured position within the source photo
+   (openingLeft/openingTop/openingWidth as fractions of the full image)
+   converted to percentages of .stage's own box. */
+.picture{
+  position: relative;
+  filter: drop-shadow(0 22px 46px rgba(0,0,0,0.45));
+}
+.frame-img{
+  position: absolute;
+  left: -44.6%; top: -46.4%;
+  width: 190.3%; height: 180.6%;
+  z-index: 6;
+  pointer-events: none;
 }
 
 /* The source photos are a perfect 1:1 square, so the stage keeps that
@@ -69,7 +77,6 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
   overflow: hidden;
 }
 @media (max-width: 760px){
-  .frame{ padding: 3.2vmin; border-width: 6px; }
   .stage{ width: min(64vw, 58vh, 420px); }
 }
 .scene-bg{
@@ -120,7 +127,7 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 </head>
 <body>
 
-<div class="frame">
+<div class="picture">
 <div class="stage">
   <img class="scene-bg" src="scene-bg.jpg" alt="">
 
@@ -132,6 +139,7 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
     <img src="full-pencase.png" alt="">
   </a>
 </div>
+<img class="frame-img" src="pink-frame.png" alt="">
 </div>
 
 </body>
