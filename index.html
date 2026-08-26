@@ -14,7 +14,6 @@
 
 :root{
   --ink: #2b2622;
-  --wall: #5f4541;
   --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -25,12 +24,18 @@ html, body{
   color: var(--ink);
   overflow: hidden; /* this page is a single fixed scene, not a scroll --
     the entrance animation is the "reveal", so there's nothing to scroll to. */
-  background: var(--wall);
 }
 body{
   display:flex;
   align-items:center;
   justify-content:center;
+  /* the wall is now a real tiled-mosaic photo repeated edge to edge --
+     the source crop was cut exactly at grout-line centers on all four
+     sides (found by detecting the grout's brightness peaks), so tiling
+     it lines the grout up continuously instead of showing a seam. */
+  background-image: url('wall-tile-unit.jpg');
+  background-repeat: repeat;
+  background-size: 340px 340px;
 }
 a{ color:inherit; text-decoration:none; }
 img{ -webkit-user-drag:none; user-select:none; display:block; }
