@@ -49,26 +49,23 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 }
 
 /* The source photos are a perfect 1:1 square, so the stage keeps that
-   exact aspect ratio -- that keeps the book's and pencil case's
-   percentage-based positions lined up with the background pixel-for-
-   pixel at any screen size. Left deliberately un-clipped: only the
-   background photo itself is clipped to the square (via .scene-clip
-   below) -- the corner objects are siblings of that, not children of
-   it, so a hover wiggle's rotate/translate never gets a hard edge
-   sliced off by the frame boundary. */
+   exact aspect ratio -- that keeps the scene lined up with the frame's
+   window at any screen size. Clipped here (not just the background):
+   the corner objects are now the FULL, un-cropped book/pencil-case
+   photos (real edges, no artificial rectangular crop line), sized with
+   plenty of spare room around where they actually show through -- so a
+   hover wiggle moves entirely within real object silhouette or margin
+   that was always going to be covered by the frame anyway, and never
+   reveals a hard-cut edge. */
 .stage{
   position: relative;
   width: min(56vw, 60.8vh, 512px); /* 80% of the previous min(70vw, 76vh, 640px) */
   aspect-ratio: 1 / 1;
-}
-.scene-clip{
-  position: absolute;
-  inset: 0;
   overflow: hidden;
 }
 @media (max-width: 760px){
   .frame{ padding: 3.2vmin; border-width: 6px; }
-  .stage{ width: min(88vw, 70vh, 640px); }
+  .stage{ width: min(64vw, 58vh, 420px); }
 }
 .scene-bg{
   width: 100%; height: 100%;
@@ -76,13 +73,9 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 }
 
 /* ===================== the two corner objects ===================== */
-/* Each is a two-layer element: the outer <a> owns positioning AND the
-   one-time slide-in entrance animation; the inner <img> owns the hover
-   "wiggle". Keeping them on separate elements means hovering never
-   touches the outer's animation-name, so the entrance never re-triggers
-   when the mouse leaves (a single shared animation would restart from
-   its 0% keyframe the moment :hover's computed animation-name changed
-   back, which looks like the object flying back out and in again). */
+/* Each is a two-layer element: the outer <a> just owns positioning/
+   rotation (a plain static transform, no entrance animation); the inner
+   <img> owns the hover "wiggle" only. */
 .corner-obj{
   position: absolute;
   z-index: 5;
@@ -91,25 +84,16 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 .corner-obj img{ width: 100%; height: 100%; }
 
 .corner-book{
-  left: 0%; top: 0%;
-  width: 18.6%; height: 61.4%;
-  animation: slide-in-book 1.05s cubic-bezier(.22,.85,.32,1) both;
+  left: -11%; top: -5%;
+  width: 24%;
+  transform: rotate(-4deg);
 }
 .corner-pencase{
-  left: 53.85%; top: 68.25%;
-  width: 46.15%; height: 31.75%;
-  animation: slide-in-pencase 1.05s cubic-bezier(.22,.85,.32,1) both;
-  animation-delay: 1.15s; /* starts only once the book has finished --
-    "one object at a time", not both sliding in together. */
+  right: -9%; bottom: -7%;
+  width: 44%;
+  transform: rotate(-18deg);
 }
-@keyframes slide-in-book{
-  0%   { transform: translate(-135%, -135%); }
-  100% { transform: translate(0, 0); }
-}
-@keyframes slide-in-pencase{
-  0%   { transform: translate(135%, 135%); }
-  100% { transform: translate(0, 0); }
-}
+.corner-book img, .corner-pencase img{ width: 100%; height: auto; }
 
 .corner-book:hover img{ animation: wiggle-book .6s ease-in-out; }
 .corner-pencase:hover img{ animation: wiggle-pencase .6s ease-in-out; }
@@ -133,16 +117,14 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 
 <div class="frame">
 <div class="stage">
-  <div class="scene-clip">
-    <img class="scene-bg" src="scene-bg.jpg" alt="">
-  </div>
+  <img class="scene-bg" src="scene-bg.jpg" alt="">
 
   <a class="corner-obj corner-book" href="verbs.html" aria-label="Phrasal Verbs Dump로 이동">
-    <img src="corner-book.png" alt="">
+    <img src="full-book.png" alt="">
   </a>
 
   <a class="corner-obj corner-pencase" href="ielts.html" aria-label="IELTS Writing으로 이동">
-    <img src="corner-pencase.png" alt="">
+    <img src="full-pencase.png" alt="">
   </a>
 </div>
 </div>
