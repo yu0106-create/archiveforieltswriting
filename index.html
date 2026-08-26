@@ -72,12 +72,12 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
    reveals a hard-cut edge. */
 .stage{
   position: relative;
-  width: min(57vw, 62vh, 522px); /* scaled down a bit from before */
+  width: min(38vw, 42vh, 350px); /* ~67% of the previous size, like zooming out to 67% in Chrome */
   aspect-ratio: 1 / 1;
   overflow: hidden;
 }
 @media (max-width: 760px){
-  .stage{ width: min(65vw, 59vh, 428px); }
+  .stage{ width: min(52vw, 40vh, 288px); } /* smaller vw fraction too, so there's clear side margin on phones */
 }
 .scene-bg{
   width: 100%; height: 100%;
