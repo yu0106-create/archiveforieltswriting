@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>PHRASAL VERBS DUMP</title>
 <style>
 @font-face{
@@ -17,499 +17,673 @@
   font-weight: 700;
   font-display: swap;
 }
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500;1,600&family=Caveat:wght@500;700&display=swap');
 
 :root{
-  --bg: #ffffff;
-  --card: #ffffff;
-  --ink: #131315;
-  --ink-soft: #6b7076;
-  --ink-faint: #9aa0a6;
-  --line: #e9e9ea;
-  --red: #c23b3b;
-  --red-deep: #9a2c2c;
-  --subhead: #fc3468;
-  --radius: 12px;
-  --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
-  --en: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
+  --lemon: #f3e26b;
+  --pink: #ff5fa8;
+  --mint: #63e9c4;
+  --ink: #f2efe6;
+  --ink-dim: rgba(242,239,230,0.55);
+  --void: #0a0a0b;
+  --panel: rgba(12,12,14,0.72);
+  --line: rgba(242,239,230,0.14);
+  --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  --hand: 'Caveat', cursive;
+  --word-font: 'Cormorant Garamond', 'Times New Roman', serif;
 }
 
-*{ box-sizing:border-box; }
-html{
-  scroll-behavior:smooth;
-  background-color: var(--bg);
-  background-image:
-    radial-gradient(circle, #d7d7d9 1.3px, transparent 1.6px),
-    radial-gradient(circle, #d7d7d9 1.3px, transparent 1.6px);
-  background-size: 26px 26px, 26px 26px;
-  background-position: 0 0, 13px 13px;
-}
-body{
-  margin: 0 auto;
-  max-width: 1040px;
-  background: var(--bg);
+*{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+html, body{
+  margin:0; padding:0; height:100%; width:100%;
+  overflow:hidden;
+  background: var(--void);
   color: var(--ink);
   font-family: var(--kr);
-  font-weight: 300;
-  line-height: 1.6;
 }
-a{ color:inherit; text-decoration:none; }
-::selection{ background: #fbe9e9; color: var(--red-deep); }
-:focus-visible{ outline: 2px solid var(--red); outline-offset: 3px; }
 
-.wrap{ max-width: 1040px; margin: 0 auto; padding: 0 32px; }
+/* ---------- background ---------- */
+.bg{
+  position:fixed; inset:0; z-index:0;
+  background-image:
+    radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 100%),
+    url('night-spiral-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: saturate(0.9) brightness(0.85);
+}
+.bg::after{
+  content:"";
+  position:absolute; inset:0;
+  background: radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,255,255,0.5) 50%, transparent 51%) repeat,
+              radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.35) 50%, transparent 51%) repeat,
+              radial-gradient(1.2px 1.2px at 40% 80%, rgba(255,255,255,0.3) 50%, transparent 51%) repeat;
+  background-size: 180px 180px, 140px 140px, 220px 220px;
+  opacity:0.5;
+  pointer-events:none;
+}
 
 /* ---------- top bar ---------- */
 .topbar{
-  padding: 26px 0 0;
-  position: sticky; top: 0; z-index: 40;
-  background: var(--bg);
-}
-.topbar .wrap{
+  position:fixed; top:0; left:0; right:0; z-index:30;
   display:flex; align-items:center; justify-content:space-between;
-  padding-bottom: 20px;
+  padding: 18px 22px;
+  pointer-events:none;
 }
+.topbar > *{ pointer-events:auto; }
 .tb-home{
-  width: 30px; height: 30px; border-radius: 50%;
+  width: 32px; height: 32px; border-radius: 50%;
   border: 1px solid var(--line);
-  background: var(--card);
+  background: rgba(10,10,11,0.5);
+  backdrop-filter: blur(6px);
   display:flex; align-items:center; justify-content:center;
-  color: var(--ink-soft);
+  color: var(--ink-dim);
   transition: border-color .15s ease, color .15s ease;
 }
 .tb-home:hover{ border-color: var(--ink); color: var(--ink); }
 .tb-home svg{ width: 15px; height: 15px; }
 .tb-brand{
-  font-family: var(--en);
-  font-weight: 700;
-  font-size: 14px;
+  font-family: var(--kr); font-weight:700; font-size: 12.5px;
+  letter-spacing: 0.08em; color: var(--ink-dim); text-transform:uppercase;
+}
+.tb-hint{
+  font-family: var(--kr); font-weight:300; font-size: 11.5px;
+  color: var(--ink-dim); text-align:right; max-width:150px; line-height:1.5;
+}
+
+/* ---------- stage ---------- */
+.stage{
+  position:fixed; inset:0; z-index:5;
+  overflow:hidden;
+}
+.word{
+  position:absolute;
+  transform: translate(-50%,-50%);
+  font-family: var(--word-font);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(17px, 2.6vw, 26px);
   color: var(--ink);
-  display:flex; align-items:baseline; gap:7px;
+  cursor: pointer;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action: none;
+  padding: 6px 10px;
   white-space: nowrap;
+  transition: color .35s ease, text-shadow .35s ease, transform .3s ease;
+  will-change: transform;
 }
-.tb-brand .tb-for{ font-weight: 300; font-size: 11.5px; color: var(--ink-faint); }
-.tb-spacer{ width: 30px; }
+.word .drift{
+  display:inline-block;
+  animation: drift var(--dur,8s) ease-in-out var(--delay,0s) infinite alternate;
+}
+@keyframes drift{
+  from{ transform: translate(calc(var(--dx,10px) * -1), calc(var(--dy,10px) * -1)) rotate(calc(var(--rot,2deg) * -1)); }
+  to{ transform: translate(var(--dx,10px), var(--dy,10px)) rotate(var(--rot,2deg)); }
+}
+.stage.frozen .word .drift{ animation-play-state: paused; }
 
-/* ---------- hero ---------- */
-.hero{ padding: 34px 0 30px; }
-.hero .eyebrow{
-  font-family: var(--en);
-  font-weight: 600;
-  font-size: 12.5px;
-  letter-spacing: 0.1em;
-  color: var(--red);
-  text-transform: uppercase;
-  margin-bottom: 16px;
+.word.anchor{
+  text-shadow: 0 0 14px currentColor, 0 0 28px currentColor;
+  z-index: 2;
+}
+.word.matched{
+  text-shadow: 0 0 10px currentColor;
+}
+.word.wrong{
+  animation: shake .32s ease;
+}
+@keyframes shake{
+  0%,100%{ transform: translate(-50%,-50%) rotate(0); }
+  25%{ transform: translate(-50%,-50%) translateX(-4px) rotate(-3deg); }
+  75%{ transform: translate(-50%,-50%) translateX(4px) rotate(3deg); }
+}
+.word.leaving{
+  animation: leave .55s ease forwards;
+}
+@keyframes leave{
+  to{ transform: translate(-50%,-50%) scale(0.2); opacity:0; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .word .drift{ animation: none !important; }
+}
+
+/* ---------- press progress ring ---------- */
+.press-ring{
+  position:absolute; top:50%; left:50%;
+  width: 46px; height:46px;
+  transform: translate(-50%,-50%);
+  border-radius:50%;
+  pointer-events:none;
+  opacity:0;
+}
+.press-ring svg{ width:100%; height:100%; transform: rotate(-90deg); }
+.press-ring circle{
+  fill:none; stroke: var(--ink); stroke-width: 2;
+  stroke-dasharray: 126; stroke-dashoffset: 126;
+  opacity:0.7;
+}
+.word.pressing .press-ring{ opacity:1; }
+.word.pressing .press-ring circle{
+  animation: fillring 2s linear forwards;
+}
+@keyframes fillring{ to{ stroke-dashoffset:0; } }
+
+/* ---------- dock (constellation) ---------- */
+.dock{
+  position:fixed; top:64px; right:18px; z-index:25;
+  display:flex; flex-direction:column; align-items:flex-end; gap:10px;
+}
+.dock-item{
   display:flex; align-items:center; gap:8px;
-}
-.hero .eyebrow::before{ content:""; width: 20px; height: 2px; background: var(--red); display:inline-block; }
-.hero h1{
-  font-family: var(--en);
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: -0.01em;
-}
-.hero h1 a{ display:block; transition: opacity .15s ease; }
-.hero h1 a:hover{ opacity: 0.6; }
-.hero h1 span{ display:block; }
-.hero h1 .l1{ font-size: clamp(34px, 5.6vw, 54px); line-height: 1.05; }
-.hero h1 .l2{ font-size: clamp(34px, 5.6vw, 54px); font-weight: 300; margin: 2px 0; }
-
-/* ---------- section headers ---------- */
-.section-head{
-  display:flex; align-items:baseline; justify-content:space-between;
-  margin: 12px 0 18px;
-}
-.section-head h2{
-  font-family: var(--kr); font-size: 13px; font-weight: 700;
-  color: var(--ink-faint); letter-spacing: 0.02em; margin:0;
-}
-.section-head .count{ font-family: var(--en); font-size: 12px; color: var(--ink-faint); }
-
-/* ---------- card grid (docs / groups) ---------- */
-.cat-grid{
-  display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin-bottom: 12px;
-}
-.cat-card{
-  background: var(--card);
+  background: var(--panel);
   border: 1px solid var(--line);
-  padding: 18px 18px 16px;
+  border-radius: 999px;
+  padding: 6px 12px 6px 8px;
   cursor:pointer;
-  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
-  display:flex; flex-direction:column; gap:10px;
+  backdrop-filter: blur(6px);
+  animation: dockIn .4s ease;
 }
-.cat-card:hover{
-  border-color: #d8d8d9;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
-  transform: translateY(-2px);
-}
-.cat-card .top-row{ display:flex; align-items:flex-start; justify-content:space-between; }
-.cat-card .eyebrow{
-  font-family: var(--en); font-weight: 700; font-size: 11px;
-  letter-spacing: 0.08em; color: var(--ink-faint);
-}
-.pill{
-  font-family: var(--kr); font-weight: 300; font-size: 11px;
-  padding: 3px 9px; border-radius: 4px; white-space: nowrap;
-  background:#f4f4f5; color:#6b7076;
-}
-.cat-card .label{ font-family: var(--kr); font-weight: 700; font-size: 16.5px; line-height: 1.35; }
-.cat-card .desc{
-  font-family: var(--kr); font-weight: 300; font-size: 12.5px;
-  color: var(--ink-soft); line-height:1.55;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
-.cat-card .bottom-row{ display:flex; align-items:center; justify-content:space-between; margin-top: auto; padding-top: 4px; }
-.cat-card .arrow{
-  width: 26px; height: 26px; border-radius: 50%;
-  border: 1px solid var(--line);
+@keyframes dockIn{ from{ opacity:0; transform: translateY(-8px) scale(0.8); } to{ opacity:1; transform:none; } }
+.dock-dot{ width:9px; height:9px; border-radius:50%; background: currentColor; box-shadow: 0 0 8px currentColor; flex:none; }
+.dock-label{ font-family: var(--kr); font-size:12px; color: var(--ink); white-space:nowrap; }
+
+/* ---------- overlay card ---------- */
+.overlay{
+  position:fixed; inset:0; z-index:50;
+  background: rgba(4,4,5,0.72);
+  backdrop-filter: blur(3px);
   display:flex; align-items:center; justify-content:center;
-  color: var(--ink-faint);
+  padding: 24px;
+  opacity:0; pointer-events:none;
+  transition: opacity .2s ease;
 }
-.cat-card .arrow svg{ width: 11px; height: 11px; display:block; }
-
-/* ---------- detail header ---------- */
-.doc-header{
-  background: var(--card);
+.overlay.open{ opacity:1; pointer-events:auto; }
+.card{
+  width:100%; max-width: 480px; max-height: 80vh; overflow-y:auto;
+  background: #121214;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 24px 26px;
-  margin: 8px 0 30px;
+  border-radius: 18px;
+  padding: 26px 26px 22px;
+  transform: translateY(10px) scale(0.98);
+  transition: transform .2s ease;
 }
-.doc-header .meta-line{
-  font-family: var(--en); font-size: 11px; color: var(--ink-faint);
-  letter-spacing: 0.04em; margin-bottom: 8px;
+.overlay.open .card{ transform:none; }
+.card-concept{
+  font-family: var(--hand); font-size: 30px; font-weight:700;
+  margin: 0 0 4px; line-height:1;
 }
-.doc-header h3{ font-family: var(--kr); font-weight: 700; font-size: 22px; margin: 0 0 6px; }
-.doc-header .back{
-  display:inline-block; margin-top: 10px;
-  font-family: var(--en); font-weight: 600; font-size: 12px;
-  color: var(--ink); border-bottom: 1px solid var(--ink);
+.card-sub{
+  font-family: var(--kr); font-size:11.5px; color: var(--ink-dim);
+  letter-spacing:0.04em; margin-bottom:18px;
+}
+.card-close{
+  position:absolute; top:18px; right:18px;
+  width:28px; height:28px; border-radius:50%;
+  border:1px solid var(--line); background:transparent; color:var(--ink-dim);
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.card-close:hover{ color:var(--ink); border-color:var(--ink); }
+
+.entry{ margin-bottom: 18px; padding-bottom:16px; border-bottom: 1px solid var(--line); }
+.entry:last-of-type{ border-bottom:none; margin-bottom:6px; padding-bottom:0; }
+.entry-word{
+  font-family: var(--word-font); font-style:italic; font-weight:600; font-size:20px;
+  margin-bottom:6px;
+}
+.entry-ex{
+  font-family: var(--word-font); font-size:15px; color: var(--ink);
+  line-height:1.5; margin-bottom:6px;
+}
+.entry-ex b{ font-style:normal; font-weight:700; padding:0 1px; }
+.entry-nuance{
+  font-family: var(--kr); font-weight:300; font-size:13px;
+  color: var(--ink-dim); line-height:1.6;
+}
+.cluster-note{
+  font-family: var(--kr); font-weight:300; font-size:12px;
+  color: var(--ink-dim); margin-bottom:10px; padding: 8px 10px;
+  background: rgba(255,255,255,0.04); border-radius:8px;
 }
 
-/* ---------- word/expression card (ported from the IELTS archive site) ---------- */
-.notes-content{ display:flex; flex-direction:column; gap:14px; }
-.worddoc-card{ padding: 0; margin-bottom: 20px; }
-.worddoc-card .notes-section{ background: transparent; border: none; border-radius: 0; padding: 0; }
-.notes-block{ margin-bottom: 14px; }
-.notes-block:last-child{ margin-bottom: 0; }
-.worddoc-card .notes-block{ padding: 16px 4px 16px 22px; border-bottom: 1px solid var(--line); }
-.worddoc-card .notes-block:last-child{ border-bottom: none; padding-bottom: 4px; }
-.worddoc-card .notes-block:first-child{ padding-top: 4px; }
-.notes-subhead{
-  font-family: var(--kr); font-weight: 700; font-size: 16px; color: var(--subhead);
-  background: #fdeff3; padding: 9px 12px; border-radius: 6px; margin: 14px 0;
+.contrast-box{
+  margin-top: 6px; padding: 14px; border-radius: 10px;
+  background: rgba(255,255,255,0.04);
 }
-.notes-subhead:first-child{ margin-top: 0; }
-.notes-subhead:last-child{ margin-bottom: 0; }
-.notes-line{ display: flex; align-items: baseline; }
-.notes-line + .notes-line{ margin-top: 6px; }
-.notes-line-label{ white-space: pre; flex: none; flex: 0 0 46px; width: 46px; overflow: hidden; text-align: right; }
-.notes-line-text{ flex: 1 1 auto; min-width: 0; }
-.notes-line[data-marker="num"] .notes-line-label{ font-family: var(--en); font-weight: 500; font-size: 21px; color: var(--ink-faint); }
-.notes-line[data-marker="num"] .notes-line-text{ font-weight: 700; font-size: 15.5px; color: var(--ink); }
-.notes-line[data-marker="ex"] .notes-line-label{
-  font-family: var(--en); font-weight: 700; font-size: 10.5px;
-  letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint);
+.contrast-title{
+  font-family:var(--kr); font-weight:700; font-size:11.5px; letter-spacing:0.04em;
+  color: var(--ink-dim); text-transform:uppercase; margin-bottom:10px;
 }
-.notes-line[data-marker="ex"] .notes-line-text{ font-style: italic; font-size: 13px; color: var(--ink-soft); }
-.notes-line[data-marker="vocab"] .notes-line-label,
-.notes-line[data-marker="vocab"] .notes-line-text{ font-size: 12px; color: var(--ink-faint); }
-.notes-line[data-marker="desc"] .notes-line-label{
-  font-family: var(--en); font-weight: 700; font-size: 10.5px;
-  letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint);
-}
-.notes-line[data-marker="desc"] .notes-line-text{ color: var(--ink-soft); }
+.contrast-row{ margin-bottom:8px; }
+.contrast-row:last-of-type{ margin-bottom:10px; }
+.contrast-ex{ font-family: var(--word-font); font-size:14.5px; line-height:1.5; }
+.contrast-ex b{ font-style:normal; font-weight:700; }
+.contrast-note{ font-family: var(--kr); font-weight:300; font-size:12.5px; color: var(--ink-dim); line-height:1.6; }
 
-.empty{ font-family: var(--kr); font-weight:300; font-size:14px; color: var(--ink-faint); padding: 40px 0; text-align:center; }
-
-footer{
-  margin: 60px 0 40px;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
-  display:flex; justify-content:space-between;
-  font-family: var(--en); font-size: 11px; color: var(--ink-faint);
+/* toast */
+.toast{
+  position:fixed; bottom: 22px; left:50%; transform: translateX(-50%) translateY(10px);
+  background: var(--panel); border:1px solid var(--line); border-radius:999px;
+  padding: 9px 18px; font-family:var(--kr); font-size:12.5px; color:var(--ink);
+  z-index:40; opacity:0; transition: opacity .25s ease, transform .25s ease;
+  pointer-events:none; backdrop-filter: blur(6px); white-space:nowrap;
 }
-
-@media (max-width: 760px){
-  .cat-grid{ grid-template-columns: repeat(2, 1fr); }
-  .hero{ padding: 24px 0 22px; }
-}
-@media (max-width: 480px){
-  .cat-grid{ grid-template-columns: 1fr; }
-  .wrap{ padding: 0 20px; }
-}
+.toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
-<header class="topbar">
-  <div class="wrap">
-    <a href="index.html" class="tb-home" aria-label="홈 데스크탑으로" title="홈으로">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M4 11.5L12 4l8 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10.5V20h5v-5.5h2V20h5v-9.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </a>
-    <a href="#/" class="tb-brand">PHRASAL VERBS<span class="tb-for">·</span><span>DUMP</span></a>
-    <span class="tb-spacer"></span>
-  </div>
-</header>
+<div class="bg"></div>
 
-<main class="wrap">
-  <section class="hero">
-    <div class="eyebrow">Personal Vocabulary Dump · Phrasal Verbs</div>
-    <h1><a href="#/"><span class="l1">PHRASAL VERBS</span><span class="l2">DUMP</span></a></h1>
-  </section>
+<div class="topbar">
+  <a class="tb-home" href="index.html" aria-label="홈으로">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+  </a>
+  <div class="tb-brand">Phrasal Verbs Dump</div>
+  <div class="tb-hint">단어를 2초간 눌러 고정 · 짝을 찾아 탭</div>
+</div>
 
-  <div id="docHeaderWrap"></div>
+<div class="stage" id="stage"></div>
+<div class="dock" id="dock"></div>
+<div class="toast" id="toast"></div>
 
-  <div class="section-head">
-    <h2 id="listTitle">표현집 목록</h2>
-    <span class="count" id="listCount"></span>
-  </div>
-  <div id="listArea"></div>
-
-  <footer>
-    <span>Personal phrasal verb log</span>
-    <span id="lastUpdated"></span>
-  </footer>
-</main>
+<div class="overlay" id="overlay">
+  <div class="card" id="card"></div>
+</div>
 
 <script>
-(function () {
-  // ---------------------------------------------------------------
-  // DATA -- one entry per "dump": a themed batch of phrasal verbs.
-  // Format follows the same "━━━ 그룹 제목 ━━━" convention used across
-  // the whole archive: each doc's `text` is split into groups, and each
-  // group's body is a set of hanging-indent lines ("1) ...", "Ex) ...",
-  // "단어: ..."). This is a starter placeholder doc so the page and its
-  // rendering can be verified end to end -- replace/extend as needed.
-  // ---------------------------------------------------------------
+(function(){
+
+  /* ============ DATA ============ */
   var DATA = {
-    verbDocs: [
+    groups: [
       {
-        id: 'starter-set',
-        title: 'Starter Set',
-        subtitle: '샘플 · 2개 그룹',
-        text:
-'━━━ up 계열 ━━━\n' +
-'\n' +
-'1) 그만두다 — give up\n' +
-'   Ex) I won\'t give up on this project even if it gets hard.\n' +
-'   단어: give = 주다 / up = 위로\n' +
-'\n' +
-'2) 준비하다, 설치하다 — set up\n' +
-'   Ex) We need to set up the equipment before the show starts.\n' +
-'\n' +
-'━━━ out 계열 ━━━\n' +
-'\n' +
-'1) 알아내다 — figure out\n' +
-'   Ex) I finally figured out how to fix the bug.\n' +
-'\n' +
-'2) (분량이) 다 떨어지다 — run out (of)\n' +
-'   Ex) We ran out of milk this morning.'
+        id: "cause",
+        concept: "원인이 되다",
+        template: "The heavy rain {word} the flood.",
+        cluster: [
+          { text: "cause", form: "caused" },
+          { text: "bring about", form: "brought about" },
+          { text: "give rise to", form: "gave rise to" }
+        ],
+        distinct: [
+          {
+            text: "trigger",
+            example: "The referee's decision triggered angry protests.",
+            nuance: "갑작스럽고 즉각적인 반응을 유발할 때 씀. 주로 부정적·격한 사건에 붙음."
+          }
+        ],
+        contrastPair: { a: "cause", b: "trigger",
+          noteKo: "cause는 원인-결과를 중립적으로 서술, trigger는 그 반응이 즉각적이고 격렬함을 강조." }
+      },
+      {
+        id: "increase",
+        concept: "증가하다",
+        template: "House prices in the city {word} rapidly last year.",
+        cluster: [
+          { text: "increase", form: "increased" },
+          { text: "go up", form: "went up" },
+          { text: "rise", form: "rose" }
+        ],
+        distinct: [
+          {
+            text: "shoot up",
+            example: "Demand for masks shot up overnight.",
+            nuance: "매우 빠르고 급격하게 늘어남. 놀라움의 뉘앙스가 있음."
+          },
+          {
+            text: "step up",
+            example: "The company stepped up its marketing efforts.",
+            nuance: "노력·활동의 양을 의도적으로 늘림. 가격·수치 등에는 잘 안 씀."
+          }
+        ],
+        contrastPair: { a: "increase", b: "shoot up",
+          noteKo: "increase는 일반적인 증가, shoot up은 그 증가가 매우 가파르고 놀라울 정도임을 강조." }
+      },
+      {
+        id: "decrease",
+        concept: "감소하다 / 줄이다",
+        template: "Sales {word} sharply after the scandal.",
+        cluster: [
+          { text: "decrease", form: "decreased" },
+          { text: "go down", form: "went down" },
+          { text: "decline", form: "declined" }
+        ],
+        distinct: [
+          {
+            text: "cut back on",
+            example: "The company cut back on staff to save money.",
+            nuance: "누군가의 의도적인 결정으로 줄임. 저절로 줄어드는 상황엔 안 씀."
+          },
+          {
+            text: "tail off",
+            example: "Interest in the project tailed off after a few months.",
+            nuance: "서서히, 자연스럽게 잦아드는 감소. 의도가 없는 흐름을 나타냄."
+          }
+        ],
+        contrastPair: { a: "cut back on", b: "tail off",
+          noteKo: "cut back on은 누군가 의도적으로 줄이는 것, tail off는 별다른 개입 없이 저절로 잦아드는 것." }
+      },
+      {
+        id: "need",
+        concept: "필요로 하다",
+        template: "This job {word} strong communication skills.",
+        cluster: [
+          { text: "need", form: "needs" },
+          { text: "require", form: "requires" }
+        ],
+        distinct: [
+          {
+            text: "call for",
+            example: "The situation calls for immediate action.",
+            nuance: "사람이 아니라 상황·환경이 주어가 되어 '그것이 필요하다'고 할 때 자연스러움."
+          }
+        ],
+        contrastPair: { a: "need", b: "call for",
+          noteKo: "need/require는 사람·사물이 직접 필요로 할 때, call for는 상황이 무언가를 요구할 때 씀." }
+      },
+      {
+        id: "problem",
+        concept: "문제",
+        template: "We need to solve this {word} quickly.",
+        cluster: [
+          { text: "problem", form: "problem" },
+          { text: "issue", form: "issue" }
+        ],
+        distinct: [
+          {
+            text: "challenge",
+            example: "Climate change is the biggest challenge of our generation.",
+            nuance: "단순한 문제보다 '극복해야 할 도전'의 뉘앙스. 부정적이지만은 않음."
+          },
+          {
+            text: "dilemma",
+            example: "She faced a difficult dilemma: stay or leave.",
+            nuance: "두 선택지 사이에서 고민해야 하는 상황. 단순 문제와는 결이 다름."
+          }
+        ],
+        contrastPair: { a: "problem", b: "challenge",
+          noteKo: "problem은 해결해야 할 부정적 대상, challenge는 극복하며 성장할 수 있는 도전에 가까움." }
       }
     ]
   };
 
-  function escapeHtml(s) {
+  var COLORS = ['lemon', 'pink', 'mint'];
+  var COLOR_HEX = { lemon: '#f3e26b', pink: '#ff5fa8', mint: '#63e9c4' };
+  var POOL_SIZE = 3; // 화면에 동시에 떠 있는 그룹 수 (라운드당 단어 개수는 추후 조정)
+
+  /* ============ helpers ============ */
+  function shuffle(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function groupWords(group){
+    var out = [];
+    group.cluster.forEach(function(w){ out.push({ text: w.text, form: w.form, kind: 'cluster' }); });
+    group.distinct.forEach(function(w){ out.push({ text: w.text, kind: 'distinct', example: w.example, nuance: w.nuance }); });
+    return out;
+  }
+
+  function escapeHtml(s){
     return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // ---- ported verbatim (format-wise) from the IELTS archive site ----
-  function splitNotesSections(text) {
-    var titleRe = /^━+\s*(.+?)\s*━+\s*$/;
-    var lines = (text || '').split('\n');
-    var sections = [];
-    var current = null;
-    lines.forEach(function (line) {
-      var m = line.match(titleRe);
-      if (m) {
-        current = { title: m[1], bodyLines: [] };
-        sections.push(current);
-      } else {
-        if (!current) { current = { title: '', bodyLines: [] }; sections.push(current); }
-        current.bodyLines.push(line);
+  function boldPhrase(sentence, phrase){
+    var idx = sentence.toLowerCase().indexOf(phrase.toLowerCase());
+    if (idx === -1) return escapeHtml(sentence);
+    var before = sentence.slice(0, idx);
+    var match = sentence.slice(idx, idx + phrase.length);
+    var after = sentence.slice(idx + phrase.length);
+    return escapeHtml(before) + '<b>' + escapeHtml(match) + '</b>' + escapeHtml(after);
+  }
+
+  function sentenceForWord(group, wordText){
+    var c = group.cluster.filter(function(w){ return w.text === wordText; })[0];
+    if (c) return boldPhrase(group.template.replace('{word}', c.form), c.form);
+    var d = group.distinct.filter(function(w){ return w.text === wordText; })[0];
+    if (d) return boldPhrase(d.example, d.text);
+    return '';
+  }
+
+  /* ============ state ============ */
+  var stageEl = document.getElementById('stage');
+  var dockEl = document.getElementById('dock');
+  var toastEl = document.getElementById('toast');
+  var overlayEl = document.getElementById('overlay');
+  var cardEl = document.getElementById('card');
+
+  var queue = shuffle(DATA.groups);
+  var qIdx = 0;
+  var onScreen = {};      // groupId -> { group, color, wordEls: [], matchedCount }
+  var frozen = false;
+  var activeGroupId = null;
+
+  function nextGroup(){
+    if (qIdx >= queue.length){ queue = shuffle(DATA.groups); qIdx = 0; }
+    return queue[qIdx++];
+  }
+
+  function usedColors(){
+    return Object.keys(onScreen).map(function(id){ return onScreen[id].color; });
+  }
+
+  function pickColor(){
+    var used = usedColors();
+    var free = COLORS.filter(function(c){ return used.indexOf(c) === -1; });
+    return (free.length ? free : COLORS)[Math.floor(Math.random() * (free.length ? free.length : COLORS.length))];
+  }
+
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(function(){ toastEl.classList.remove('show'); }, 1600);
+  }
+
+  function randomPos(){
+    return {
+      top: 14 + Math.random() * 68,   // % , 상단바/여백 피함
+      left: 8 + Math.random() * 84
+    };
+  }
+
+  function spawnGroup(group){
+    var color = pickColor();
+    var words = shuffle(groupWords(group));
+    var entry = { group: group, color: color, wordEls: [], matched: {} };
+    words.forEach(function(w){
+      var pos = randomPos();
+      var el = document.createElement('div');
+      el.className = 'word';
+      el.dataset.groupId = group.id;
+      el.dataset.text = w.text;
+      el.style.top = pos.top + '%';
+      el.style.left = pos.left + '%';
+
+      var dur = (6 + Math.random() * 5).toFixed(2);
+      var delay = (Math.random() * -6).toFixed(2);
+      var dx = (14 + Math.random() * 18).toFixed(1) + 'px';
+      var dy = (10 + Math.random() * 16).toFixed(1) + 'px';
+      var rot = (1 + Math.random() * 2).toFixed(1) + 'deg';
+      el.style.setProperty('--dur', dur + 's');
+      el.style.setProperty('--delay', delay + 's');
+      el.style.setProperty('--dx', dx);
+      el.style.setProperty('--dy', dy);
+      el.style.setProperty('--rot', rot);
+
+      var drift = document.createElement('span');
+      drift.className = 'drift';
+      drift.textContent = w.text;
+      el.appendChild(drift);
+
+      var ring = document.createElement('span');
+      ring.className = 'press-ring';
+      ring.innerHTML = '<svg viewBox="0 0 46 46"><circle cx="23" cy="23" r="20"/></svg>';
+      el.appendChild(ring);
+
+      attachPressHandlers(el, entry);
+      stageEl.appendChild(el);
+      entry.wordEls.push(el);
+    });
+    onScreen[group.id] = entry;
+  }
+
+  function refill(){
+    while (Object.keys(onScreen).length < POOL_SIZE){
+      spawnGroup(nextGroup());
+    }
+  }
+
+  /* ============ press / match logic ============ */
+  function attachPressHandlers(el, entry){
+    var pressTimer = null;
+
+    el.addEventListener('pointerdown', function(ev){
+      ev.preventDefault();
+      if (!frozen){
+        el.classList.add('pressing');
+        pressTimer = setTimeout(function(){
+          el.classList.remove('pressing');
+          el._justFroze = true; // 이번 long-press의 pointerup을 "취소 탭"으로 오인하지 않도록
+          freezeOn(entry, el);
+        }, 2000);
       }
     });
-    return sections.map(function (s) {
-      return { title: s.title, body: s.bodyLines.join('\n').replace(/^\n+|\n+$/g, '') };
-    }).filter(function (s) { return s.title || s.body; });
-  }
 
-  var NOTES_MARKER_RE = /^(-\s+|\d+\)\s+|Ex\)\s+|비교\s?예시:\s*|비교\)\s+|예시\s?오류:\s*|요약:\s*|설명:\s*|단어:\s*|→\s*)/;
-  var NOTES_SUBHEAD_RE = /^##\s*(.+)$/;
-
-  function markerType(marker) {
-    if (!marker) return 'plain';
-    if (/^-\s*/.test(marker)) return 'dash';
-    if (/^\d+\)/.test(marker)) return 'num';
-    if (/^Ex\)/.test(marker)) return 'ex';
-    if (/^단어:/.test(marker)) return 'vocab';
-    if (/^설명:/.test(marker)) return 'desc';
-    if (/^요약:/.test(marker)) return 'summary';
-    if (/^비교/.test(marker)) return 'compare';
-    if (/^예시\s?오류:/.test(marker)) return 'wrongex';
-    if (/^→/.test(marker)) return 'arrow';
-    return 'plain';
-  }
-
-  function renderNotesBody(bodyText) {
-    var rawLines = (bodyText || '').split('\n');
-    var isSubheadLine = {};
-    rawLines.forEach(function (line, i) {
-      if (NOTES_SUBHEAD_RE.test(line)) isSubheadLine[i] = true;
+    function cancelPress(){
+      if (pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
+      el.classList.remove('pressing');
+    }
+    el.addEventListener('pointerup', function(ev){
+      cancelPress();
+      if (el._justFroze){ el._justFroze = false; return; }
+      if (frozen) handleTapWhileFrozen(entry, el);
     });
-    var lineBlocks = [];
-    var current = [];
-    rawLines.forEach(function (line, i) {
-      if (line === '') {
-        if (current.length) { lineBlocks.push(current); current = []; }
-        return;
-      }
-      if (isSubheadLine[i]) {
-        if (current.length) { lineBlocks.push(current); current = []; }
-        lineBlocks.push([{ text: line }]);
-        return;
-      }
-      current.push({ text: line });
-    });
-    if (current.length) lineBlocks.push(current);
-
-    return lineBlocks.map(function (block) {
-      if (block.length === 1) {
-        var soleMatch = block[0].text.match(NOTES_SUBHEAD_RE);
-        if (soleMatch) {
-          return '<div class="notes-subhead">' + escapeHtml(soleMatch[1]) + '</div>';
-        }
-      }
-      var linesHtml = block.map(function (li) {
-        var wsMatch = li.text.match(/^\s*/);
-        var leadingWs = wsMatch[0];
-        var afterWs = li.text.slice(leadingWs.length);
-        var markerMatch = afterWs.match(NOTES_MARKER_RE);
-        var marker = markerMatch ? markerMatch[0] : '';
-        var labelText = leadingWs + marker;
-        var contentText = afterWs.slice(marker.length);
-        var labelSpan = labelText ? '<span class="notes-line-label">' + escapeHtml(labelText) + '</span>' : '';
-        var textSpan = '<span class="notes-line-text">' + escapeHtml(contentText) + '</span>';
-        return '<div class="notes-line" data-marker="' + markerType(marker) + '">' + labelSpan + textSpan + '</div>';
-      }).join('');
-      return '<div class="notes-block">' + linesHtml + '</div>';
-    }).join('');
+    el.addEventListener('pointerleave', cancelPress);
+    el.addEventListener('pointercancel', cancelPress);
   }
 
-  var ARROW_SVG = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-    '<path d="M8 16L16 8M10 8H16V14" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
-    '</svg>';
-
-  function findDoc(id) {
-    return DATA.verbDocs.filter(function (d) { return d.id === id; })[0] || null;
+  function freezeOn(entry, anchorEl){
+    frozen = true;
+    activeGroupId = entry.group.id;
+    stageEl.classList.add('frozen');
+    anchorEl.classList.add('anchor');
+    anchorEl.style.color = COLOR_HEX[entry.color];
+    entry.matched[anchorEl.dataset.text] = true;
+    checkGroupComplete(entry);
+    showToast(entry.group.concept + ' — 같은 뜻의 단어를 찾아 탭하세요');
   }
 
-  function parseHash() {
-    var h = window.location.hash.replace(/^#\/?/, '');
-    var parts = h.split('/').filter(Boolean);
-    if (!parts.length) return { docId: null, groupIdx: null };
-    var docId = decodeURIComponent(parts[0]);
-    var groupIdx = parts.length > 1 ? parseInt(parts[1], 10) : null;
-    return { docId: docId, groupIdx: (groupIdx == null || isNaN(groupIdx)) ? null : groupIdx };
-  }
+  function handleTapWhileFrozen(entry, el){
+    if (entry.group.id !== activeGroupId) return; // 다른 그룹 단어는 무시(고정 중엔 비활성)
+    var text = el.dataset.text;
 
-  var docHeaderWrap = document.getElementById('docHeaderWrap');
-  var listTitle = document.getElementById('listTitle');
-  var listCount = document.getElementById('listCount');
-  var listArea = document.getElementById('listArea');
-
-  function render() {
-    var route = parseHash();
-
-    if (route.docId == null) {
-      docHeaderWrap.innerHTML = '';
-      listTitle.textContent = '표현집 목록';
-      listCount.textContent = DATA.verbDocs.length + '개';
-      if (!DATA.verbDocs.length) {
-        listArea.innerHTML = '<div class="empty">아직 저장된 표현집이 없음.</div>';
-        return;
-      }
-      var grid = document.createElement('div');
-      grid.className = 'cat-grid';
-      grid.innerHTML = DATA.verbDocs.map(function (doc) {
-        var sections = splitNotesSections(doc.text);
-        return '<a class="cat-card" href="#/' + encodeURIComponent(doc.id) + '">' +
-          '<div class="top-row">' +
-            '<div class="eyebrow">VERB DUMP</div>' +
-            '<span class="pill">' + sections.length + '개 그룹</span>' +
-          '</div>' +
-          '<div class="label">' + escapeHtml(doc.title) + '</div>' +
-          '<div class="desc">' + escapeHtml(doc.subtitle || '') + '</div>' +
-          '<div class="bottom-row"><span class="pill">표현집</span><span class="arrow">' + ARROW_SVG + '</span></div>' +
-        '</a>';
-      }).join('');
-      listArea.innerHTML = '';
-      listArea.appendChild(grid);
+    if (el.classList.contains('anchor')){
+      // 앵커 다시 탭 = 취소하고 재개
+      unfreeze();
       return;
     }
+    if (entry.matched[text]) return; // 이미 맞춘 단어
 
-    var doc = findDoc(route.docId);
-    if (!doc) {
-      docHeaderWrap.innerHTML = '';
-      listArea.innerHTML = '<div class="empty">표현집을 찾을 수 없음.</div>';
-      return;
+    entry.matched[text] = true;
+    el.classList.add('matched');
+    el.style.color = COLOR_HEX[entry.color];
+    checkGroupComplete(entry);
+  }
+
+  // 고정 모드에서, 클릭된 단어가 활성 그룹이 아닌 경우 오답 처리하려면
+  // stage 전체에 위임 리스너를 하나 더 둔다.
+  stageEl.addEventListener('pointerup', function(ev){
+    if (!frozen) return;
+    var el = ev.target.closest('.word');
+    if (!el) return;
+    var gid = el.dataset.groupId;
+    if (gid === activeGroupId) return; // 정상 처리는 위에서 이미 됨
+    el.classList.add('wrong');
+    setTimeout(function(){ el.classList.remove('wrong'); }, 320);
+  });
+
+  function checkGroupComplete(entry){
+    var total = entry.group.cluster.length + entry.group.distinct.length;
+    var done = Object.keys(entry.matched).length;
+    if (done >= total){
+      completeGroup(entry);
     }
-    var sections = splitNotesSections(doc.text);
+  }
 
-    if (route.groupIdx == null) {
-      docHeaderWrap.innerHTML =
-        '<div class="doc-header">' +
-          '<div class="meta-line">' + escapeHtml(doc.subtitle || '표현집') + '</div>' +
-          '<h3>' + escapeHtml(doc.title) + '</h3>' +
-          '<a href="#/" class="back">← 표현집 목록으로</a>' +
+  function completeGroup(entry){
+    entry.wordEls.forEach(function(el){ el.classList.add('leaving'); });
+    setTimeout(function(){
+      entry.wordEls.forEach(function(el){ el.remove(); });
+      delete onScreen[entry.group.id];
+      addDockItem(entry.group, entry.color);
+      unfreeze();
+      refill();
+    }, 500);
+  }
+
+  function unfreeze(){
+    frozen = false;
+    activeGroupId = null;
+    stageEl.classList.remove('frozen');
+  }
+
+  /* ============ dock + overlay ============ */
+  function addDockItem(group, color){
+    var item = document.createElement('div');
+    item.className = 'dock-item';
+    item.innerHTML = '<span class="dock-dot" style="color:' + COLOR_HEX[color] + '"></span>' +
+                      '<span class="dock-label">' + escapeHtml(group.concept) + '</span>';
+    item.addEventListener('click', function(){ openCard(group, color); });
+    dockEl.appendChild(item);
+  }
+
+  function openCard(group, color){
+    var html = '<button class="card-close" id="cardClose">&times;</button>' +
+      '<div class="card-concept" style="color:' + COLOR_HEX[color] + '">' + escapeHtml(group.concept) + '</div>' +
+      '<div class="card-sub">동의어 ' + (group.cluster.length + group.distinct.length) + '개</div>';
+
+    if (group.cluster.length){
+      html += '<div class="cluster-note">아래 단어들은 이 문장에서 서로 그대로 바꿔 쓸 수 있음 — 단어만 다르고 문장은 동일함.</div>';
+      group.cluster.forEach(function(w){
+        html += '<div class="entry"><div class="entry-word">' + escapeHtml(w.text) + '</div>' +
+          '<div class="entry-ex">' + sentenceForWord(group, w.text) + '</div></div>';
+      });
+    }
+    group.distinct.forEach(function(w){
+      html += '<div class="entry"><div class="entry-word">' + escapeHtml(w.text) + '</div>' +
+        '<div class="entry-ex">' + sentenceForWord(group, w.text) + '</div>' +
+        '<div class="entry-nuance">' + escapeHtml(w.nuance) + '</div></div>';
+    });
+
+    if (group.contrastPair){
+      var cp = group.contrastPair;
+      html += '<div class="contrast-box">' +
+        '<div class="contrast-title">헷갈리기 쉬운 짝</div>' +
+        '<div class="contrast-row"><div class="contrast-ex">' + sentenceForWord(group, cp.a) + '</div></div>' +
+        '<div class="contrast-row"><div class="contrast-ex">' + sentenceForWord(group, cp.b) + '</div></div>' +
+        '<div class="contrast-note">' + escapeHtml(cp.noteKo) + '</div>' +
         '</div>';
-      listTitle.textContent = doc.title + ' · 그룹 목록';
-      listCount.textContent = sections.length + '개 그룹';
-      var secGrid = document.createElement('div');
-      secGrid.className = 'cat-grid';
-      secGrid.innerHTML = sections.map(function (sec, idx) {
-        var itemCount = (sec.body.match(/^\d+\)\s+/gm) || []).length;
-        return '<a class="cat-card" href="#/' + encodeURIComponent(doc.id) + '/' + idx + '">' +
-          '<div class="top-row" style="justify-content:flex-end"><span class="pill">' + itemCount + '개</span></div>' +
-          '<div class="label">' + escapeHtml(sec.title || '(제목 없음)') + '</div>' +
-          '<div class="bottom-row"><span></span><span class="arrow">' + ARROW_SVG + '</span></div>' +
-        '</a>';
-      }).join('');
-      listArea.innerHTML = '';
-      listArea.appendChild(secGrid);
-      return;
     }
 
-    var sec = sections[route.groupIdx];
-    docHeaderWrap.innerHTML =
-      '<div class="doc-header">' +
-        '<div class="meta-line">' + escapeHtml(doc.title) + '</div>' +
-        '<h3>' + escapeHtml(sec ? sec.title : '') + '</h3>' +
-        '<a href="#/' + encodeURIComponent(doc.id) + '" class="back">← ' + escapeHtml(doc.title) + '로</a>' +
-      '</div>';
-    var itemCount = sec ? (sec.body.match(/^\d+\)\s+/gm) || []).length : 0;
-    listTitle.textContent = sec ? sec.title + ' · 표현 목록' : '';
-    listCount.textContent = itemCount + '개';
-    listArea.innerHTML = '';
-    if (sec) {
-      var card = document.createElement('div');
-      card.className = 'worddoc-card';
-      card.innerHTML = '<div class="notes-content"><div class="notes-section"><div class="notes-section-body">' +
-        renderNotesBody(sec.body) +
-        '</div></div></div>';
-      listArea.appendChild(card);
-    } else {
-      listArea.innerHTML = '<div class="empty">그룹을 찾을 수 없음.</div>';
-    }
+    cardEl.innerHTML = html;
+    overlayEl.classList.add('open');
+    document.getElementById('cardClose').addEventListener('click', closeCard);
   }
+  function closeCard(){ overlayEl.classList.remove('open'); }
+  overlayEl.addEventListener('click', function(ev){ if (ev.target === overlayEl) closeCard(); });
 
-  window.addEventListener('hashchange', render);
-  render();
+  /* ============ init ============ */
+  refill();
+
 })();
 </script>
 </body>
