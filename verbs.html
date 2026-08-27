@@ -17,7 +17,7 @@
   font-weight: 700;
   font-display: swap;
 }
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500;1,600&family=Caveat:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500;1,600&display=swap');
 
 :root{
   --lemon: #f3e26b;
@@ -28,8 +28,7 @@
   --void: #0a0a0b;
   --panel: rgba(12,12,14,0.72);
   --line: rgba(242,239,230,0.14);
-  --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-  --hand: 'Caveat', cursive;
+  --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
   --word-font: 'Cormorant Garamond', 'Times New Roman', serif;
 }
 
@@ -40,6 +39,8 @@ html, body{
   background: var(--void);
   color: var(--ink);
   font-family: var(--kr);
+  font-weight: 300;
+  line-height: 1.6;
 }
 
 /* ---------- background ---------- */
@@ -87,10 +88,7 @@ html, body{
   font-family: var(--kr); font-weight:700; font-size: 12.5px;
   letter-spacing: 0.08em; color: var(--ink-dim); text-transform:uppercase;
 }
-.tb-hint{
-  font-family: var(--kr); font-weight:300; font-size: 11.5px;
-  color: var(--ink-dim); text-align:right; max-width:150px; line-height:1.5;
-}
+.tb-spacer{ width: 32px; height: 32px; }
 
 /* ---------- stage ---------- */
 .stage{
@@ -99,6 +97,7 @@ html, body{
 }
 .word{
   position:absolute;
+  top:-999px; left:-999px; /* 측정 전까지 화면 밖 */
   transform: translate(-50%,-50%);
   font-family: var(--word-font);
   font-style: italic;
@@ -111,25 +110,32 @@ html, body{
   touch-action: none;
   padding: 6px 10px;
   white-space: nowrap;
-  transition: color .35s ease, text-shadow .35s ease, transform .3s ease;
-  will-change: transform;
+  transition: color .25s ease, transform .25s ease;
 }
-.word .drift{
+.word .wobble{
   display:inline-block;
-  animation: drift var(--dur,8s) ease-in-out var(--delay,0s) infinite alternate;
+  animation: wobble var(--wdur,4s) ease-in-out var(--wdelay,0s) infinite alternate;
 }
-@keyframes drift{
-  from{ transform: translate(calc(var(--dx,10px) * -1), calc(var(--dy,10px) * -1)) rotate(calc(var(--rot,2deg) * -1)); }
-  to{ transform: translate(var(--dx,10px), var(--dy,10px)) rotate(var(--rot,2deg)); }
+@keyframes wobble{
+  from{ transform: rotate(calc(var(--wrot,1.5deg) * -1)); }
+  to{ transform: rotate(var(--wrot,1.5deg)); }
 }
-.stage.frozen .word .drift{ animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce){
+  .word .wobble{ animation: none !important; }
+}
 
+.word.charging{
+  transition: color 2000ms linear, transform 2000ms ease;
+  color: var(--anchor-color, var(--ink));
+  transform: translate(-50%,-50%) scale(1.3);
+}
 .word.anchor{
-  text-shadow: 0 0 14px currentColor, 0 0 28px currentColor;
+  color: var(--anchor-color, var(--ink));
+  transform: translate(-50%,-50%) scale(1.3);
   z-index: 2;
 }
 .word.matched{
-  text-shadow: 0 0 10px currentColor;
+  z-index: 2;
 }
 .word.wrong{
   animation: shake .32s ease;
@@ -140,36 +146,10 @@ html, body{
   75%{ transform: translate(-50%,-50%) translateX(4px) rotate(3deg); }
 }
 .word.leaving{
-  animation: leave .55s ease forwards;
-}
-@keyframes leave{
-  to{ transform: translate(-50%,-50%) scale(0.2); opacity:0; }
-}
-
-@media (prefers-reduced-motion: reduce){
-  .word .drift{ animation: none !important; }
-}
-
-/* ---------- press progress ring ---------- */
-.press-ring{
-  position:absolute; top:50%; left:50%;
-  width: 46px; height:46px;
-  transform: translate(-50%,-50%);
-  border-radius:50%;
-  pointer-events:none;
+  transition: transform .5s ease, opacity .5s ease;
+  transform: translate(-50%,-50%) scale(0.2);
   opacity:0;
 }
-.press-ring svg{ width:100%; height:100%; transform: rotate(-90deg); }
-.press-ring circle{
-  fill:none; stroke: var(--ink); stroke-width: 2;
-  stroke-dasharray: 126; stroke-dashoffset: 126;
-  opacity:0.7;
-}
-.word.pressing .press-ring{ opacity:1; }
-.word.pressing .press-ring circle{
-  animation: fillring 2s linear forwards;
-}
-@keyframes fillring{ to{ stroke-dashoffset:0; } }
 
 /* ---------- dock (constellation) ---------- */
 .dock{
@@ -202,6 +182,7 @@ html, body{
 }
 .overlay.open{ opacity:1; pointer-events:auto; }
 .card{
+  position:relative;
   width:100%; max-width: 480px; max-height: 80vh; overflow-y:auto;
   background: #121214;
   border: 1px solid var(--line);
@@ -212,8 +193,8 @@ html, body{
 }
 .overlay.open .card{ transform:none; }
 .card-concept{
-  font-family: var(--hand); font-size: 30px; font-weight:700;
-  margin: 0 0 4px; line-height:1;
+  font-family: var(--kr); font-weight:700; font-size: 21px;
+  margin: 0 0 4px; line-height:1.3;
 }
 .card-sub{
   font-family: var(--kr); font-size:11.5px; color: var(--ink-dim);
@@ -224,14 +205,28 @@ html, body{
   width:28px; height:28px; border-radius:50%;
   border:1px solid var(--line); background:transparent; color:var(--ink-dim);
   display:flex; align-items:center; justify-content:center; cursor:pointer;
+  font-size: 16px; line-height:1;
 }
 .card-close:hover{ color:var(--ink); border-color:var(--ink); }
 
-.entry{ margin-bottom: 18px; padding-bottom:16px; border-bottom: 1px solid var(--line); }
+.entry{ margin-bottom: 18px; padding-bottom:16px; border-bottom: 1px solid var(--line); border-radius:8px; }
 .entry:last-of-type{ border-bottom:none; margin-bottom:6px; padding-bottom:0; }
+.entry.entry-highlight{
+  background: rgba(255,255,255,0.05);
+  padding: 12px 12px 14px;
+  margin: 0 -12px 18px;
+  border-bottom: none;
+}
 .entry-word{
   font-family: var(--word-font); font-style:italic; font-weight:600; font-size:20px;
   margin-bottom:6px;
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+}
+.tag-same{
+  font-family: var(--kr); font-style:normal; font-weight:700; font-size:10.5px;
+  letter-spacing:0.02em; color: var(--ink-dim);
+  background: rgba(255,255,255,0.08);
+  padding: 2px 8px; border-radius: 999px;
 }
 .entry-ex{
   font-family: var(--word-font); font-size:15px; color: var(--ink);
@@ -244,7 +239,7 @@ html, body{
 }
 .cluster-note{
   font-family: var(--kr); font-weight:300; font-size:12px;
-  color: var(--ink-dim); margin-bottom:10px; padding: 8px 10px;
+  color: var(--ink-dim); margin-top: 4px; padding: 8px 10px;
   background: rgba(255,255,255,0.04); border-radius:8px;
 }
 
@@ -269,6 +264,7 @@ html, body{
   padding: 9px 18px; font-family:var(--kr); font-size:12.5px; color:var(--ink);
   z-index:40; opacity:0; transition: opacity .25s ease, transform .25s ease;
   pointer-events:none; backdrop-filter: blur(6px); white-space:nowrap;
+  max-width: 80vw; overflow:hidden; text-overflow:ellipsis;
 }
 .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
 </style>
@@ -282,7 +278,7 @@ html, body{
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
   </a>
   <div class="tb-brand">Phrasal Verbs Dump</div>
-  <div class="tb-hint">단어를 2초간 눌러 고정 · 짝을 찾아 탭</div>
+  <div class="tb-spacer"></div>
 </div>
 
 <div class="stage" id="stage"></div>
@@ -413,6 +409,9 @@ html, body{
   var COLORS = ['lemon', 'pink', 'mint'];
   var COLOR_HEX = { lemon: '#f3e26b', pink: '#ff5fa8', mint: '#63e9c4' };
   var POOL_SIZE = 3; // 화면에 동시에 떠 있는 그룹 수 (라운드당 단어 개수는 추후 조정)
+  var TOPBAR_MARGIN = 78;   // 상단바 피하는 여백(px)
+  var SIDE_MARGIN = 26;
+  var DOCK_ZONE = { x: 0, y: 0, w: 0, h: 0 }; // 초기화시 계산
 
   /* ============ helpers ============ */
   function shuffle(arr){
@@ -424,11 +423,11 @@ html, body{
     return a;
   }
 
-  function groupWords(group){
-    var out = [];
-    group.cluster.forEach(function(w){ out.push({ text: w.text, form: w.form, kind: 'cluster' }); });
-    group.distinct.forEach(function(w){ out.push({ text: w.text, kind: 'distinct', example: w.example, nuance: w.nuance }); });
-    return out;
+  function buildUnifiedList(group){
+    var list = [];
+    group.cluster.forEach(function(w){ list.push({ type: 'cluster', text: w.text }); });
+    group.distinct.forEach(function(w){ list.push({ type: 'distinct', text: w.text, nuance: w.nuance }); });
+    return list;
   }
 
   function escapeHtml(s){
@@ -462,151 +461,267 @@ html, body{
 
   var queue = shuffle(DATA.groups);
   var qIdx = 0;
-  var onScreen = {};      // groupId -> { group, color, wordEls: [], matchedCount }
+  var dockedIds = {};      // 이미 도킹 완료되어 다시 등장하면 안 되는 그룹
+  var onScreen = {};       // groupId -> { group, color, wordEls: [] }
+  var particles = [];      // 물리 시뮬레이션 대상 전체 { el, x, y, vx, vy, r, fixed }
   var frozen = false;
   var activeGroupId = null;
 
+  function remainingGroups(){
+    return DATA.groups.filter(function(g){ return !dockedIds[g.id] && !onScreen[g.id]; });
+  }
+
   function nextGroup(){
-    if (qIdx >= queue.length){ queue = shuffle(DATA.groups); qIdx = 0; }
-    return queue[qIdx++];
+    var pool = remainingGroups();
+    if (!pool.length) return null;
+    if (qIdx >= queue.length || !queue.some(function(g){ return pool.indexOf(g) !== -1; })){
+      queue = shuffle(pool);
+      qIdx = 0;
+    }
+    while (qIdx < queue.length){
+      var g = queue[qIdx++];
+      if (pool.indexOf(g) !== -1) return g;
+    }
+    return pool[0];
   }
 
   function usedColors(){
     return Object.keys(onScreen).map(function(id){ return onScreen[id].color; });
   }
+  function dockedColors(){
+    return Object.keys(dockedIds).map(function(id){ return dockedIds[id]; });
+  }
 
   function pickColor(){
-    var used = usedColors();
-    var free = COLORS.filter(function(c){ return used.indexOf(c) === -1; });
-    return (free.length ? free : COLORS)[Math.floor(Math.random() * (free.length ? free.length : COLORS.length))];
+    var active = usedColors();
+    var docked = dockedColors();
+    var freeOfActive = COLORS.filter(function(c){ return active.indexOf(c) === -1; });
+    var freeOfBoth = freeOfActive.filter(function(c){ return docked.indexOf(c) === -1; });
+    var pool = freeOfBoth.length ? freeOfBoth : (freeOfActive.length ? freeOfActive : COLORS);
+    return pool[Math.floor(Math.random() * pool.length)];
   }
 
   function showToast(msg){
     toastEl.textContent = msg;
     toastEl.classList.add('show');
     clearTimeout(showToast._t);
-    showToast._t = setTimeout(function(){ toastEl.classList.remove('show'); }, 1600);
+    showToast._t = setTimeout(function(){ toastEl.classList.remove('show'); }, 1800);
   }
 
-  function randomPos(){
-    return {
-      top: 14 + Math.random() * 68,   // % , 상단바/여백 피함
-      left: 8 + Math.random() * 84
-    };
+  /* ============ physics ============ */
+  function stageRect(){ return stageEl.getBoundingClientRect(); }
+
+  function findFreeSpot(r){
+    var rect = stageRect();
+    var minX = SIDE_MARGIN + r, maxX = rect.width - SIDE_MARGIN - r;
+    var minY = TOPBAR_MARGIN + r, maxY = rect.height - SIDE_MARGIN - r;
+    var best = null, bestScore = -1;
+    for (var attempt = 0; attempt < 40; attempt++){
+      var x = minX + Math.random() * Math.max(1, maxX - minX);
+      var y = minY + Math.random() * Math.max(1, maxY - minY);
+      var minDist = Infinity;
+      for (var i = 0; i < particles.length; i++){
+        var p = particles[i];
+        var d = Math.hypot(p.x - x, p.y - y) - (p.r + r);
+        if (d < minDist) minDist = d;
+      }
+      if (minDist === Infinity) return { x: x, y: y };
+      if (minDist > 18) return { x: x, y: y };
+      if (minDist > bestScore){ bestScore = minDist; best = { x: x, y: y }; }
+    }
+    return best || { x: (minX + maxX) / 2, y: (minY + maxY) / 2 };
   }
 
+  function tick(){
+    var rect = stageRect();
+    var minX = SIDE_MARGIN, maxX = rect.width - SIDE_MARGIN;
+    var minY = TOPBAR_MARGIN, maxY = rect.height - SIDE_MARGIN;
+
+    for (var i = 0; i < particles.length; i++){
+      var p = particles[i];
+      if (p.fixed) continue;
+      p.vx += (Math.random() - 0.5) * 0.9;
+      p.vy += (Math.random() - 0.5) * 0.9;
+      var speed = Math.hypot(p.vx, p.vy);
+      var maxSpeed = 13, minSpeed = 4;
+      if (speed > maxSpeed){ p.vx = p.vx / speed * maxSpeed; p.vy = p.vy / speed * maxSpeed; }
+      else if (speed < minSpeed && speed > 0.01){ p.vx = p.vx / speed * minSpeed; p.vy = p.vy / speed * minSpeed; }
+      p.x += p.vx * 0.06;
+      p.y += p.vy * 0.06;
+      if (p.x - p.r < minX){ p.x = minX + p.r; p.vx = Math.abs(p.vx); }
+      if (p.x + p.r > maxX){ p.x = maxX - p.r; p.vx = -Math.abs(p.vx); }
+      if (p.y - p.r < minY){ p.y = minY + p.r; p.vy = Math.abs(p.vy); }
+      if (p.y + p.r > maxY){ p.y = maxY - p.r; p.vy = -Math.abs(p.vy); }
+    }
+
+    // 충돌 회피: 서로 겹치면 밀어냄 (고정된 단어는 밀리지 않고, 상대만 피해감)
+    var pad = 16;
+    for (var a = 0; a < particles.length; a++){
+      for (var b = a + 1; b < particles.length; b++){
+        var pa = particles[a], pb = particles[b];
+        var dx = pb.x - pa.x, dy = pb.y - pa.y;
+        var dist = Math.hypot(dx, dy);
+        var minDist = pa.r + pb.r + pad;
+        if (dist < minDist){
+          if (dist < 0.001){ dx = (Math.random() - 0.5); dy = (Math.random() - 0.5); dist = 0.001; }
+          var nx = dx / dist, ny = dy / dist;
+          var overlap = minDist - dist;
+          if (pa.fixed && pb.fixed) continue;
+          if (pa.fixed){ pb.x += nx * overlap; pb.y += ny * overlap; }
+          else if (pb.fixed){ pa.x -= nx * overlap; pa.y -= ny * overlap; }
+          else{ pa.x -= nx * overlap * 0.5; pa.y -= ny * overlap * 0.5; pb.x += nx * overlap * 0.5; pb.y += ny * overlap * 0.5; }
+        }
+      }
+    }
+
+    for (var k = 0; k < particles.length; k++){
+      var pp = particles[k];
+      pp.el.style.left = pp.x + 'px';
+      pp.el.style.top = pp.y + 'px';
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  /* ============ spawn / group lifecycle ============ */
   function spawnGroup(group){
     var color = pickColor();
-    var words = shuffle(groupWords(group));
+    var words = shuffle(buildUnifiedList(group));
     var entry = { group: group, color: color, wordEls: [], matched: {} };
+
     words.forEach(function(w){
-      var pos = randomPos();
       var el = document.createElement('div');
       el.className = 'word';
       el.dataset.groupId = group.id;
       el.dataset.text = w.text;
-      el.style.top = pos.top + '%';
-      el.style.left = pos.left + '%';
 
-      var dur = (6 + Math.random() * 5).toFixed(2);
-      var delay = (Math.random() * -6).toFixed(2);
-      var dx = (14 + Math.random() * 18).toFixed(1) + 'px';
-      var dy = (10 + Math.random() * 16).toFixed(1) + 'px';
-      var rot = (1 + Math.random() * 2).toFixed(1) + 'deg';
-      el.style.setProperty('--dur', dur + 's');
-      el.style.setProperty('--delay', delay + 's');
-      el.style.setProperty('--dx', dx);
-      el.style.setProperty('--dy', dy);
-      el.style.setProperty('--rot', rot);
+      var wobble = document.createElement('span');
+      wobble.className = 'wobble';
+      wobble.textContent = w.text;
+      var wdur = (3 + Math.random() * 2.5).toFixed(2);
+      var wdelay = (Math.random() * -4).toFixed(2);
+      var wrot = (1 + Math.random() * 1.6).toFixed(1) + 'deg';
+      wobble.style.setProperty('--wdur', wdur + 's');
+      wobble.style.setProperty('--wdelay', wdelay + 's');
+      wobble.style.setProperty('--wrot', wrot);
+      el.appendChild(wobble);
 
-      var drift = document.createElement('span');
-      drift.className = 'drift';
-      drift.textContent = w.text;
-      el.appendChild(drift);
-
-      var ring = document.createElement('span');
-      ring.className = 'press-ring';
-      ring.innerHTML = '<svg viewBox="0 0 46 46"><circle cx="23" cy="23" r="20"/></svg>';
-      el.appendChild(ring);
-
-      attachPressHandlers(el, entry);
       stageEl.appendChild(el);
+      var w0 = el.offsetWidth, h0 = el.offsetHeight;
+      var r = Math.max(w0, h0) / 2;
+      var spot = findFreeSpot(r);
+
+      var particle = {
+        el: el, x: spot.x, y: spot.y,
+        vx: (Math.random() - 0.5) * 10,
+        vy: (Math.random() - 0.5) * 10,
+        r: r, fixed: false
+      };
+      el.style.left = spot.x + 'px';
+      el.style.top = spot.y + 'px';
+
+      particles.push(particle);
+      attachPressHandlers(el, entry, particle);
       entry.wordEls.push(el);
     });
+
     onScreen[group.id] = entry;
   }
 
   function refill(){
+    var addedAny = false;
     while (Object.keys(onScreen).length < POOL_SIZE){
-      spawnGroup(nextGroup());
+      var g = nextGroup();
+      if (!g) break;
+      spawnGroup(g);
+      addedAny = true;
+    }
+    if (!addedAny && !Object.keys(onScreen).length && Object.keys(dockedIds).length === DATA.groups.length){
+      showToast('지금 있는 표현을 모두 모았어요');
     }
   }
 
-  /* ============ press / match logic ============ */
-  function attachPressHandlers(el, entry){
+  function removeParticleFor(el){
+    for (var i = 0; i < particles.length; i++){
+      if (particles[i].el === el){ particles.splice(i, 1); return; }
+    }
+  }
+
+  /* ============ press / tap / match logic ============ */
+  function attachPressHandlers(el, entry, particle){
     var pressTimer = null;
+    var downTime = 0;
 
     el.addEventListener('pointerdown', function(ev){
       ev.preventDefault();
+      downTime = Date.now();
       if (!frozen){
-        el.classList.add('pressing');
+        el.style.setProperty('--anchor-color', COLOR_HEX[entry.color]);
+        el.classList.add('charging');
         pressTimer = setTimeout(function(){
-          el.classList.remove('pressing');
-          el._justFroze = true; // 이번 long-press의 pointerup을 "취소 탭"으로 오인하지 않도록
-          freezeOn(entry, el);
+          el.classList.remove('charging');
+          el._justFroze = true;
+          freezeOn(entry, el, particle);
         }, 2000);
       }
     });
 
-    function cancelPress(){
+    function cancelCharge(){
       if (pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
-      el.classList.remove('pressing');
+      if (!el.classList.contains('anchor')) el.classList.remove('charging');
     }
-    el.addEventListener('pointerup', function(ev){
-      cancelPress();
+
+    el.addEventListener('pointerup', function(){
+      var elapsed = Date.now() - downTime;
+      cancelCharge();
       if (el._justFroze){ el._justFroze = false; return; }
-      if (frozen) handleTapWhileFrozen(entry, el);
+      if (frozen){ handleTapWhileFrozen(entry, el); return; }
+      if (elapsed < 1900){
+        openCard(entry.group, entry.color, el.dataset.text);
+      }
     });
-    el.addEventListener('pointerleave', cancelPress);
-    el.addEventListener('pointercancel', cancelPress);
+    el.addEventListener('pointerleave', cancelCharge);
+    el.addEventListener('pointercancel', cancelCharge);
   }
 
-  function freezeOn(entry, anchorEl){
+  function freezeOn(entry, anchorEl, particle){
     frozen = true;
     activeGroupId = entry.group.id;
-    stageEl.classList.add('frozen');
     anchorEl.classList.add('anchor');
-    anchorEl.style.color = COLOR_HEX[entry.color];
+    particle.fixed = true;
     entry.matched[anchorEl.dataset.text] = true;
     checkGroupComplete(entry);
-    showToast(entry.group.concept + ' — 같은 뜻의 단어를 찾아 탭하세요');
   }
 
   function handleTapWhileFrozen(entry, el){
-    if (entry.group.id !== activeGroupId) return; // 다른 그룹 단어는 무시(고정 중엔 비활성)
+    if (entry.group.id !== activeGroupId) return;
     var text = el.dataset.text;
 
     if (el.classList.contains('anchor')){
-      // 앵커 다시 탭 = 취소하고 재개
-      unfreeze();
+      unfreeze(entry);
       return;
     }
-    if (entry.matched[text]) return; // 이미 맞춘 단어
+    if (entry.matched[text]) return;
 
     entry.matched[text] = true;
     el.classList.add('matched');
     el.style.color = COLOR_HEX[entry.color];
+    var p = particleFor(el);
+    if (p) p.fixed = true;
     checkGroupComplete(entry);
   }
 
-  // 고정 모드에서, 클릭된 단어가 활성 그룹이 아닌 경우 오답 처리하려면
-  // stage 전체에 위임 리스너를 하나 더 둔다.
+  function particleFor(el){
+    for (var i = 0; i < particles.length; i++){ if (particles[i].el === el) return particles[i]; }
+    return null;
+  }
+
   stageEl.addEventListener('pointerup', function(ev){
     if (!frozen) return;
     var el = ev.target.closest('.word');
     if (!el) return;
     var gid = el.dataset.groupId;
-    if (gid === activeGroupId) return; // 정상 처리는 위에서 이미 됨
+    if (gid === activeGroupId) return;
     el.classList.add('wrong');
     setTimeout(function(){ el.classList.remove('wrong'); }, 320);
   });
@@ -614,55 +729,70 @@ html, body{
   function checkGroupComplete(entry){
     var total = entry.group.cluster.length + entry.group.distinct.length;
     var done = Object.keys(entry.matched).length;
-    if (done >= total){
-      completeGroup(entry);
-    }
+    if (done >= total) completeGroup(entry);
   }
 
   function completeGroup(entry){
     entry.wordEls.forEach(function(el){ el.classList.add('leaving'); });
     setTimeout(function(){
-      entry.wordEls.forEach(function(el){ el.remove(); });
+      entry.wordEls.forEach(function(el){ removeParticleFor(el); el.remove(); });
       delete onScreen[entry.group.id];
+      dockedIds[entry.group.id] = entry.color;
       addDockItem(entry.group, entry.color);
-      unfreeze();
+      unfreeze(entry);
       refill();
     }, 500);
   }
 
-  function unfreeze(){
+  function unfreeze(entry){
     frozen = false;
     activeGroupId = null;
-    stageEl.classList.remove('frozen');
+    if (entry){
+      entry.wordEls.forEach(function(el){
+        el.classList.remove('anchor');
+        var p = particleFor(el); // 완료돼서 이미 제거된 단어는 particleFor가 null을 반환 → 자동으로 스킵됨
+        if (p) p.fixed = false;
+      });
+    }
   }
 
   /* ============ dock + overlay ============ */
   function addDockItem(group, color){
+    if (document.querySelector('.dock-item[data-group="' + group.id + '"]')) return;
     var item = document.createElement('div');
     item.className = 'dock-item';
+    item.dataset.group = group.id;
     item.innerHTML = '<span class="dock-dot" style="color:' + COLOR_HEX[color] + '"></span>' +
                       '<span class="dock-label">' + escapeHtml(group.concept) + '</span>';
     item.addEventListener('click', function(){ openCard(group, color); });
     dockEl.appendChild(item);
   }
 
-  function openCard(group, color){
+  function openCard(group, color, highlightText){
+    var list = buildUnifiedList(group);
+    if (highlightText){
+      var idx = -1;
+      for (var i = 0; i < list.length; i++){ if (list[i].text === highlightText){ idx = i; break; } }
+      if (idx > 0){ var item = list.splice(idx, 1)[0]; list.unshift(item); }
+    }
+
     var html = '<button class="card-close" id="cardClose">&times;</button>' +
       '<div class="card-concept" style="color:' + COLOR_HEX[color] + '">' + escapeHtml(group.concept) + '</div>' +
-      '<div class="card-sub">동의어 ' + (group.cluster.length + group.distinct.length) + '개</div>';
+      '<div class="card-sub">동의어 ' + list.length + '개</div>';
 
-    if (group.cluster.length){
-      html += '<div class="cluster-note">아래 단어들은 이 문장에서 서로 그대로 바꿔 쓸 수 있음 — 단어만 다르고 문장은 동일함.</div>';
-      group.cluster.forEach(function(w){
-        html += '<div class="entry"><div class="entry-word">' + escapeHtml(w.text) + '</div>' +
-          '<div class="entry-ex">' + sentenceForWord(group, w.text) + '</div></div>';
-      });
-    }
-    group.distinct.forEach(function(w){
-      html += '<div class="entry"><div class="entry-word">' + escapeHtml(w.text) + '</div>' +
-        '<div class="entry-ex">' + sentenceForWord(group, w.text) + '</div>' +
-        '<div class="entry-nuance">' + escapeHtml(w.nuance) + '</div></div>';
+    var hasCluster = group.cluster.length > 1;
+    list.forEach(function(it){
+      var isHi = it.text === highlightText;
+      var tag = it.type === 'cluster' ? '<span class="tag-same">= 동일 표현</span>' : '';
+      html += '<div class="entry' + (isHi ? ' entry-highlight' : '') + '">' +
+        '<div class="entry-word">' + escapeHtml(it.text) + tag + '</div>' +
+        '<div class="entry-ex">' + sentenceForWord(group, it.text) + '</div>' +
+        (it.nuance ? '<div class="entry-nuance">' + escapeHtml(it.nuance) + '</div>' : '') +
+        '</div>';
     });
+    if (hasCluster){
+      html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
+    }
 
     if (group.contrastPair){
       var cp = group.contrastPair;
@@ -683,6 +813,7 @@ html, body{
 
   /* ============ init ============ */
   refill();
+  requestAnimationFrame(tick);
 
 })();
 </script>
