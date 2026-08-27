@@ -69,10 +69,8 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
    window at any screen size. Clipped here (not just the background):
    the corner objects are now the FULL, un-cropped book/pencil-case
    photos (real edges, no artificial rectangular crop line), sized with
-   plenty of spare room around where they actually show through -- so a
-   hover wiggle moves entirely within real object silhouette or margin
-   that was always going to be covered by the frame anyway, and never
-   reveals a hard-cut edge. */
+   plenty of spare room around where they actually show through, so the
+   transparent margin never reveals a hard-cut edge. */
 .stage{
   position: relative;
   /* Sized against the wall tile grid itself, not an independent vw/vh
@@ -86,12 +84,12 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
      that 4-tile mark. vw/vh still cap it lower on small screens so it
      never overflows a phone; the tile-matched 357px is only the
      desktop ceiling. */
-  width: min(38vw, 42vh, 357px);
+  width: min(22.8vw, 25.2vh, 214.2px); /* 0.6x of previous size */
   aspect-ratio: 1 / 1;
   overflow: hidden;
 }
 @media (max-width: 760px){
-  .stage{ width: min(52vw, 40vh, 294px); } /* same ~0.82 ratio the old 288/350 cap used */
+  .stage{ width: min(31.2vw, 24vh, 176.4px); } /* 0.6x of previous mobile size */
 }
 .scene-bg{
   width: 100%; height: 100%;
@@ -99,15 +97,34 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 }
 
 /* ===================== the two corner objects ===================== */
-/* Each is a two-layer element: the outer <a> just owns positioning/
-   rotation (a plain static transform, no entrance animation); the inner
-   <img> owns the hover "wiggle" only. */
+/* Each is a two-layer element: the outer <a> owns positioning/rotation
+   (a plain static transform); the inner <img> owns the hover pink-glow
+   highlight (see the "hover highlight" block below). */
 .corner-obj{
   position: absolute;
   z-index: 5;
   cursor: pointer;
 }
-.corner-obj img{ width: 100%; height: 100%; }
+.corner-obj img{ width: 100%; height: 100%; transition: filter .25s ease; }
+
+/* ===================== hover highlight (link objects only) ===================== */
+/* All three linked objects (book, pencase, horse frame) are transparent-
+   background PNGs with irregular silhouettes, so a normal CSS border
+   would just draw a rectangle around empty space. Instead we stack
+   several blurred drop-shadows in the same neon pink -- drop-shadow
+   follows the image's actual alpha shape, so the glow traces the real
+   outline of the object, not a bounding box. */
+.corner-book:hover img,
+.corner-pencase:hover img,
+.corner-frame2:hover img{
+  filter:
+    drop-shadow(0 0 4px #ff2fd6)
+    drop-shadow(0 0 10px #ff2fd6)
+    drop-shadow(0 0 18px #ff2fd6);
+}
+/* frame2's own cast-shadow drop-shadow lives on the outer <a> (see
+   .corner-frame2 above); the pink glow above is layered on the inner
+   <img> so both effects stack without overwriting each other. */
 
 .corner-book{
   left: -10%; top: -4%;
@@ -127,56 +144,28 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
    unlike the pink frame it has no separate "opening" for a scene behind
    it, so it behaves like a third clickable corner object rather than a
    second .stage. Same two-layer split as the book/pencase: the outer
-   <a> owns position + a fixed base rotation, the inner <img> owns the
-   hover wiggle only. */
+   <a> owns position, the inner <img> owns the hover pink-glow
+   highlight. */
 .corner-frame2{
   /* Same 16-tile (4x4, 680px) target as the pink frame's outer edge --
      see the .stage comment above for how that 680px number was
      measured. This one is a single flattened image (no inner-scaling
-     trick), so its CSS width IS its visible outer width directly. No
-     base rotation now -- it sits flat/level, only the hover wiggle
-     moves it. */
+     trick), so its CSS width IS its visible outer width directly. It
+     sits flat/level with no rotation. */
   position: absolute;
   left: 76%;
   top: 26%;
-  width: min(72vw, 80vh, 680px);
+  width: min(43.2vw, 48vh, 408px); /* 0.6x of previous size */
   transform: translate(-50%, -50%);
   z-index: 5;
   cursor: pointer;
   filter: drop-shadow(0 16px 32px rgba(0,0,0,0.4));
 }
-.corner-frame2 img{ width: 100%; height: auto; transform-origin: 50% 50%; }
-.corner-frame2:hover img{ animation: wiggle-frame2 .6s ease-in-out; }
-@keyframes wiggle-frame2{
-  0%   { transform: rotate(0deg) translate(0,0); }
-  25%  { transform: rotate(-3deg) translate(-2px, 1px); }
-  55%  { transform: rotate(2deg) translate(1px, -1px); }
-  80%  { transform: rotate(-1deg) translate(0, 1px); }
-  100% { transform: rotate(0deg) translate(0,0); }
-}
+.corner-frame2 img{ width: 100%; height: auto; transform-origin: 50% 50%; transition: filter .25s ease; }
 @media (max-width: 760px){
-  .corner-frame2{ width: min(99vw, 76vh, 560px); left: 78%; top: 22%; }
+  .corner-frame2{ width: min(59.4vw, 45.6vh, 336px); left: 78%; top: 22%; } /* 0.6x of previous mobile size */
 }
-/* pivot near the bottom of the book (not dead-center), so a rotation
-   reads as "top swings, bottom stays put" rather than the whole
-   object rotating around its middle. */
-.corner-book img{ transform-origin: 50% 92%; }
 
-.corner-book:hover img{ animation: wiggle-book .6s ease-in-out; }
-.corner-pencase:hover img{ animation: wiggle-pencase .6s ease-in-out; }
-@keyframes wiggle-book{
-  0%   { transform: rotate(0deg); }
-  30%  { transform: rotate(6deg); }
-  60%  { transform: rotate(-1.5deg); }
-  100% { transform: rotate(0deg); }
-}
-@keyframes wiggle-pencase{
-  0%   { transform: rotate(0deg) translate(0,0); }
-  20%  { transform: rotate(2.5deg) translate(2px, -2px); }
-  50%  { transform: rotate(-2deg) translate(-2px, 1px); }
-  78%  { transform: rotate(1.5deg) translate(1px, 1px); }
-  100% { transform: rotate(0deg) translate(0,0); }
-}
 </style>
 </head>
 <body>
