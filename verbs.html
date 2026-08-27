@@ -166,8 +166,8 @@ html, body{
 /* ---------- dock: 완료된 그룹을 작은 배지 형태로 모아두는 영역 ---------- */
 .dock{
   position:fixed; top:70px; right:18px; z-index:25;
-  display:flex; flex-wrap:wrap; justify-content:flex-end;
-  gap:8px; max-width: 168px;
+  display:flex; flex-direction:column; align-items:flex-end;
+  gap:8px;
 }
 .dock-item{
   width:34px; height:34px; border-radius:50%;
@@ -217,6 +217,15 @@ html, body{
   transition: transform .2s ease;
 }
 .overlay.open .card{ transform:none; }
+
+/* 제목/개수 부분은 스크롤해도 위에 붙어있는 고정 상단바 역할 */
+.card-header{
+  position: sticky; top: 0; z-index: 8;
+  background: var(--c-bg);
+  margin: -26px -26px 20px; /* .card 자체 패딩을 상쇄해서 좌우 끝까지 꽉 차게 */
+  padding: 26px 26px 16px;
+  border-bottom: 1px solid var(--c-line);
+}
 .card-concept{
   font-family: var(--kr); font-weight:700; font-size: 21px;
   color: var(--c-ink);
@@ -229,8 +238,7 @@ html, body{
 }
 .card-sub{
   font-family: var(--kr); font-weight:300; font-size:11.5px; color: var(--c-ink-faint);
-  letter-spacing:0.04em; margin-bottom:18px;
-  padding-bottom:14px; border-bottom:1px solid var(--c-line);
+  letter-spacing:0.04em;
 }
 .card-close{
   position:absolute; top:18px; right:18px; z-index:10;
@@ -264,24 +272,19 @@ html, body{
 .concept-item-arrow{ width:14px; height:14px; color: var(--c-ink-faint); flex:none; }
 
 /*
-  .entry-first: 목록에서 시각적으로 가장 위에 오는 항목(하이라이트 또는 cluster-note 또는 첫 entry)에
-  JS가 직접 붙여주는 클래스. ':first-of-type'은 card-concept/card-sub 등 앞선 div들 때문에
-  실제로는 한 번도 걸리지 않는 죽은 규칙이었어서, 그 대신 이 클래스로 위쪽 여백을 확실히 없앰.
+  간격 규칙: 모든 블록(entry/cluster-note/contrast-box)은 오직 margin-bottom(20px)만 가짐.
+  margin-top은 절대 쓰지 않음 — 그래야 "이전 요소 뒤 간격"과 "다음 요소 앞 간격"이
+  항상 같은 하나의 값(20px)이 되고, 어떤 조합으로 이어지든 간격이 흐트러지지 않음.
 */
-.entry{ padding: 20px 0; border-bottom: 1px solid var(--c-line); }
-.entry.entry-first{ padding-top: 0; }
-.entry:last-of-type{ border-bottom:none; padding-bottom:0; }
+.entry{ padding-bottom: 16px; border-bottom: 1px solid var(--c-line); margin: 0 0 20px; }
 .entry.entry-highlight{
-  position: sticky; top: 0; z-index: 5;
   background: #faf8f4;
   border-left: 3px solid currentColor;
-  padding: 16px 46px 16px 14px; /* 오른쪽 여백: 고정됐을 때 닫기 버튼과 안 겹치게 */
+  padding: 16px 14px;
   margin: 0 0 20px;
   border-bottom: none;
   border-radius: 0 8px 8px 0;
-  box-shadow: 0 10px 14px -10px rgba(0,0,0,0.18);
 }
-.entry.entry-highlight.entry-first{ margin-top:0; }
 .entry-word{
   font-family: var(--word-font); font-style:italic; font-weight:600; font-size:20px;
   color: var(--c-ink);
@@ -313,7 +316,7 @@ html, body{
 /* '헷갈리기 쉬운 짝' — 배지가 테두리 위에 살짝 걸치는 노트 박스 */
 .contrast-box{
   position: relative;
-  margin: 24px 0 4px;
+  margin: 0 0 4px;
   padding: 18px 16px 16px;
   border-radius: 10px;
   border: 1.5px solid var(--c-ink);
@@ -1165,24 +1168,19 @@ html, body{
     var hex = COLOR_HEX[color];
     var hasCluster = group.cluster.length > 1;
     var html = '<button class="card-close" id="cardClose">&times;</button>' +
+      '<div class="card-header">' +
       '<div class="card-concept"><span class="dot" style="color:' + hex + '"></span>' + escapeHtml(group.concept) + '</div>' +
-      '<div class="card-sub">동의어 ' + list.length + '개</div>';
-
-    var firstMarked = false;
-    function markFirst(){
-      if (firstMarked) return '';
-      firstMarked = true;
-      return ' entry-first';
-    }
+      '<div class="card-sub">동의어 ' + list.length + '개</div>' +
+      '</div>';
 
     if (hasCluster){
-      html += '<div class="cluster-note' + markFirst() + '">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
+      html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
     }
 
     list.forEach(function(it){
       var isHi = it.text === highlightText;
       var tag = it.type === 'cluster' ? '<span class="tag-same">= 동일 표현</span>' : '';
-      var cls = 'entry' + (isHi ? ' entry-highlight' : '') + markFirst();
+      var cls = 'entry' + (isHi ? ' entry-highlight' : '');
       html += '<div class="' + cls + '"' + (isHi ? ' style="color:' + hex + '"' : '') + '>' +
         '<div class="entry-word">' + escapeHtml(it.text) + tag + '</div>' +
         '<div class="entry-ex">' + sentenceForWord(group, it.text) + '</div>' +
@@ -1229,8 +1227,10 @@ html, body{
 
   function renderCriteriaScreen(){
     var html = '<button class="card-close" id="cardClose">&times;</button>' +
+      '<div class="card-header">' +
       '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>VOCA DUMP · 전체 목록</div>' +
       '<div class="card-sub">어떤 기준으로 볼까요?</div>' +
+      '</div>' +
       '<div class="concept-list">';
     CRITERIA.forEach(function(c){
       html += '<button class="concept-item" data-crit="' + c.key + '">' +
@@ -1258,9 +1258,11 @@ html, body{
     });
 
     var html = '<button class="card-close" id="cardClose">&times;</button>' +
+      '<div class="card-header">' +
       '<button class="card-back" id="cardBack">← 뒤로</button>' +
       '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>' + escapeHtml(crit.label) + '</div>' +
       '<div class="card-sub">' + values.length + '개 분류</div>' +
+      '</div>' +
       '<div class="concept-list">';
     values.forEach(function(v){
       var count = DATA.groups.filter(function(g){ return g[critKey] === v; }).length;
@@ -1284,9 +1286,11 @@ html, body{
   function renderConceptsScreen(critKey, val){
     var groups = DATA.groups.filter(function(g){ return g[critKey] === val; });
     var html = '<button class="card-close" id="cardClose">&times;</button>' +
+      '<div class="card-header">' +
       '<button class="card-back" id="cardBack">← 뒤로</button>' +
       '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>' + escapeHtml(labelFor(critKey, val)) + '</div>' +
       '<div class="card-sub">' + groups.length + '개 그룹</div>' +
+      '</div>' +
       '<div class="concept-list">';
     groups.forEach(function(group){
       var count = group.cluster.length + group.distinct.length;
@@ -1318,24 +1322,19 @@ html, body{
     var hasCluster = group.cluster.length > 1;
 
     var html = '<button class="card-close" id="cardClose">&times;</button>' +
+      '<div class="card-header">' +
       '<button class="card-back" id="cardBack">← 뒤로</button>' +
       '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>' + escapeHtml(group.concept) + '</div>' +
-      '<div class="card-sub">동의어 ' + list.length + '개</div>';
-
-    var firstMarked = false;
-    function markFirst(){
-      if (firstMarked) return '';
-      firstMarked = true;
-      return ' entry-first';
-    }
+      '<div class="card-sub">동의어 ' + list.length + '개</div>' +
+      '</div>';
 
     if (hasCluster){
-      html += '<div class="cluster-note' + markFirst() + '">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
+      html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
     }
 
     list.forEach(function(it){
       var tag = it.type === 'cluster' ? '<span class="tag-same">= 동일 표현</span>' : '';
-      html += '<div class="entry' + markFirst() + '">' +
+      html += '<div class="entry">' +
         '<div class="entry-word">' + escapeHtml(it.text) + tag + '</div>' +
         '<div class="entry-ex">' + sentenceForWord(group, it.text) + '</div>' +
         (it.nuance ? '<div class="entry-nuance">' + escapeHtml(it.nuance) + '</div>' : '') +
