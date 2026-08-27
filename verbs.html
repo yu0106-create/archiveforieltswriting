@@ -84,9 +84,10 @@ html, body{
 .tb-home:hover{ border-color: #131315; color: #131315; }
 .tb-home svg{ width: 15px; height: 15px; }
 .tb-brand{
-  font-family: var(--kr); font-weight:700; font-size: 12.5px;
-  letter-spacing: 0.08em; color: #131315; text-transform:uppercase;
+  font-family: var(--kr); font-weight:300; font-size: 15.5px;
+  letter-spacing: 0.06em; color: #131315; text-transform:uppercase;
 }
+.tb-brand b{ font-weight:700; }
 .tb-right{ display:flex; align-items:center; gap:8px; }
 .tb-icon{
   width: 32px; height: 32px; border-radius: 50%;
@@ -162,23 +163,24 @@ html, body{
   opacity:0;
 }
 
-/* ---------- dock (constellation) ---------- */
+/* ---------- dock: 완료된 그룹을 작은 배지 형태로 모아두는 영역 ---------- */
 .dock{
   position:fixed; top:70px; right:18px; z-index:25;
-  display:flex; flex-direction:column; align-items:flex-end; gap:10px;
+  display:flex; flex-wrap:wrap; justify-content:flex-end;
+  gap:8px; max-width: 168px;
 }
 .dock-item{
-  display:flex; align-items:center; gap:8px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 6px 12px 6px 8px;
+  width:34px; height:34px; border-radius:50%;
+  background: rgba(10,10,11,0.82);
+  border: 1.5px solid rgba(255,255,255,0.16);
+  display:flex; align-items:center; justify-content:center;
   cursor:pointer;
-  animation: dockIn .4s ease;
+  animation: dockIn .35s ease;
+  transition: border-color .15s ease, transform .15s ease;
 }
-@keyframes dockIn{ from{ opacity:0; transform: translateY(-8px) scale(0.8); } to{ opacity:1; transform:none; } }
-.dock-dot{ width:9px; height:9px; border-radius:50%; background: currentColor; box-shadow: 0 0 8px currentColor; flex:none; }
-.dock-label{ font-family: var(--kr); font-size:12px; color: var(--ink); white-space:nowrap; }
+.dock-item:hover{ border-color: rgba(255,255,255,0.5); transform: scale(1.08); }
+@keyframes dockIn{ from{ opacity:0; transform: scale(0.5); } to{ opacity:1; transform:none; } }
+.dock-dot{ width:12px; height:12px; border-radius:50%; background: currentColor; box-shadow: 0 0 9px currentColor; flex:none; }
 
 /* ---------- overlay card ---------- */
 .overlay{
@@ -231,9 +233,9 @@ html, body{
   padding-bottom:14px; border-bottom:1px solid var(--c-line);
 }
 .card-close{
-  position:absolute; top:18px; right:18px;
+  position:absolute; top:18px; right:18px; z-index:10;
   width:28px; height:28px; border-radius:50%;
-  border:1px solid var(--c-line); background:transparent; color:var(--c-ink-faint);
+  border:1px solid var(--c-line); background:#ffffff; color:var(--c-ink-faint);
   display:flex; align-items:center; justify-content:center; cursor:pointer;
   font-size: 16px; line-height:1;
   transition: border-color .15s ease, color .15s ease;
@@ -261,29 +263,37 @@ html, body{
 .concept-item-count{ font-family: var(--en, var(--kr)); font-weight:300; font-size:11.5px; color: var(--c-ink-faint); }
 .concept-item-arrow{ width:14px; height:14px; color: var(--c-ink-faint); flex:none; }
 
+/*
+  .entry-first: 목록에서 시각적으로 가장 위에 오는 항목(하이라이트 또는 cluster-note 또는 첫 entry)에
+  JS가 직접 붙여주는 클래스. ':first-of-type'은 card-concept/card-sub 등 앞선 div들 때문에
+  실제로는 한 번도 걸리지 않는 죽은 규칙이었어서, 그 대신 이 클래스로 위쪽 여백을 확실히 없앰.
+*/
 .entry{ padding: 20px 0; border-bottom: 1px solid var(--c-line); }
-.entry:first-of-type{ padding-top: 0; }
+.entry.entry-first{ padding-top: 0; }
 .entry:last-of-type{ border-bottom:none; padding-bottom:0; }
 .entry.entry-highlight{
+  position: sticky; top: 0; z-index: 5;
   background: #faf8f4;
   border-left: 3px solid currentColor;
-  padding: 16px 14px;
+  padding: 16px 46px 16px 14px; /* 오른쪽 여백: 고정됐을 때 닫기 버튼과 안 겹치게 */
   margin: 0 0 20px;
   border-bottom: none;
   border-radius: 0 8px 8px 0;
+  box-shadow: 0 10px 14px -10px rgba(0,0,0,0.18);
 }
-.entry.entry-highlight:first-of-type{ margin-top:0; }
+.entry.entry-highlight.entry-first{ margin-top:0; }
 .entry-word{
   font-family: var(--word-font); font-style:italic; font-weight:600; font-size:20px;
   color: var(--c-ink);
   margin-bottom:6px;
-  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
 }
 .tag-same{
   font-family: var(--kr); font-style:normal; font-weight:700; font-size:10.5px;
   letter-spacing:0.02em; color: var(--c-subhead);
   background: var(--c-subhead-wash);
   padding: 3px 9px; border-radius: 999px;
+  position: relative; top: -1px; /* 이탤릭 단어의 시각적 중심과 배지 중심을 맞추기 위한 미세 보정 */
 }
 .entry-ex{
   font-family: var(--word-font); font-size:15px; color: var(--c-ink);
@@ -336,11 +346,11 @@ html, body{
   position:fixed; inset:0; z-index:60;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:14px;
-  background: rgba(6,6,7,0.55);
-  opacity:0; pointer-events:none;
+  background: rgba(6,6,7,0.35);
+  opacity:0; pointer-events:none; /* 배경 자체는 클릭을 막지 않음 → 도킹된 그룹을 계속 누를 수 있음 */
   transition: opacity .35s ease;
 }
-.clear-screen.show{ opacity:1; pointer-events:auto; }
+.clear-screen.show{ opacity:1; }
 .clear-title{
   font-family: var(--word-font); font-style: italic; font-weight:600;
   font-size: clamp(48px, 11vw, 96px);
@@ -349,14 +359,16 @@ html, body{
   margin:0;
   transform: translateY(6px) scale(0.94);
   transition: transform .4s ease;
+  pointer-events:none;
 }
 .clear-screen.show .clear-title{ transform:none; }
 .clear-restart{
   margin-top: 6px;
   font-family: var(--kr); font-weight:700; font-size:12.5px;
-  color: var(--ink); background: transparent;
+  color: var(--ink); background: rgba(8,8,9,0.6);
   border: 1px solid var(--line); border-radius: 999px;
   padding: 9px 20px; cursor:pointer;
+  pointer-events:auto; /* 이 버튼만 클릭 가능 */
   transition: border-color .15s ease, background .15s ease;
 }
 .clear-restart:hover{ border-color: var(--ink); background: rgba(255,255,255,0.06); }
@@ -370,7 +382,7 @@ html, body{
   <a class="tb-home" href="index.html" aria-label="홈으로">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
   </a>
-  <div class="tb-brand">Voca Dump</div>
+  <div class="tb-brand"><b>Voca</b> Dump</div>
   <div class="tb-right">
     <button class="tb-icon" id="btnAllList" aria-label="전체 목록 보기" title="전체 목록 보기">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
@@ -1135,8 +1147,9 @@ html, body{
     var item = document.createElement('div');
     item.className = 'dock-item';
     item.dataset.group = group.id;
-    item.innerHTML = '<span class="dock-dot" style="color:' + COLOR_HEX[color] + '"></span>' +
-                      '<span class="dock-label">' + escapeHtml(group.concept) + '</span>';
+    item.title = group.concept;
+    item.setAttribute('aria-label', group.concept);
+    item.innerHTML = '<span class="dock-dot" style="color:' + COLOR_HEX[color] + '"></span>';
     item.addEventListener('click', function(){ openCard(group, color); });
     dockEl.appendChild(item);
   }
@@ -1155,14 +1168,22 @@ html, body{
       '<div class="card-concept"><span class="dot" style="color:' + hex + '"></span>' + escapeHtml(group.concept) + '</div>' +
       '<div class="card-sub">동의어 ' + list.length + '개</div>';
 
+    var firstMarked = false;
+    function markFirst(){
+      if (firstMarked) return '';
+      firstMarked = true;
+      return ' entry-first';
+    }
+
     if (hasCluster){
-      html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
+      html += '<div class="cluster-note' + markFirst() + '">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
     }
 
     list.forEach(function(it){
       var isHi = it.text === highlightText;
       var tag = it.type === 'cluster' ? '<span class="tag-same">= 동일 표현</span>' : '';
-      html += '<div class="entry' + (isHi ? ' entry-highlight' : '') + '"' + (isHi ? ' style="color:' + hex + '"' : '') + '>' +
+      var cls = 'entry' + (isHi ? ' entry-highlight' : '') + markFirst();
+      html += '<div class="' + cls + '"' + (isHi ? ' style="color:' + hex + '"' : '') + '>' +
         '<div class="entry-word">' + escapeHtml(it.text) + tag + '</div>' +
         '<div class="entry-ex">' + sentenceForWord(group, it.text) + '</div>' +
         (it.nuance ? '<div class="entry-nuance">' + escapeHtml(it.nuance) + '</div>' : '') +
@@ -1301,13 +1322,20 @@ html, body{
       '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>' + escapeHtml(group.concept) + '</div>' +
       '<div class="card-sub">동의어 ' + list.length + '개</div>';
 
+    var firstMarked = false;
+    function markFirst(){
+      if (firstMarked) return '';
+      firstMarked = true;
+      return ' entry-first';
+    }
+
     if (hasCluster){
-      html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
+      html += '<div class="cluster-note' + markFirst() + '">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
     }
 
     list.forEach(function(it){
       var tag = it.type === 'cluster' ? '<span class="tag-same">= 동일 표현</span>' : '';
-      html += '<div class="entry">' +
+      html += '<div class="entry' + markFirst() + '">' +
         '<div class="entry-word">' + escapeHtml(it.text) + tag + '</div>' +
         '<div class="entry-ex">' + sentenceForWord(group, it.text) + '</div>' +
         (it.nuance ? '<div class="entry-nuance">' + escapeHtml(it.nuance) + '</div>' : '') +
