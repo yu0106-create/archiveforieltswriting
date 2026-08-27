@@ -26,7 +26,7 @@
   --ink: #f2efe6;
   --ink-dim: rgba(242,239,230,0.55);
   --void: #0a0a0b;
-  --panel: rgba(12,12,14,0.72);
+  --panel: rgba(10,10,11,0.88);
   --line: rgba(242,239,230,0.14);
   --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
   --word-font: 'Cormorant Garamond', 'Times New Roman', serif;
@@ -76,8 +76,7 @@ html, body{
 .tb-home{
   width: 32px; height: 32px; border-radius: 50%;
   border: 1px solid var(--line);
-  background: rgba(10,10,11,0.5);
-  backdrop-filter: blur(6px);
+  background: rgba(8,8,9,0.85);
   display:flex; align-items:center; justify-content:center;
   color: var(--ink-dim);
   transition: border-color .15s ease, color .15s ease;
@@ -93,8 +92,7 @@ html, body{
 .tb-icon{
   width: 32px; height: 32px; border-radius: 50%;
   border: 1px solid var(--line);
-  background: rgba(10,10,11,0.5);
-  backdrop-filter: blur(6px);
+  background: rgba(8,8,9,0.85);
   display:flex; align-items:center; justify-content:center;
   color: var(--ink-dim);
   cursor:pointer;
@@ -131,6 +129,7 @@ html, body{
   touch-action: none;
   padding: 6px 10px;
   white-space: nowrap;
+  will-change: translate, scale;
   transition: color .25s ease, scale .25s ease;
 }
 @media (prefers-reduced-motion: reduce){
@@ -176,7 +175,6 @@ html, body{
   border-radius: 999px;
   padding: 6px 12px 6px 8px;
   cursor:pointer;
-  backdrop-filter: blur(6px);
   animation: dockIn .4s ease;
 }
 @keyframes dockIn{ from{ opacity:0; transform: translateY(-8px) scale(0.8); } to{ opacity:1; transform:none; } }
@@ -187,7 +185,6 @@ html, body{
 .overlay{
   position:fixed; inset:0; z-index:50;
   background: rgba(4,4,5,0.72);
-  backdrop-filter: blur(3px);
   display:flex; align-items:center; justify-content:center;
   padding: 24px;
   opacity:0; pointer-events:none;
@@ -322,7 +319,7 @@ html, body{
   background: var(--panel); border:1px solid var(--line); border-radius:999px;
   padding: 9px 18px; font-family:var(--kr); font-size:12.5px; color:var(--ink);
   z-index:40; opacity:0; transition: opacity .25s ease, transform .25s ease;
-  pointer-events:none; backdrop-filter: blur(6px); white-space:nowrap;
+  pointer-events:none; white-space:nowrap;
   max-width: 80vw; overflow:hidden; text-overflow:ellipsis;
 }
 .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }/* ---------- clear screen ---------- */
@@ -331,7 +328,6 @@ html, body{
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:14px;
   background: rgba(6,6,7,0.55);
-  backdrop-filter: blur(4px);
   opacity:0; pointer-events:none;
   transition: opacity .35s ease;
 }
