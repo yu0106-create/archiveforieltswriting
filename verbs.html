@@ -89,16 +89,37 @@ html, body{
   letter-spacing: 0.08em; color: var(--ink-dim); text-transform:uppercase;
 }
 .tb-spacer{ width: 32px; height: 32px; }
+.tb-right{ display:flex; align-items:center; gap:8px; }
+.tb-icon{
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(10,10,11,0.5);
+  backdrop-filter: blur(6px);
+  display:flex; align-items:center; justify-content:center;
+  color: var(--ink-dim);
+  cursor:pointer;
+  transition: border-color .15s ease, color .15s ease;
+}
+.tb-icon:hover{ border-color: var(--ink); color: var(--ink); }
+.tb-icon svg{ width: 15px; height: 15px; }
 
 /* ---------- stage ---------- */
 .stage{
   position:fixed; inset:0; z-index:5;
   overflow:hidden;
 }
+/*
+  위치(translate)는 JS가 매 프레임 갱신하므로 여기엔 트랜지션을 걸지 않음(끌림/떨림 방지).
+  scale/rotate는 'transform'과 별개인 CSS 개별 속성(translate/scale/rotate)을 써서,
+  확대(길게 누르기)·흔들림(오답) 애니메이션만 부드럽게 걸리도록 분리함.
+*/
 .word{
   position:absolute;
-  top:-999px; left:-999px; /* 측정 전까지 화면 밖 */
-  transform: translate(-50%,-50%);
+  top:0; left:0;
+  transform: translate(-50%,-50%); /* 중심 정렬 고정값, 트랜지션 없음 */
+  translate: -999px -999px;       /* JS가 매 프레임 덮어씀 */
+  scale: 1;
+  rotate: 0deg;
   font-family: var(--word-font);
   font-style: italic;
   font-weight: 500;
@@ -110,28 +131,20 @@ html, body{
   touch-action: none;
   padding: 6px 10px;
   white-space: nowrap;
-  transition: color .25s ease, transform .25s ease;
-}
-.word .wobble{
-  display:inline-block;
-  animation: wobble var(--wdur,4s) ease-in-out var(--wdelay,0s) infinite alternate;
-}
-@keyframes wobble{
-  from{ transform: rotate(calc(var(--wrot,1.5deg) * -1)); }
-  to{ transform: rotate(var(--wrot,1.5deg)); }
+  transition: color .25s ease, scale .25s ease;
 }
 @media (prefers-reduced-motion: reduce){
-  .word .wobble{ animation: none !important; }
+  .word{ transition: color .25s ease; }
 }
 
 .word.charging{
-  transition: color 2000ms linear, transform 2000ms ease;
+  transition: color 1300ms linear, scale 1300ms ease;
   color: var(--anchor-color, var(--ink));
-  transform: translate(-50%,-50%) scale(1.3);
+  scale: 1.3;
 }
 .word.anchor{
   color: var(--anchor-color, var(--ink));
-  transform: translate(-50%,-50%) scale(1.3);
+  scale: 1.3;
   z-index: 2;
 }
 .word.matched{
@@ -141,13 +154,13 @@ html, body{
   animation: shake .32s ease;
 }
 @keyframes shake{
-  0%,100%{ transform: translate(-50%,-50%) rotate(0); }
-  25%{ transform: translate(-50%,-50%) translateX(-4px) rotate(-3deg); }
-  75%{ transform: translate(-50%,-50%) translateX(4px) rotate(3deg); }
+  0%,100%{ rotate: 0deg; }
+  25%{ rotate: -3deg; }
+  75%{ rotate: 3deg; }
 }
 .word.leaving{
-  transition: transform .5s ease, opacity .5s ease;
-  transform: translate(-50%,-50%) scale(0.2);
+  transition: scale .5s ease, opacity .5s ease;
+  scale: 0.2;
   opacity:0;
 }
 
@@ -181,81 +194,106 @@ html, body{
   transition: opacity .2s ease;
 }
 .overlay.open{ opacity:1; pointer-events:auto; }
+
+/* ---------- card: ielts.html과 같은 라이트 테마(흰 배경/레드 포인트) ---------- */
 .card{
+  --c-bg: #ffffff;
+  --c-ink: #131315;
+  --c-ink-soft: #6b7076;
+  --c-ink-faint: #9aa0a6;
+  --c-line: #e9e9ea;
+  --c-red: #c23b3b;
+  --c-red-deep: #9a2c2c;
+  --c-subhead: #fc3468;
+  --c-subhead-wash: #fdeff3;
+
   position:relative;
   width:100%; max-width: 480px; max-height: 80vh; overflow-y:auto;
-  background: #121214;
-  border: 1px solid var(--line);
-  border-radius: 18px;
+  background: var(--c-bg);
+  color: var(--c-ink);
+  border: 1px solid var(--c-line);
+  border-radius: 12px;
   padding: 26px 26px 22px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
   transform: translateY(10px) scale(0.98);
   transition: transform .2s ease;
 }
 .overlay.open .card{ transform:none; }
 .card-concept{
   font-family: var(--kr); font-weight:700; font-size: 21px;
+  color: var(--c-ink);
   margin: 0 0 4px; line-height:1.3;
+  display:flex; align-items:center; gap:9px;
+}
+.card-concept .dot{
+  width:10px; height:10px; border-radius:50%; background: currentColor;
+  flex:none;
 }
 .card-sub{
-  font-family: var(--kr); font-size:11.5px; color: var(--ink-dim);
+  font-family: var(--kr); font-weight:300; font-size:11.5px; color: var(--c-ink-faint);
   letter-spacing:0.04em; margin-bottom:18px;
+  padding-bottom:14px; border-bottom:1px solid var(--c-line);
 }
 .card-close{
   position:absolute; top:18px; right:18px;
   width:28px; height:28px; border-radius:50%;
-  border:1px solid var(--line); background:transparent; color:var(--ink-dim);
+  border:1px solid var(--c-line); background:transparent; color:var(--c-ink-faint);
   display:flex; align-items:center; justify-content:center; cursor:pointer;
   font-size: 16px; line-height:1;
+  transition: border-color .15s ease, color .15s ease;
 }
-.card-close:hover{ color:var(--ink); border-color:var(--ink); }
+.card-close:hover{ color:var(--c-ink); border-color:var(--c-ink); }
 
-.entry{ margin-bottom: 18px; padding-bottom:16px; border-bottom: 1px solid var(--line); border-radius:8px; }
+.entry{ margin-bottom: 18px; padding-bottom:16px; border-bottom: 1px solid var(--c-line); }
 .entry:last-of-type{ border-bottom:none; margin-bottom:6px; padding-bottom:0; }
 .entry.entry-highlight{
-  background: rgba(255,255,255,0.05);
-  padding: 12px 12px 14px;
-  margin: 0 -12px 18px;
+  background: #faf8f4;
+  border-left: 3px solid currentColor;
+  padding: 12px 14px 14px;
+  margin: 0 0 18px;
   border-bottom: none;
+  border-radius: 0 8px 8px 0;
 }
 .entry-word{
   font-family: var(--word-font); font-style:italic; font-weight:600; font-size:20px;
+  color: var(--c-ink);
   margin-bottom:6px;
   display:flex; align-items:center; gap:8px; flex-wrap:wrap;
 }
 .tag-same{
   font-family: var(--kr); font-style:normal; font-weight:700; font-size:10.5px;
-  letter-spacing:0.02em; color: var(--ink-dim);
-  background: rgba(255,255,255,0.08);
-  padding: 2px 8px; border-radius: 999px;
+  letter-spacing:0.02em; color: var(--c-subhead);
+  background: var(--c-subhead-wash);
+  padding: 3px 9px; border-radius: 999px;
 }
 .entry-ex{
-  font-family: var(--word-font); font-size:15px; color: var(--ink);
+  font-family: var(--word-font); font-size:15px; color: var(--c-ink);
   line-height:1.5; margin-bottom:6px;
 }
-.entry-ex b{ font-style:normal; font-weight:700; padding:0 1px; }
+.entry-ex b{ font-style:normal; font-weight:700; color: var(--c-red-deep); padding:0 1px; }
 .entry-nuance{
   font-family: var(--kr); font-weight:300; font-size:13px;
-  color: var(--ink-dim); line-height:1.6;
+  color: var(--c-ink-soft); line-height:1.6;
 }
 .cluster-note{
   font-family: var(--kr); font-weight:300; font-size:12px;
-  color: var(--ink-dim); margin-top: 4px; padding: 8px 10px;
-  background: rgba(255,255,255,0.04); border-radius:8px;
+  color: var(--c-ink-soft); margin-top: 4px; padding: 9px 12px;
+  background: var(--c-subhead-wash); border-radius:6px;
 }
 
 .contrast-box{
   margin-top: 6px; padding: 14px; border-radius: 10px;
-  background: rgba(255,255,255,0.04);
+  background: #f6f5f2; border: 1px solid var(--c-line);
 }
 .contrast-title{
   font-family:var(--kr); font-weight:700; font-size:11.5px; letter-spacing:0.04em;
-  color: var(--ink-dim); text-transform:uppercase; margin-bottom:10px;
+  color: var(--c-ink-faint); text-transform:uppercase; margin-bottom:10px;
 }
 .contrast-row{ margin-bottom:8px; }
 .contrast-row:last-of-type{ margin-bottom:10px; }
-.contrast-ex{ font-family: var(--word-font); font-size:14.5px; line-height:1.5; }
-.contrast-ex b{ font-style:normal; font-weight:700; }
-.contrast-note{ font-family: var(--kr); font-weight:300; font-size:12.5px; color: var(--ink-dim); line-height:1.6; }
+.contrast-ex{ font-family: var(--word-font); font-size:14.5px; line-height:1.5; color: var(--c-ink); }
+.contrast-ex b{ font-style:normal; font-weight:700; color: var(--c-red-deep); }
+.contrast-note{ font-family: var(--kr); font-weight:300; font-size:12.5px; color: var(--c-ink-soft); line-height:1.6; }
 
 /* toast */
 .toast{
@@ -266,7 +304,39 @@ html, body{
   pointer-events:none; backdrop-filter: blur(6px); white-space:nowrap;
   max-width: 80vw; overflow:hidden; text-overflow:ellipsis;
 }
-.toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+.toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }/* ---------- clear screen ---------- */
+.clear-screen{
+  position:fixed; inset:0; z-index:60;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px;
+  background: rgba(6,6,7,0.55);
+  backdrop-filter: blur(4px);
+  opacity:0; pointer-events:none;
+  transition: opacity .35s ease;
+}
+.clear-screen.show{ opacity:1; pointer-events:auto; }
+.clear-title{
+  font-family: var(--word-font); font-style: italic; font-weight:600;
+  font-size: clamp(48px, 11vw, 96px);
+  color: var(--ink);
+  text-shadow: 0 0 30px rgba(242,239,230,0.35);
+  margin:0;
+  transform: translateY(6px) scale(0.94);
+  transition: transform .4s ease;
+}
+.clear-screen.show .clear-title{ transform:none; }
+.clear-sub{
+  font-family: var(--kr); font-weight:300; font-size:13px; color: var(--ink-dim);
+}
+.clear-restart{
+  margin-top: 6px;
+  font-family: var(--kr); font-weight:700; font-size:12.5px;
+  color: var(--ink); background: transparent;
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 9px 20px; cursor:pointer;
+  transition: border-color .15s ease, background .15s ease;
+}
+.clear-restart:hover{ border-color: var(--ink); background: rgba(255,255,255,0.06); }
 </style>
 </head>
 <body>
@@ -278,12 +348,25 @@ html, body{
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
   </a>
   <div class="tb-brand">Phrasal Verbs Dump</div>
-  <div class="tb-spacer"></div>
+  <div class="tb-right">
+    <button class="tb-icon" id="btnAllList" aria-label="전체 목록 보기" title="전체 목록 보기">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+    </button>
+    <button class="tb-icon" id="btnReset" aria-label="새 라운드 시작" title="새 라운드 시작">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+    </button>
+  </div>
 </div>
 
 <div class="stage" id="stage"></div>
 <div class="dock" id="dock"></div>
 <div class="toast" id="toast"></div>
+
+<div class="clear-screen" id="clearScreen">
+  <div class="clear-title">Clear!</div>
+  <div class="clear-sub" id="clearSub"></div>
+  <button class="clear-restart" id="btnRestart">다시 시작</button>
+</div>
 
 <div class="overlay" id="overlay">
   <div class="card" id="card"></div>
@@ -408,7 +491,6 @@ html, body{
 
   var COLORS = ['lemon', 'pink', 'mint'];
   var COLOR_HEX = { lemon: '#f3e26b', pink: '#ff5fa8', mint: '#63e9c4' };
-  var POOL_SIZE = 3; // 화면에 동시에 떠 있는 그룹 수 (라운드당 단어 개수는 추후 조정)
   var TOPBAR_MARGIN = 78;   // 상단바 피하는 여백(px)
   var SIDE_MARGIN = 26;
   var DOCK_ZONE = { x: 0, y: 0, w: 0, h: 0 }; // 초기화시 계산
@@ -458,46 +540,70 @@ html, body{
   var toastEl = document.getElementById('toast');
   var overlayEl = document.getElementById('overlay');
   var cardEl = document.getElementById('card');
+  var clearScreenEl = document.getElementById('clearScreen');
+  var clearSubEl = document.getElementById('clearSub');
 
-  var queue = shuffle(DATA.groups);
-  var qIdx = 0;
-  var dockedIds = {};      // 이미 도킹 완료되어 다시 등장하면 안 되는 그룹
-  var onScreen = {};       // groupId -> { group, color, wordEls: [] }
+  var ROUND_SIZE = 3; // 한 라운드에 등장하는 그룹 수 (추후 조정 가능)
+  var REVIEW_INTERVAL = { 1: 1, 2: 2, 3: 4 }; // box(숙련도)별 복습 주기(라운드 수)
+  var STATS_KEY = 'pvdStats_v1';
+  var ROUND_KEY = 'pvdRoundIndex_v1';
+
+  var onScreen = {};       // groupId -> { group, color, wordEls: [], matched, mistakes }
   var particles = [];      // 물리 시뮬레이션 대상 전체 { el, x, y, vx, vy, r, fixed }
   var frozen = false;
   var activeGroupId = null;
+  var roundGroupIds = [];  // 이번 라운드에 등장한 그룹 id 목록(전부 클리어됐는지 판정용)
 
-  function remainingGroups(){
-    return DATA.groups.filter(function(g){ return !dockedIds[g.id] && !onScreen[g.id]; });
+  function loadStats(){
+    try {
+      var raw = localStorage.getItem(STATS_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e){ return {}; }
+  }
+  function saveStats(stats){
+    try { localStorage.setItem(STATS_KEY, JSON.stringify(stats)); } catch (e){}
+  }
+  function loadRoundIndex(){
+    var v = parseInt(localStorage.getItem(ROUND_KEY) || '0', 10);
+    return isNaN(v) ? 0 : v;
+  }
+  function saveRoundIndex(v){
+    try { localStorage.setItem(ROUND_KEY, String(v)); } catch (e){}
   }
 
-  function nextGroup(){
-    var pool = remainingGroups();
-    if (!pool.length) return null;
-    if (qIdx >= queue.length || !queue.some(function(g){ return pool.indexOf(g) !== -1; })){
-      queue = shuffle(pool);
-      qIdx = 0;
-    }
-    while (qIdx < queue.length){
-      var g = queue[qIdx++];
-      if (pool.indexOf(g) !== -1) return g;
-    }
-    return pool[0];
+  var stats = loadStats();       // groupId -> { box, lastRound }
+  var roundIndex = loadRoundIndex();
+
+  function statFor(groupId){
+    if (!stats[groupId]) stats[groupId] = { box: 1, lastRound: -1 };
+    return stats[groupId];
+  }
+
+  // 복습 우선순위: 한 번도 안 본 그룹 > 복습 주기가 지난(오래된 순) 그룹 > 나머지
+  function selectRoundGroups(){
+    var all = DATA.groups.slice();
+    var unseen = all.filter(function(g){ return !stats[g.id]; });
+    var seen = all.filter(function(g){ return !!stats[g.id]; });
+
+    seen.sort(function(a, b){
+      var sa = stats[a.id], sb = stats[b.id];
+      var dueA = roundIndex - sa.lastRound - REVIEW_INTERVAL[sa.box];
+      var dueB = roundIndex - sb.lastRound - REVIEW_INTERVAL[sb.box];
+      return dueB - dueA; // 많이 밀린(overdue) 것부터
+    });
+
+    var ordered = shuffle(unseen).concat(seen); // 새 단어 우선 노출, 새 단어끼리는 랜덤
+    return ordered.slice(0, Math.min(ROUND_SIZE, ordered.length));
   }
 
   function usedColors(){
     return Object.keys(onScreen).map(function(id){ return onScreen[id].color; });
   }
-  function dockedColors(){
-    return Object.keys(dockedIds).map(function(id){ return dockedIds[id]; });
-  }
 
   function pickColor(){
     var active = usedColors();
-    var docked = dockedColors();
-    var freeOfActive = COLORS.filter(function(c){ return active.indexOf(c) === -1; });
-    var freeOfBoth = freeOfActive.filter(function(c){ return docked.indexOf(c) === -1; });
-    var pool = freeOfBoth.length ? freeOfBoth : (freeOfActive.length ? freeOfActive : COLORS);
+    var free = COLORS.filter(function(c){ return active.indexOf(c) === -1; });
+    var pool = free.length ? free : COLORS;
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
@@ -540,10 +646,13 @@ html, body{
     for (var i = 0; i < particles.length; i++){
       var p = particles[i];
       if (p.fixed) continue;
-      p.vx += (Math.random() - 0.5) * 0.9;
-      p.vy += (Math.random() - 0.5) * 0.9;
+      // 감쇠(마찰)를 먼저 적용해서 속도가 무한히 쌓이지 않게 함 — 진동의 핵심 원인이었음
+      p.vx *= 0.94;
+      p.vy *= 0.94;
+      p.vx += (Math.random() - 0.5) * 0.35;
+      p.vy += (Math.random() - 0.5) * 0.35;
       var speed = Math.hypot(p.vx, p.vy);
-      var maxSpeed = 13, minSpeed = 4;
+      var maxSpeed = 7, minSpeed = 1.6;
       if (speed > maxSpeed){ p.vx = p.vx / speed * maxSpeed; p.vy = p.vy / speed * maxSpeed; }
       else if (speed < minSpeed && speed > 0.01){ p.vx = p.vx / speed * minSpeed; p.vy = p.vy / speed * minSpeed; }
       p.x += p.vx * 0.06;
@@ -554,30 +663,31 @@ html, body{
       if (p.y + p.r > maxY){ p.y = maxY - p.r; p.vy = -Math.abs(p.vy); }
     }
 
-    // 충돌 회피: 서로 겹치면 밀어냄 (고정된 단어는 밀리지 않고, 상대만 피해감)
-    var pad = 16;
+    // 충돌 회피: 어느 정도(pad)까지는 가까이 붙어도 그냥 두고, 그 이상 겹칠 때만
+    // 겹친 양의 일부(0.35)만 매 프레임 부드럽게 밀어냄 — 한 번에 순간이동시키지 않아 떨림이 없음.
+    var pad = 4;
+    var correctionRate = 0.35;
     for (var a = 0; a < particles.length; a++){
       for (var b = a + 1; b < particles.length; b++){
         var pa = particles[a], pb = particles[b];
         var dx = pb.x - pa.x, dy = pb.y - pa.y;
         var dist = Math.hypot(dx, dy);
         var minDist = pa.r + pb.r + pad;
-        if (dist < minDist){
+        if (dist < minDist - 1){ // 1px 여유는 무시(미세 떨림 방지용 히스테리시스)
           if (dist < 0.001){ dx = (Math.random() - 0.5); dy = (Math.random() - 0.5); dist = 0.001; }
           var nx = dx / dist, ny = dy / dist;
-          var overlap = minDist - dist;
+          var overlap = (minDist - dist) * correctionRate;
           if (pa.fixed && pb.fixed) continue;
-          if (pa.fixed){ pb.x += nx * overlap; pb.y += ny * overlap; }
-          else if (pb.fixed){ pa.x -= nx * overlap; pa.y -= ny * overlap; }
-          else{ pa.x -= nx * overlap * 0.5; pa.y -= ny * overlap * 0.5; pb.x += nx * overlap * 0.5; pb.y += ny * overlap * 0.5; }
+          if (pa.fixed){ pb.x += nx * overlap * 2; pb.y += ny * overlap * 2; }
+          else if (pb.fixed){ pa.x -= nx * overlap * 2; pa.y -= ny * overlap * 2; }
+          else{ pa.x -= nx * overlap; pa.y -= ny * overlap; pb.x += nx * overlap; pb.y += ny * overlap; }
         }
       }
     }
 
     for (var k = 0; k < particles.length; k++){
       var pp = particles[k];
-      pp.el.style.left = pp.x + 'px';
-      pp.el.style.top = pp.y + 'px';
+      pp.el.style.translate = pp.x + 'px ' + pp.y + 'px';
     }
 
     requestAnimationFrame(tick);
@@ -587,7 +697,7 @@ html, body{
   function spawnGroup(group){
     var color = pickColor();
     var words = shuffle(buildUnifiedList(group));
-    var entry = { group: group, color: color, wordEls: [], matched: {} };
+    var entry = { group: group, color: color, wordEls: [], matched: {}, mistakes: 0 };
 
     words.forEach(function(w){
       var el = document.createElement('div');
@@ -617,8 +727,7 @@ html, body{
         vy: (Math.random() - 0.5) * 10,
         r: r, fixed: false
       };
-      el.style.left = spot.x + 'px';
-      el.style.top = spot.y + 'px';
+      el.style.translate = spot.x + 'px ' + spot.y + 'px';
 
       particles.push(particle);
       attachPressHandlers(el, entry, particle);
@@ -628,17 +737,26 @@ html, body{
     onScreen[group.id] = entry;
   }
 
-  function refill(){
-    var addedAny = false;
-    while (Object.keys(onScreen).length < POOL_SIZE){
-      var g = nextGroup();
-      if (!g) break;
-      spawnGroup(g);
-      addedAny = true;
-    }
-    if (!addedAny && !Object.keys(onScreen).length && Object.keys(dockedIds).length === DATA.groups.length){
-      showToast('지금 있는 표현을 모두 모았어요');
-    }
+  function startRound(){
+    // 진행 중이던 상태 완전히 정리
+    frozen = false;
+    activeGroupId = null;
+    clearTimeout(showToast._t);
+    toastEl.classList.remove('show');
+    overlayEl.classList.remove('open');
+    clearScreenEl.classList.remove('show');
+
+    particles.forEach(function(p){ p.el.remove(); });
+    particles = [];
+    onScreen = {};
+    dockEl.innerHTML = '';
+
+    roundIndex += 1;
+    saveRoundIndex(roundIndex);
+
+    var groups = selectRoundGroups();
+    roundGroupIds = groups.map(function(g){ return g.id; });
+    groups.forEach(function(g){ spawnGroup(g); });
   }
 
   function removeParticleFor(el){
@@ -648,13 +766,13 @@ html, body{
   }
 
   /* ============ press / tap / match logic ============ */
+  var PRESS_MS = 1300; // 롱프레스(고정) 임계값
+
   function attachPressHandlers(el, entry, particle){
     var pressTimer = null;
-    var downTime = 0;
 
     el.addEventListener('pointerdown', function(ev){
       ev.preventDefault();
-      downTime = Date.now();
       if (!frozen){
         el.style.setProperty('--anchor-color', COLOR_HEX[entry.color]);
         el.classList.add('charging');
@@ -662,7 +780,7 @@ html, body{
           el.classList.remove('charging');
           el._justFroze = true;
           freezeOn(entry, el, particle);
-        }, 2000);
+        }, PRESS_MS);
       }
     });
 
@@ -672,11 +790,12 @@ html, body{
     }
 
     el.addEventListener('pointerup', function(){
-      var elapsed = Date.now() - downTime;
+      // 타이머가 아직 살아있었다는 건(=지금 clear됨) 1.3초를 채우기 전에 뗐다는 뜻 → 짧은 탭으로 처리
+      var wasShortTap = !!pressTimer;
       cancelCharge();
       if (el._justFroze){ el._justFroze = false; return; }
       if (frozen){ handleTapWhileFrozen(entry, el); return; }
-      if (elapsed < 1900){
+      if (wasShortTap){
         openCard(entry.group, entry.color, el.dataset.text);
       }
     });
@@ -722,6 +841,8 @@ html, body{
     if (!el) return;
     var gid = el.dataset.groupId;
     if (gid === activeGroupId) return;
+    var activeEntry = onScreen[activeGroupId];
+    if (activeEntry) activeEntry.mistakes += 1;
     el.classList.add('wrong');
     setTimeout(function(){ el.classList.remove('wrong'); }, 320);
   });
@@ -737,11 +858,24 @@ html, body{
     setTimeout(function(){
       entry.wordEls.forEach(function(el){ removeParticleFor(el); el.remove(); });
       delete onScreen[entry.group.id];
-      dockedIds[entry.group.id] = entry.color;
+
+      var s = statFor(entry.group.id);
+      s.box = entry.mistakes === 0 ? Math.min(3, s.box + 1) : 1;
+      s.lastRound = roundIndex;
+      saveStats(stats);
+
       addDockItem(entry.group, entry.color);
       unfreeze(entry);
-      refill();
+
+      if (Object.keys(onScreen).length === 0){
+        showClearScreen();
+      }
     }, 500);
+  }
+
+  function showClearScreen(){
+    clearSubEl.textContent = roundGroupIds.length + '개 그룹 완료';
+    clearScreenEl.classList.add('show');
   }
 
   function unfreeze(entry){
@@ -776,15 +910,16 @@ html, body{
       if (idx > 0){ var item = list.splice(idx, 1)[0]; list.unshift(item); }
     }
 
+    var hex = COLOR_HEX[color];
     var html = '<button class="card-close" id="cardClose">&times;</button>' +
-      '<div class="card-concept" style="color:' + COLOR_HEX[color] + '">' + escapeHtml(group.concept) + '</div>' +
+      '<div class="card-concept"><span class="dot" style="color:' + hex + '"></span>' + escapeHtml(group.concept) + '</div>' +
       '<div class="card-sub">동의어 ' + list.length + '개</div>';
 
     var hasCluster = group.cluster.length > 1;
     list.forEach(function(it){
       var isHi = it.text === highlightText;
       var tag = it.type === 'cluster' ? '<span class="tag-same">= 동일 표현</span>' : '';
-      html += '<div class="entry' + (isHi ? ' entry-highlight' : '') + '">' +
+      html += '<div class="entry' + (isHi ? ' entry-highlight' : '') + '"' + (isHi ? ' style="color:' + hex + '"' : '') + '>' +
         '<div class="entry-word">' + escapeHtml(it.text) + tag + '</div>' +
         '<div class="entry-ex">' + sentenceForWord(group, it.text) + '</div>' +
         (it.nuance ? '<div class="entry-nuance">' + escapeHtml(it.nuance) + '</div>' : '') +
@@ -808,11 +943,52 @@ html, body{
     overlayEl.classList.add('open');
     document.getElementById('cardClose').addEventListener('click', closeCard);
   }
+  function openAllListCard(){
+    var html = '<button class="card-close" id="cardClose">&times;</button>' +
+      '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>전체 표현 목록</div>' +
+      '<div class="card-sub">' + DATA.groups.length + '개 그룹</div>';
+
+    DATA.groups.forEach(function(group, gi){
+      var list = buildUnifiedList(group);
+      var hasCluster = group.cluster.length > 1;
+      html += '<div style="margin:' + (gi === 0 ? '0' : '22px') + ' 0 10px; font-family:var(--kr); font-weight:700; font-size:15px; color:#131315;">' +
+        escapeHtml(group.concept) + '</div>';
+      list.forEach(function(it){
+        var tag = it.type === 'cluster' ? '<span class="tag-same">= 동일 표현</span>' : '';
+        html += '<div class="entry">' +
+          '<div class="entry-word">' + escapeHtml(it.text) + tag + '</div>' +
+          '<div class="entry-ex">' + sentenceForWord(group, it.text) + '</div>' +
+          (it.nuance ? '<div class="entry-nuance">' + escapeHtml(it.nuance) + '</div>' : '') +
+          '</div>';
+      });
+      if (hasCluster){
+        html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
+      }
+      if (group.contrastPair){
+        var cp = group.contrastPair;
+        html += '<div class="contrast-box">' +
+          '<div class="contrast-title">헷갈리기 쉬운 짝</div>' +
+          '<div class="contrast-row"><div class="contrast-ex">' + sentenceForWord(group, cp.a) + '</div></div>' +
+          '<div class="contrast-row"><div class="contrast-ex">' + sentenceForWord(group, cp.b) + '</div></div>' +
+          '<div class="contrast-note">' + escapeHtml(cp.noteKo) + '</div>' +
+          '</div>';
+      }
+    });
+
+    cardEl.innerHTML = html;
+    overlayEl.classList.add('open');
+    document.getElementById('cardClose').addEventListener('click', closeCard);
+  }
+
   function closeCard(){ overlayEl.classList.remove('open'); }
   overlayEl.addEventListener('click', function(ev){ if (ev.target === overlayEl) closeCard(); });
 
+  document.getElementById('btnAllList').addEventListener('click', openAllListCard);
+  document.getElementById('btnReset').addEventListener('click', startRound);
+  document.getElementById('btnRestart').addEventListener('click', startRound);
+
   /* ============ init ============ */
-  refill();
+  startRound();
   requestAnimationFrame(tick);
 
 })();
