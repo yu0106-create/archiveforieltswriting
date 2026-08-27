@@ -26,9 +26,9 @@ html, body{
     the entrance animation is the "reveal", so there's nothing to scroll to. */
 }
 body{
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  position: relative; /* frames are now individually absolute-positioned,
+    not flex-centered as a single unit, so two frames can sit at two
+    different spots on the wall. */
   /* the wall is now a real tiled-mosaic photo repeated edge to edge --
      the source crop was cut exactly at grout-line centers on all four
      sides (found by detecting the grout's brightness peaks), so tiling
@@ -50,7 +50,10 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
    (openingLeft/openingTop/openingWidth as fractions of the full image)
    converted to percentages of .stage's own box. */
 .picture{
-  position: relative;
+  position: absolute;
+  left: 42%;
+  top: 58%;
+  transform: translate(-50%, -50%);
   filter: drop-shadow(0 22px 46px rgba(0,0,0,0.45));
 }
 .frame-img{
@@ -106,6 +109,37 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
   transform: rotate(-18deg);
 }
 .corner-book img, .corner-pencase img{ width: 100%; height: auto; }
+
+/* ===================== second framed picture (phrasal verbs) ===================== */
+/* This one is a single flattened photo (frame + the little horse print
+   already baked into it) with only the outer background removed --
+   unlike the pink frame it has no separate "opening" for a scene behind
+   it, so it behaves like a third clickable corner object rather than a
+   second .stage. Same two-layer split as the book/pencase: the outer
+   <a> owns position + a fixed base rotation, the inner <img> owns the
+   hover wiggle only. */
+.corner-frame2{
+  position: absolute;
+  left: 70%;
+  top: 24%;
+  width: min(19vw, 23vh, 175px);
+  transform: translate(-50%, -50%) rotate(5deg);
+  z-index: 5;
+  cursor: pointer;
+  filter: drop-shadow(0 16px 32px rgba(0,0,0,0.4));
+}
+.corner-frame2 img{ width: 100%; height: auto; transform-origin: 50% 50%; }
+.corner-frame2:hover img{ animation: wiggle-frame2 .6s ease-in-out; }
+@keyframes wiggle-frame2{
+  0%   { transform: rotate(0deg) translate(0,0); }
+  25%  { transform: rotate(-3deg) translate(-2px, 1px); }
+  55%  { transform: rotate(2deg) translate(1px, -1px); }
+  80%  { transform: rotate(-1deg) translate(0, 1px); }
+  100% { transform: rotate(0deg) translate(0,0); }
+}
+@media (max-width: 760px){
+  .corner-frame2{ width: min(26vw, 22vh, 130px); left: 74%; top: 20%; }
+}
 /* pivot near the bottom of the book (not dead-center), so a rotation
    reads as "top swings, bottom stays put" rather than the whole
    object rotating around its middle. */
@@ -144,6 +178,10 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 </div>
 <img class="frame-img" src="pink-frame.png" alt="">
 </div>
+
+<a class="corner-frame2" href="phrasal-verbs.html" aria-label="구동사 사전으로 이동">
+  <img src="blue-frame.png" alt="">
+</a>
 
 </body>
 </html>
