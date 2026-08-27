@@ -119,11 +119,17 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
    <a> owns position + a fixed base rotation, the inner <img> owns the
    hover wiggle only. */
 .corner-frame2{
+  /* Sized to match the pink frame's own outer visible width: the pink
+     frame's frame-img canvas is 190.3% of .stage's width (see below),
+     so this second frame reuses the exact same .stage width formula
+     scaled by that same 1.903 factor -- both frames grow/shrink
+     together at any viewport size instead of matching at only one
+     breakpoint. */
   position: absolute;
-  left: 70%;
-  top: 24%;
-  width: min(19vw, 23vh, 175px);
-  transform: translate(-50%, -50%) rotate(5deg);
+  left: 76%;
+  top: 26%;
+  width: min(72vw, 80vh, 666px);
+  transform: translate(-50%, -50%) rotate(-4deg);
   z-index: 5;
   cursor: pointer;
   filter: drop-shadow(0 16px 32px rgba(0,0,0,0.4));
@@ -138,7 +144,7 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
   100% { transform: rotate(0deg) translate(0,0); }
 }
 @media (max-width: 760px){
-  .corner-frame2{ width: min(26vw, 22vh, 130px); left: 74%; top: 20%; }
+  .corner-frame2{ width: min(99vw, 76vh, 548px); left: 78%; top: 22%; }
 }
 /* pivot near the bottom of the book (not dead-center), so a rotation
    reads as "top swings, bottom stays put" rather than the whole
@@ -180,7 +186,7 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 </div>
 
 <a class="corner-frame2" href="phrasal-verbs.html" aria-label="구동사 사전으로 이동">
-  <img src="blue-frame.png" alt="">
+  <img src="horse-frame.png" alt="">
 </a>
 
 </body>
