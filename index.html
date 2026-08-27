@@ -51,11 +51,21 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
    converted to percentages of .stage's own box. */
 .picture{
   position: absolute;
-  left: 42%;
-  top: 58%;
+  /* Default position: chosen so that BOTH frames together, as one
+     group, sit centered on the page (both axes). Offsets are in px
+     from the exact viewport center (50%, 50%), sized against this
+     frame's own rendered footprint (~408 x 387px, from .stage's
+     214.2px * the 190.3%/180.6% frame-img scale) so it balances
+     against .corner-frame2's footprint below -- see that block's
+     comment for the matching math. */
+  left: calc(50% - 224px);
+  top: calc(50% + 100px);
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 22px 46px rgba(0,0,0,0.45));
+  cursor: grab; /* whole set (frame + book + pencase) drags together --
+    see the drag script at the bottom of the page. */
 }
+.picture.dragging{ cursor: grabbing; }
 .frame-img{
   position: absolute;
   left: -44.6%; top: -46.4%;
@@ -118,9 +128,9 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 .corner-pencase:hover img,
 .corner-frame2:hover img{
   filter:
-    drop-shadow(0 0 4px #ff2fd6)
-    drop-shadow(0 0 10px #ff2fd6)
-    drop-shadow(0 0 18px #ff2fd6);
+    drop-shadow(0 0 3px #ffffff)
+    drop-shadow(0 0 6px #ffffff)
+    drop-shadow(0 0 10px #ffffff);
 }
 /* frame2's own cast-shadow drop-shadow lives on the outer <a> (see
    .corner-frame2 above); the pink glow above is layered on the inner
@@ -151,19 +161,34 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
      see the .stage comment above for how that 680px number was
      measured. This one is a single flattened image (no inner-scaling
      trick), so its CSS width IS its visible outer width directly. It
-     sits flat/level with no rotation. */
+     sits flat/level with no rotation.
+     Default position: paired with .picture's offset above so the two
+     frames sit mirrored left/right of page-center (~40px gap between
+     their outer edges) and stacked so the taller .picture rides lower
+     and this shorter, wider frame rides higher -- together the whole
+     two-frame group's bounding box centers exactly on the page. Sized
+     against this frame's own ~408 x 274px rendered footprint (408px
+     width cap, ~1.49:1 photo aspect ratio). */
   position: absolute;
-  left: 76%;
-  top: 26%;
+  left: calc(50% + 224px);
+  top: calc(50% - 156px);
   width: min(43.2vw, 48vh, 408px); /* 0.6x of previous size */
   transform: translate(-50%, -50%);
   z-index: 5;
-  cursor: pointer;
+  cursor: grab;
   filter: drop-shadow(0 16px 32px rgba(0,0,0,0.4));
 }
+.corner-frame2.dragging{ cursor: grabbing; }
 .corner-frame2 img{ width: 100%; height: auto; transform-origin: 50% 50%; transition: filter .25s ease; }
 @media (max-width: 760px){
-  .corner-frame2{ width: min(59.4vw, 45.6vh, 336px); left: 78%; top: 22%; } /* 0.6x of previous mobile size */
+  .corner-frame2{
+    width: min(59.4vw, 45.6vh, 336px); /* 0.6x of previous mobile size */
+    /* same centering math as the desktop rule above, recomputed
+       against this breakpoint's smaller rendered footprints (.picture
+       ~336 x 319px, this frame ~336 x 226px). */
+    left: calc(50% + 176px);
+    top: calc(50% - 116px);
+  }
 }
 
 </style>
@@ -188,6 +213,118 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 <a class="corner-frame2" href="phrasal-verbs.html" aria-label="구동사 사전으로 이동">
   <img src="horse-frame.png" alt="">
 </a>
+
+<script>
+/* ===================== free-drag repositioning ===================== */
+/* Lets the two frames be dragged anywhere on the wall, like moving
+   folder icons on a desktop. Both .picture (the pink frame, which
+   carries the book/pencase inside it as one set) and .corner-frame2
+   (the horse frame) already use position:absolute + left/top +
+   translate(-50%,-50%), so left/top are the CENTER point -- dragging
+   just needs to add the pointer's movement (in screen px) onto that
+   center point directly, no unit conversion needed.
+
+   Positions persist per-browser via localStorage, so a saved layout
+   survives page reloads (but only on this device/browser, like a real
+   desktop -- it won't follow you to a different computer).
+
+   A drag vs. a plain click share the same pointerdown/pointerup pair,
+   so a short movement threshold decides which one happened; if it was
+   a drag, the click that the browser fires right after is swallowed
+   (in the capture phase) so it doesn't also trigger navigation on the
+   book/pencase/horse-frame links. */
+(function(){
+  const THRESHOLD = 5; // px of movement before a press counts as a drag
+  const EDGE_MARGIN = 40; // keep at least this much on-screen at all times
+
+  function centerOf(el){
+    const rect = el.getBoundingClientRect();
+    const parentRect = el.offsetParent.getBoundingClientRect();
+    return {
+      left: rect.left + rect.width / 2 - parentRect.left,
+      top: rect.top + rect.height / 2 - parentRect.top
+    };
+  }
+
+  function clamp(pos){
+    return {
+      left: Math.min(Math.max(pos.left, EDGE_MARGIN), window.innerWidth - EDGE_MARGIN),
+      top: Math.min(Math.max(pos.top, EDGE_MARGIN), window.innerHeight - EDGE_MARGIN)
+    };
+  }
+
+  // Swallows the single click that follows a drag, anywhere inside the
+  // dragged element (including its nested <a> links), so a drag never
+  // also fires a navigation.
+  function swallowNextClick(container){
+    function onClickCapture(e){
+      if (container.contains(e.target)){
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      document.removeEventListener('click', onClickCapture, true);
+    }
+    document.addEventListener('click', onClickCapture, true);
+  }
+
+  function makeDraggable(el, storageKey){
+    let dragging = false, moved = false;
+    let startX = 0, startY = 0, baseLeft = 0, baseTop = 0;
+
+    // restore a previously saved position, clamped to the current
+    // viewport in case the window is now smaller than when it was saved
+    try{
+      const saved = JSON.parse(localStorage.getItem(storageKey));
+      if (saved && typeof saved.left === 'number' && typeof saved.top === 'number'){
+        const c = clamp(saved);
+        el.style.left = c.left + 'px';
+        el.style.top = c.top + 'px';
+      }
+    }catch(e){}
+
+    el.style.touchAction = 'none'; // dragging owns touch gestures here, not page scroll
+
+    el.addEventListener('pointerdown', (e) => {
+      if (e.button !== undefined && e.button !== 0) return; // left button / touch only
+      dragging = true;
+      moved = false;
+      startX = e.clientX;
+      startY = e.clientY;
+      const c = centerOf(el);
+      baseLeft = c.left;
+      baseTop = c.top;
+      el.setPointerCapture(e.pointerId);
+    });
+
+    el.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (!moved && Math.hypot(dx, dy) < THRESHOLD) return;
+      moved = true;
+      el.classList.add('dragging');
+      const next = clamp({ left: baseLeft + dx, top: baseTop + dy });
+      el.style.left = next.left + 'px';
+      el.style.top = next.top + 'px';
+    });
+
+    function endDrag(e){
+      if (!dragging) return;
+      dragging = false;
+      el.classList.remove('dragging');
+      if (moved){
+        localStorage.setItem(storageKey, JSON.stringify(centerOf(el)));
+        swallowNextClick(el);
+      }
+    }
+    el.addEventListener('pointerup', endDrag);
+    el.addEventListener('pointercancel', endDrag);
+  }
+
+  makeDraggable(document.querySelector('.picture'), 'pos-picture');
+  makeDraggable(document.querySelector('.corner-frame2'), 'pos-frame2');
+})();
+</script>
 
 </body>
 </html>
