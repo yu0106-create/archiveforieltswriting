@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PHRASAL VERBS DUMP</title>
+<title>VOCA DUMP</title>
 <style>
 @font-face{
   font-family: 'BookkGothic';
@@ -208,7 +208,7 @@ html, body{
   --c-subhead-wash: #fdeff3;
 
   position:relative;
-  width:100%; max-width: 480px; max-height: 80vh; overflow-y:auto;
+  width:100%; max-width: 720px; max-height: 80vh; overflow-y:auto;
   background: var(--c-bg);
   color: var(--c-ink);
   border: 1px solid var(--c-line);
@@ -243,6 +243,27 @@ html, body{
   transition: border-color .15s ease, color .15s ease;
 }
 .card-close:hover{ color:var(--c-ink); border-color:var(--c-ink); }
+.card-back{
+  display:inline-block; margin-bottom:10px;
+  font-family: var(--kr); font-weight:700; font-size:12px;
+  color: var(--c-ink-soft); background:transparent; border:none; cursor:pointer;
+  padding:0;
+}
+.card-back:hover{ color: var(--c-ink); }
+
+.concept-list{ display:flex; flex-direction:column; gap:8px; }
+.concept-item{
+  display:flex; align-items:center; gap:10px;
+  width:100%; text-align:left;
+  background: #faf9f6; border: 1px solid var(--c-line); border-radius: 8px;
+  padding: 13px 14px; cursor:pointer;
+  font-family: var(--kr);
+  transition: border-color .15s ease, background .15s ease;
+}
+.concept-item:hover{ border-color:#d8d6d0; background:#f5f3ee; }
+.concept-item-label{ flex:1; font-weight:700; font-size:14.5px; color: var(--c-ink); }
+.concept-item-count{ font-family: var(--en, var(--kr)); font-weight:300; font-size:11.5px; color: var(--c-ink-faint); }
+.concept-item-arrow{ width:14px; height:14px; color: var(--c-ink-faint); flex:none; }
 
 .entry{ margin-bottom: 18px; padding-bottom:16px; border-bottom: 1px solid var(--c-line); }
 .entry:last-of-type{ border-bottom:none; margin-bottom:6px; padding-bottom:0; }
@@ -347,7 +368,7 @@ html, body{
   <a class="tb-home" href="index.html" aria-label="홈으로">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
   </a>
-  <div class="tb-brand">Phrasal Verbs Dump</div>
+  <div class="tb-brand">Voca Dump</div>
   <div class="tb-right">
     <button class="tb-icon" id="btnAllList" aria-label="전체 목록 보기" title="전체 목록 보기">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
@@ -485,6 +506,184 @@ html, body{
         ],
         contrastPair: { a: "problem", b: "challenge",
           noteKo: "problem은 해결해야 할 부정적 대상, challenge는 극복하며 성장할 수 있는 도전에 가까움." }
+      },
+      {
+        id: "difficult",
+        concept: "어려운",
+        template: "The exam questions were {word} this year.",
+        cluster: [
+          { text: "difficult", form: "difficult" },
+          { text: "complicated", form: "complicated" }
+        ],
+        distinct: [
+          {
+            text: "demanding",
+            example: "Raising three kids alone is a demanding job.",
+            nuance: "어렵다기보다 '힘과 에너지를 많이 요구한다'는 뉘앙스. 사람/일에 자주 씀."
+          },
+          {
+            text: "formidable",
+            example: "She faced a formidable opponent in the final round.",
+            nuance: "상대·과제가 압도적으로 강력해서 겁이 날 정도로 어려움을 강조."
+          }
+        ],
+        contrastPair: { a: "complicated", b: "formidable",
+          noteKo: "complicated는 구조가 복잡해서 이해하기 어려운 것, formidable은 규모나 힘 자체가 압도적이라 어려운 것." }
+      },
+      {
+        id: "simple",
+        concept: "단순한 / 쉬운",
+        template: "The instructions were {word} enough for a child to follow.",
+        cluster: [
+          { text: "simple", form: "simple" },
+          { text: "basic", form: "basic" },
+          { text: "plain", form: "plain" }
+        ],
+        distinct: [
+          {
+            text: "elementary",
+            example: "This is elementary physics — nothing advanced.",
+            nuance: "'기초 단계'라는 뉘앙스가 강함. 종종 상대를 살짝 낮잡아 보는 어조로도 쓰임(예: '기초적인 것도 모르나')."
+          }
+        ]
+      },
+      {
+        id: "angry",
+        concept: "화난",
+        template: "My neighbor got {word} about the noise last night.",
+        cluster: [
+          { text: "angry", form: "angry" },
+          { text: "annoyed", form: "annoyed" }
+        ],
+        distinct: [
+          {
+            text: "furious",
+            example: "She was furious when she found out about the lie.",
+            nuance: "annoyed보다 훨씬 강한 분노. 거의 폭발 직전의 감정."
+          },
+          {
+            text: "enraged",
+            example: "The enraged crowd demanded an explanation from the mayor.",
+            nuance: "furious보다도 더 격렬하고 공적인 상황(군중, 사건)에 자주 쓰임."
+          }
+        ],
+        contrastPair: { a: "annoyed", b: "furious",
+          noteKo: "annoyed는 짜증나는 수준의 가벼운 화, furious는 걷잡을 수 없이 격렬한 분노." }
+      },
+      {
+        id: "happy",
+        concept: "행복한 / 기쁜",
+        template: "The kids were {word} when school was cancelled.",
+        cluster: [
+          { text: "happy", form: "happy" },
+          { text: "cheerful", form: "cheerful" }
+        ],
+        distinct: [
+          {
+            text: "delighted",
+            example: "We were delighted to receive your invitation.",
+            nuance: "formal한 감사·기쁨 표현. 편지/이메일에 자주 씀."
+          },
+          {
+            text: "ecstatic",
+            example: "She was ecstatic when she got the acceptance letter.",
+            nuance: "기쁨이 극에 달한 상태. 일상적인 기쁨보다 훨씬 강함."
+          }
+        ],
+        contrastPair: { a: "delighted", b: "ecstatic",
+          noteKo: "delighted는 정중하고 차분한 기쁨, ecstatic은 억누를 수 없을 정도로 벅찬 기쁨." }
+      },
+      {
+        id: "rich",
+        concept: "부유한",
+        template: "His family has always been {word}.",
+        cluster: [
+          { text: "rich", form: "rich" },
+          { text: "wealthy", form: "wealthy" }
+        ],
+        distinct: [
+          {
+            text: "affluent",
+            example: "They live in an affluent suburb just outside the city.",
+            nuance: "개인보다는 지역·사회 계층을 묘사할 때 자주 쓰이는 격식체."
+          },
+          {
+            text: "prosperous",
+            example: "The country became prosperous after decades of steady growth.",
+            nuance: "단순히 돈이 많다기보다, 경제가 '번영'하고 있다는 뉘앙스."
+          }
+        ],
+        contrastPair: { a: "wealthy", b: "prosperous",
+          noteKo: "wealthy는 이미 축적된 부(재산)를 가리키고, prosperous는 계속 잘 되어가는 번영의 흐름을 가리킴." }
+      },
+      {
+        id: "poor",
+        concept: "가난한",
+        template: "Many families in the region remain {word}.",
+        cluster: [
+          { text: "poor", form: "poor" },
+          { text: "needy", form: "needy" }
+        ],
+        distinct: [
+          {
+            text: "impoverished",
+            example: "The war left millions of people impoverished.",
+            nuance: "특정 사건(전쟁, 재해 등)으로 '가난해진' 과정을 내포하는 격식체."
+          },
+          {
+            text: "destitute",
+            example: "After losing his job, he became completely destitute.",
+            nuance: "poor보다 훨씬 극단적 — 생계 유지가 불가능할 정도의 극빈 상태."
+          }
+        ],
+        contrastPair: { a: "poor", b: "destitute",
+          noteKo: "poor는 일반적으로 돈이 부족한 상태, destitute는 기본적인 생활조차 불가능한 극단적 빈곤." }
+      },
+      {
+        id: "important",
+        concept: "중요한",
+        template: "Getting enough sleep is {word} for your health.",
+        cluster: [
+          { text: "important", form: "important" },
+          { text: "significant", form: "significant" }
+        ],
+        distinct: [
+          {
+            text: "crucial",
+            example: "Early diagnosis is crucial for successful treatment.",
+            nuance: "그것 없이는 일이 실패할 정도로 결정적으로 중요함을 강조."
+          },
+          {
+            text: "essential",
+            example: "Clean water is essential for survival.",
+            nuance: "필수불가결함 — 없으면 아예 성립하지 않는 것에 씀(생존, 기본 조건 등)."
+          }
+        ],
+        contrastPair: { a: "significant", b: "crucial",
+          noteKo: "significant는 '주목할 만큼 중요한' 정도, crucial은 '이것이 없으면 결과가 완전히 달라지는' 결정적 중요함." }
+      },
+      {
+        id: "beautiful",
+        concept: "아름다운",
+        template: "The view from the mountain was absolutely {word}.",
+        cluster: [
+          { text: "beautiful", form: "beautiful" },
+          { text: "attractive", form: "attractive" }
+        ],
+        distinct: [
+          {
+            text: "stunning",
+            example: "She wore a stunning red dress to the gala.",
+            nuance: "보는 순간 감탄이 나올 정도로 강렬하게 아름다움."
+          },
+          {
+            text: "exquisite",
+            example: "The necklace was made with exquisite craftsmanship.",
+            nuance: "정교함·섬세함에서 오는 아름다움. 예술품·세공품에 자주 씀."
+          }
+        ],
+        contrastPair: { a: "stunning", b: "exquisite",
+          noteKo: "stunning은 강렬한 인상으로 감탄을 자아내는 아름다움, exquisite은 섬세하고 정교해서 아름다운 것." }
       }
     ]
   };
@@ -615,7 +814,12 @@ html, body{
   }
 
   /* ============ physics ============ */
-  function stageRect(){ return stageEl.getBoundingClientRect(); }
+  var cachedRect = null;
+  function stageRect(){
+    if (!cachedRect) cachedRect = stageEl.getBoundingClientRect();
+    return cachedRect;
+  }
+  window.addEventListener('resize', function(){ cachedRect = null; });
 
   function findFreeSpot(r){
     var rect = stageRect();
@@ -638,7 +842,20 @@ html, body{
     return best || { x: (minX + maxX) / 2, y: (minY + maxY) / 2 };
   }
 
-  function tick(){
+  var lastTs = null;
+
+  function tick(ts){
+    // 고정(long-press) 모드에서는 전 단어가 정지 상태이므로 물리 계산을 통째로 건너뜀 — 버벅임 방지
+    if (frozen){
+      lastTs = ts;
+      requestAnimationFrame(tick);
+      return;
+    }
+
+    if (lastTs == null) lastTs = ts;
+    var dt = Math.min((ts - lastTs) / 1000, 1 / 30); // 탭 전환 등으로 프레임이 크게 벌어져도 한 번에 확 튀지 않게 상한
+    lastTs = ts;
+
     var rect = stageRect();
     var minX = SIDE_MARGIN, maxX = rect.width - SIDE_MARGIN;
     var minY = TOPBAR_MARGIN, maxY = rect.height - SIDE_MARGIN;
@@ -655,8 +872,8 @@ html, body{
       var maxSpeed = 7, minSpeed = 1.6;
       if (speed > maxSpeed){ p.vx = p.vx / speed * maxSpeed; p.vy = p.vy / speed * maxSpeed; }
       else if (speed < minSpeed && speed > 0.01){ p.vx = p.vx / speed * minSpeed; p.vy = p.vy / speed * minSpeed; }
-      p.x += p.vx * 0.06;
-      p.y += p.vy * 0.06;
+      p.x += p.vx * dt * 60 * 0.06;
+      p.y += p.vy * dt * 60 * 0.06;
       if (p.x - p.r < minX){ p.x = minX + p.r; p.vx = Math.abs(p.vx); }
       if (p.x + p.r > maxX){ p.x = maxX - p.r; p.vx = -Math.abs(p.vx); }
       if (p.y - p.r < minY){ p.y = minY + p.r; p.vy = Math.abs(p.vy); }
@@ -670,6 +887,7 @@ html, body{
     for (var a = 0; a < particles.length; a++){
       for (var b = a + 1; b < particles.length; b++){
         var pa = particles[a], pb = particles[b];
+        if (pa.fixed && pb.fixed) continue;
         var dx = pb.x - pa.x, dy = pb.y - pa.y;
         var dist = Math.hypot(dx, dy);
         var minDist = pa.r + pb.r + pad;
@@ -677,7 +895,6 @@ html, body{
           if (dist < 0.001){ dx = (Math.random() - 0.5); dy = (Math.random() - 0.5); dist = 0.001; }
           var nx = dx / dist, ny = dy / dist;
           var overlap = (minDist - dist) * correctionRate;
-          if (pa.fixed && pb.fixed) continue;
           if (pa.fixed){ pb.x += nx * overlap * 2; pb.y += ny * overlap * 2; }
           else if (pb.fixed){ pa.x -= nx * overlap * 2; pa.y -= ny * overlap * 2; }
           else{ pa.x -= nx * overlap; pa.y -= ny * overlap; pb.x += nx * overlap; pb.y += ny * overlap; }
@@ -803,12 +1020,16 @@ html, body{
     el.addEventListener('pointercancel', cancelCharge);
   }
 
-  function freezeOn(entry, anchorEl, particle){
+  var anchorEl = null; // 현재 고정된(long-press) 단어 엘리먼트 참조
+
+  function freezeOn(entry, el, particle){
     frozen = true;
     activeGroupId = entry.group.id;
-    anchorEl.classList.add('anchor');
-    particle.fixed = true;
-    entry.matched[anchorEl.dataset.text] = true;
+    anchorEl = el;
+    el.classList.add('anchor');
+    // 나머지 단어들도 전부 위치 고정 (요청: 한 단어를 고정하면 나머지도 같이 멈춤)
+    particles.forEach(function(p){ p.fixed = true; });
+    entry.matched[el.dataset.text] = true;
     checkGroupComplete(entry);
   }
 
@@ -817,7 +1038,7 @@ html, body{
     var text = el.dataset.text;
 
     if (el.classList.contains('anchor')){
-      unfreeze(entry);
+      unfreeze();
       return;
     }
     if (entry.matched[text]) return;
@@ -825,8 +1046,6 @@ html, body{
     entry.matched[text] = true;
     el.classList.add('matched');
     el.style.color = COLOR_HEX[entry.color];
-    var p = particleFor(el);
-    if (p) p.fixed = true;
     checkGroupComplete(entry);
   }
 
@@ -865,7 +1084,7 @@ html, body{
       saveStats(stats);
 
       addDockItem(entry.group, entry.color);
-      unfreeze(entry);
+      unfreeze(); // 이 그룹이 사라지면서 나머지(다른 그룹 포함) 단어들이 다시 움직이기 시작함
 
       if (Object.keys(onScreen).length === 0){
         showClearScreen();
@@ -878,16 +1097,11 @@ html, body{
     clearScreenEl.classList.add('show');
   }
 
-  function unfreeze(entry){
+  function unfreeze(){
     frozen = false;
     activeGroupId = null;
-    if (entry){
-      entry.wordEls.forEach(function(el){
-        el.classList.remove('anchor');
-        var p = particleFor(el); // 완료돼서 이미 제거된 단어는 particleFor가 null을 반환 → 자동으로 스킵됨
-        if (p) p.fixed = false;
-      });
-    }
+    if (anchorEl){ anchorEl.classList.remove('anchor'); anchorEl = null; }
+    particles.forEach(function(p){ p.fixed = false; });
   }
 
   /* ============ dock + overlay ============ */
@@ -943,41 +1157,72 @@ html, body{
     overlayEl.classList.add('open');
     document.getElementById('cardClose').addEventListener('click', closeCard);
   }
-  function openAllListCard(){
+  function renderConceptListHtml(){
     var html = '<button class="card-close" id="cardClose">&times;</button>' +
-      '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>전체 표현 목록</div>' +
-      '<div class="card-sub">' + DATA.groups.length + '개 그룹</div>';
-
-    DATA.groups.forEach(function(group, gi){
-      var list = buildUnifiedList(group);
-      var hasCluster = group.cluster.length > 1;
-      html += '<div style="margin:' + (gi === 0 ? '0' : '22px') + ' 0 10px; font-family:var(--kr); font-weight:700; font-size:15px; color:#131315;">' +
-        escapeHtml(group.concept) + '</div>';
-      list.forEach(function(it){
-        var tag = it.type === 'cluster' ? '<span class="tag-same">= 동일 표현</span>' : '';
-        html += '<div class="entry">' +
-          '<div class="entry-word">' + escapeHtml(it.text) + tag + '</div>' +
-          '<div class="entry-ex">' + sentenceForWord(group, it.text) + '</div>' +
-          (it.nuance ? '<div class="entry-nuance">' + escapeHtml(it.nuance) + '</div>' : '') +
-          '</div>';
-      });
-      if (hasCluster){
-        html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
-      }
-      if (group.contrastPair){
-        var cp = group.contrastPair;
-        html += '<div class="contrast-box">' +
-          '<div class="contrast-title">헷갈리기 쉬운 짝</div>' +
-          '<div class="contrast-row"><div class="contrast-ex">' + sentenceForWord(group, cp.a) + '</div></div>' +
-          '<div class="contrast-row"><div class="contrast-ex">' + sentenceForWord(group, cp.b) + '</div></div>' +
-          '<div class="contrast-note">' + escapeHtml(cp.noteKo) + '</div>' +
-          '</div>';
-      }
+      '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>VOCA DUMP · 전체 목록</div>' +
+      '<div class="card-sub">' + DATA.groups.length + '개 그룹</div>' +
+      '<div class="concept-list">';
+    DATA.groups.forEach(function(group){
+      var count = group.cluster.length + group.distinct.length;
+      html += '<button class="concept-item" data-id="' + escapeHtml(group.id) + '">' +
+        '<span class="concept-item-label">' + escapeHtml(group.concept) + '</span>' +
+        '<span class="concept-item-count">' + count + '개</span>' +
+        '<svg class="concept-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>' +
+        '</button>';
     });
+    html += '</div>';
+    return html;
+  }
+
+  function openAllListCard(){
+    cardEl.innerHTML = renderConceptListHtml();
+    overlayEl.classList.add('open');
+    bindListCardEvents();
+  }
+
+  function openConceptDetail(group){
+    var list = buildUnifiedList(group);
+    var hasCluster = group.cluster.length > 1;
+
+    var html = '<button class="card-close" id="cardClose">&times;</button>' +
+      '<button class="card-back" id="cardBack">← 전체 목록</button>' +
+      '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>' + escapeHtml(group.concept) + '</div>' +
+      '<div class="card-sub">동의어 ' + list.length + '개</div>';
+
+    list.forEach(function(it){
+      var tag = it.type === 'cluster' ? '<span class="tag-same">= 동일 표현</span>' : '';
+      html += '<div class="entry">' +
+        '<div class="entry-word">' + escapeHtml(it.text) + tag + '</div>' +
+        '<div class="entry-ex">' + sentenceForWord(group, it.text) + '</div>' +
+        (it.nuance ? '<div class="entry-nuance">' + escapeHtml(it.nuance) + '</div>' : '') +
+        '</div>';
+    });
+    if (hasCluster){
+      html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
+    }
+    if (group.contrastPair){
+      var cp = group.contrastPair;
+      html += '<div class="contrast-box">' +
+        '<div class="contrast-title">헷갈리기 쉬운 짝</div>' +
+        '<div class="contrast-row"><div class="contrast-ex">' + sentenceForWord(group, cp.a) + '</div></div>' +
+        '<div class="contrast-row"><div class="contrast-ex">' + sentenceForWord(group, cp.b) + '</div></div>' +
+        '<div class="contrast-note">' + escapeHtml(cp.noteKo) + '</div>' +
+        '</div>';
+    }
 
     cardEl.innerHTML = html;
-    overlayEl.classList.add('open');
     document.getElementById('cardClose').addEventListener('click', closeCard);
+    document.getElementById('cardBack').addEventListener('click', openAllListCard);
+  }
+
+  function bindListCardEvents(){
+    document.getElementById('cardClose').addEventListener('click', closeCard);
+    Array.prototype.forEach.call(cardEl.querySelectorAll('.concept-item'), function(btn){
+      btn.addEventListener('click', function(){
+        var g = DATA.groups.filter(function(x){ return x.id === btn.dataset.id; })[0];
+        if (g) openConceptDetail(g);
+      });
+    });
   }
 
   function closeCard(){ overlayEl.classList.remove('open'); }
