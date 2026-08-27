@@ -211,21 +211,41 @@ html, body{
   color: var(--c-ink);
   border: 1px solid var(--c-line);
   border-radius: 12px;
-  padding: 26px 26px 22px;
+  padding: 0;
   box-shadow: 0 20px 50px rgba(0,0,0,0.35);
   transform: translateY(10px) scale(0.98);
   transition: transform .2s ease;
+  /* 세련되고 얇은 커스텀 스크롤바 (Firefox) */
+  scrollbar-width: thin;
+  scrollbar-color: #d9d7d0 transparent;
 }
 .overlay.open .card{ transform:none; }
 
-/* 제목/개수 부분은 스크롤해도 위에 붙어있는 고정 상단바 역할 */
+/* 커스텀 스크롤바 (Chrome/Safari/Edge) */
+.card::-webkit-scrollbar{ width: 8px; }
+.card::-webkit-scrollbar-track{ background: transparent; }
+.card::-webkit-scrollbar-thumb{
+  background-color: #d9d7d0;
+  border-radius: 999px;
+  border: 2px solid #ffffff; /* 트랙과의 여백처럼 보이게 해서 얇고 정돈된 느낌을 줌 */
+  background-clip: padding-box;
+}
+.card::-webkit-scrollbar-thumb:hover{ background-color: #b9b6ad; }
+
+/* 제목/개수 부분은 스크롤해도 위에 붙어있는 고정 상단바 역할.
+   닫기 버튼(card-close)도 이 안에 함께 넣어야 스크롤해도 같이 고정됨. */
 .card-header{
   position: sticky; top: 0; z-index: 8;
+  display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
   background: var(--c-bg);
-  margin: -26px -26px 20px; /* .card 자체 패딩을 상쇄해서 좌우 끝까지 꽉 차게 */
-  padding: 26px 26px 16px;
+  padding: 22px 22px 16px 26px;
   border-bottom: 1px solid var(--c-line);
+  border-radius: 12px 12px 0 0; /* .card의 둥근 위쪽 모서리와 맞춰서, 스크롤 시 헤더 배경이 카드 모서리 밖으로 각지게 삐져나오거나 잘려 보이지 않게 함 */
 }
+.card-header-main{ flex:1; min-width:0; }
+/* 나머지 본문 콘텐츠 전용 패딩 (기존에는 .card 자체가 패딩을 가졌지만,
+   헤더를 분리하면서 본문 쪽 패딩을 이 래퍼가 담당) */
+.card-body{ padding: 20px 26px 22px; }
 .card-concept{
   font-family: var(--kr); font-weight:700; font-size: 21px;
   color: var(--c-ink);
@@ -241,7 +261,7 @@ html, body{
   letter-spacing:0.04em;
 }
 .card-close{
-  position:absolute; top:18px; right:18px; z-index:10;
+  flex: none; /* 헤더 flex 레이아웃 안에서 크기 고정, 스크롤과 무관하게 헤더에 붙어 있음 */
   width:28px; height:28px; border-radius:50%;
   border:1px solid var(--c-line); background:#ffffff; color:var(--c-ink-faint);
   display:flex; align-items:center; justify-content:center; cursor:pointer;
@@ -1167,11 +1187,14 @@ html, body{
 
     var hex = COLOR_HEX[color];
     var hasCluster = group.cluster.length > 1;
-    var html = '<button class="card-close" id="cardClose">&times;</button>' +
-      '<div class="card-header">' +
+    var html = '<div class="card-header">' +
+      '<div class="card-header-main">' +
       '<div class="card-concept"><span class="dot" style="color:' + hex + '"></span>' + escapeHtml(group.concept) + '</div>' +
       '<div class="card-sub">동의어 ' + list.length + '개</div>' +
-      '</div>';
+      '</div>' +
+      '<button class="card-close" id="cardClose">&times;</button>' +
+      '</div>' +
+      '<div class="card-body">';
 
     if (hasCluster){
       html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
@@ -1197,6 +1220,8 @@ html, body{
         '<div class="contrast-note">' + escapeHtml(cp.noteKo) + '</div>' +
         '</div>';
     }
+
+    html += '</div>';
 
     cardEl.innerHTML = html;
     overlayEl.classList.add('open');
@@ -1226,11 +1251,14 @@ html, body{
   }
 
   function renderCriteriaScreen(){
-    var html = '<button class="card-close" id="cardClose">&times;</button>' +
-      '<div class="card-header">' +
+    var html = '<div class="card-header">' +
+      '<div class="card-header-main">' +
       '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>VOCA DUMP · 전체 목록</div>' +
       '<div class="card-sub">어떤 기준으로 볼까요?</div>' +
       '</div>' +
+      '<button class="card-close" id="cardClose">&times;</button>' +
+      '</div>' +
+      '<div class="card-body">' +
       '<div class="concept-list">';
     CRITERIA.forEach(function(c){
       html += '<button class="concept-item" data-crit="' + c.key + '">' +
@@ -1238,7 +1266,7 @@ html, body{
         '<svg class="concept-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>' +
         '</button>';
     });
-    html += '</div>';
+    html += '</div></div>';
     cardEl.innerHTML = html;
     bindCommon();
     Array.prototype.forEach.call(cardEl.querySelectorAll('.concept-item'), function(btn){
@@ -1257,12 +1285,15 @@ html, body{
       if (values.indexOf(v) === -1) values.push(v);
     });
 
-    var html = '<button class="card-close" id="cardClose">&times;</button>' +
-      '<div class="card-header">' +
+    var html = '<div class="card-header">' +
+      '<div class="card-header-main">' +
       '<button class="card-back" id="cardBack">← 뒤로</button>' +
       '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>' + escapeHtml(crit.label) + '</div>' +
       '<div class="card-sub">' + values.length + '개 분류</div>' +
       '</div>' +
+      '<button class="card-close" id="cardClose">&times;</button>' +
+      '</div>' +
+      '<div class="card-body">' +
       '<div class="concept-list">';
     values.forEach(function(v){
       var count = DATA.groups.filter(function(g){ return g[critKey] === v; }).length;
@@ -1272,7 +1303,7 @@ html, body{
         '<svg class="concept-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>' +
         '</button>';
     });
-    html += '</div>';
+    html += '</div></div>';
     cardEl.innerHTML = html;
     bindCommon();
     Array.prototype.forEach.call(cardEl.querySelectorAll('.concept-item'), function(btn){
@@ -1285,12 +1316,15 @@ html, body{
 
   function renderConceptsScreen(critKey, val){
     var groups = DATA.groups.filter(function(g){ return g[critKey] === val; });
-    var html = '<button class="card-close" id="cardClose">&times;</button>' +
-      '<div class="card-header">' +
+    var html = '<div class="card-header">' +
+      '<div class="card-header-main">' +
       '<button class="card-back" id="cardBack">← 뒤로</button>' +
       '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>' + escapeHtml(labelFor(critKey, val)) + '</div>' +
       '<div class="card-sub">' + groups.length + '개 그룹</div>' +
       '</div>' +
+      '<button class="card-close" id="cardClose">&times;</button>' +
+      '</div>' +
+      '<div class="card-body">' +
       '<div class="concept-list">';
     groups.forEach(function(group){
       var count = group.cluster.length + group.distinct.length;
@@ -1300,7 +1334,7 @@ html, body{
         '<svg class="concept-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>' +
         '</button>';
     });
-    html += '</div>';
+    html += '</div></div>';
     cardEl.innerHTML = html;
     bindCommon();
     Array.prototype.forEach.call(cardEl.querySelectorAll('.concept-item'), function(btn){
@@ -1321,12 +1355,15 @@ html, body{
     var list = buildUnifiedList(group);
     var hasCluster = group.cluster.length > 1;
 
-    var html = '<button class="card-close" id="cardClose">&times;</button>' +
-      '<div class="card-header">' +
+    var html = '<div class="card-header">' +
+      '<div class="card-header-main">' +
       '<button class="card-back" id="cardBack">← 뒤로</button>' +
       '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>' + escapeHtml(group.concept) + '</div>' +
       '<div class="card-sub">동의어 ' + list.length + '개</div>' +
-      '</div>';
+      '</div>' +
+      '<button class="card-close" id="cardClose">&times;</button>' +
+      '</div>' +
+      '<div class="card-body">';
 
     if (hasCluster){
       html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
@@ -1349,6 +1386,8 @@ html, body{
         '<div class="contrast-note">' + escapeHtml(cp.noteKo) + '</div>' +
         '</div>';
     }
+
+    html += '</div>';
 
     cardEl.innerHTML = html;
     bindCommon();
