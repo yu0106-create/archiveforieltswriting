@@ -106,15 +106,18 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
   transform: rotate(-18deg);
 }
 .corner-book img, .corner-pencase img{ width: 100%; height: auto; }
+/* pivot near the bottom of the book (not dead-center), so a rotation
+   reads as "top swings, bottom stays put" rather than the whole
+   object rotating around its middle. */
+.corner-book img{ transform-origin: 50% 92%; }
 
 .corner-book:hover img{ animation: wiggle-book .6s ease-in-out; }
 .corner-pencase:hover img{ animation: wiggle-pencase .6s ease-in-out; }
 @keyframes wiggle-book{
-  0%   { transform: rotate(0deg) translate(0,0); }
-  25%  { transform: rotate(-3deg) translate(-2px, 1px); }
-  55%  { transform: rotate(2deg) translate(2px, -1px); }
-  80%  { transform: rotate(-1.5deg) translate(-1px, 1px); }
-  100% { transform: rotate(0deg) translate(0,0); }
+  0%   { transform: rotate(0deg); }
+  30%  { transform: rotate(6deg); }
+  60%  { transform: rotate(-1.5deg); }
+  100% { transform: rotate(0deg); }
 }
 @keyframes wiggle-pencase{
   0%   { transform: rotate(0deg) translate(0,0); }
