@@ -65,40 +65,39 @@ html, body{
   pointer-events:none;
 }
 
-/* ---------- top bar ---------- */
+/* ---------- top bar: ielts.html처럼 흰색 고정바 ---------- */
 .topbar{
-  position:fixed; top:0; left:0; right:0; z-index:30;
+  position:fixed; top:0; left:0; right:0; z-index:100;
   display:flex; align-items:center; justify-content:space-between;
-  padding: 18px 22px;
-  pointer-events:none;
+  padding: 13px 22px;
+  background: #ffffff;
+  border-bottom: 1px solid #e9e9ea;
 }
-.topbar > *{ pointer-events:auto; }
 .tb-home{
   width: 32px; height: 32px; border-radius: 50%;
-  border: 1px solid var(--line);
-  background: rgba(8,8,9,0.85);
+  border: 1px solid #e9e9ea;
+  background: #ffffff;
   display:flex; align-items:center; justify-content:center;
-  color: var(--ink-dim);
+  color: #9aa0a6;
   transition: border-color .15s ease, color .15s ease;
 }
-.tb-home:hover{ border-color: var(--ink); color: var(--ink); }
+.tb-home:hover{ border-color: #131315; color: #131315; }
 .tb-home svg{ width: 15px; height: 15px; }
 .tb-brand{
   font-family: var(--kr); font-weight:700; font-size: 12.5px;
-  letter-spacing: 0.08em; color: var(--ink-dim); text-transform:uppercase;
+  letter-spacing: 0.08em; color: #131315; text-transform:uppercase;
 }
-.tb-spacer{ width: 32px; height: 32px; }
 .tb-right{ display:flex; align-items:center; gap:8px; }
 .tb-icon{
   width: 32px; height: 32px; border-radius: 50%;
-  border: 1px solid var(--line);
-  background: rgba(8,8,9,0.85);
+  border: 1px solid #e9e9ea;
+  background: #ffffff;
   display:flex; align-items:center; justify-content:center;
-  color: var(--ink-dim);
+  color: #9aa0a6;
   cursor:pointer;
   transition: border-color .15s ease, color .15s ease;
 }
-.tb-icon:hover{ border-color: var(--ink); color: var(--ink); }
+.tb-icon:hover{ border-color: #131315; color: #131315; }
 .tb-icon svg{ width: 15px; height: 15px; }
 
 /* ---------- stage ---------- */
@@ -165,7 +164,7 @@ html, body{
 
 /* ---------- dock (constellation) ---------- */
 .dock{
-  position:fixed; top:64px; right:18px; z-index:25;
+  position:fixed; top:70px; right:18px; z-index:25;
   display:flex; flex-direction:column; align-items:flex-end; gap:10px;
 }
 .dock-item{
@@ -342,9 +341,6 @@ html, body{
   transition: transform .4s ease;
 }
 .clear-screen.show .clear-title{ transform:none; }
-.clear-sub{
-  font-family: var(--kr); font-weight:300; font-size:13px; color: var(--ink-dim);
-}
 .clear-restart{
   margin-top: 6px;
   font-family: var(--kr); font-weight:700; font-size:12.5px;
@@ -381,7 +377,6 @@ html, body{
 
 <div class="clear-screen" id="clearScreen">
   <div class="clear-title">Clear!</div>
-  <div class="clear-sub" id="clearSub"></div>
   <button class="clear-restart" id="btnRestart">다시 시작</button>
 </div>
 
@@ -397,6 +392,8 @@ html, body{
     groups: [
       {
         id: "cause",
+        pos: "verb",
+        theme: "변화·인과",
         concept: "원인이 되다",
         template: "The heavy rain {word} the flood.",
         cluster: [
@@ -416,6 +413,8 @@ html, body{
       },
       {
         id: "increase",
+        pos: "verb",
+        theme: "변화·인과",
         concept: "증가하다",
         template: "House prices in the city {word} rapidly last year.",
         cluster: [
@@ -440,6 +439,8 @@ html, body{
       },
       {
         id: "decrease",
+        pos: "verb",
+        theme: "변화·인과",
         concept: "감소하다 / 줄이다",
         template: "Sales {word} sharply after the scandal.",
         cluster: [
@@ -464,6 +465,8 @@ html, body{
       },
       {
         id: "need",
+        pos: "verb",
+        theme: "필요·문제해결",
         concept: "필요로 하다",
         template: "This job {word} strong communication skills.",
         cluster: [
@@ -482,6 +485,8 @@ html, body{
       },
       {
         id: "problem",
+        pos: "noun",
+        theme: "필요·문제해결",
         concept: "문제",
         template: "We need to solve this {word} quickly.",
         cluster: [
@@ -505,6 +510,8 @@ html, body{
       },
       {
         id: "difficult",
+        pos: "adjective",
+        theme: "평가·정도",
         concept: "어려운",
         template: "The exam questions were {word} this year.",
         cluster: [
@@ -528,6 +535,8 @@ html, body{
       },
       {
         id: "simple",
+        pos: "adjective",
+        theme: "평가·정도",
         concept: "단순한 / 쉬운",
         template: "The instructions were {word} enough for a child to follow.",
         cluster: [
@@ -545,6 +554,8 @@ html, body{
       },
       {
         id: "angry",
+        pos: "adjective",
+        theme: "감정",
         concept: "화난",
         template: "My neighbor got {word} about the noise last night.",
         cluster: [
@@ -568,6 +579,8 @@ html, body{
       },
       {
         id: "happy",
+        pos: "adjective",
+        theme: "감정",
         concept: "행복한 / 기쁜",
         template: "The kids were {word} when school was cancelled.",
         cluster: [
@@ -591,6 +604,8 @@ html, body{
       },
       {
         id: "rich",
+        pos: "adjective",
+        theme: "경제 상태",
         concept: "부유한",
         template: "His family has always been {word}.",
         cluster: [
@@ -614,6 +629,8 @@ html, body{
       },
       {
         id: "poor",
+        pos: "adjective",
+        theme: "경제 상태",
         concept: "가난한",
         template: "Many families in the region remain {word}.",
         cluster: [
@@ -637,6 +654,8 @@ html, body{
       },
       {
         id: "important",
+        pos: "adjective",
+        theme: "평가·정도",
         concept: "중요한",
         template: "Getting enough sleep is {word} for your health.",
         cluster: [
@@ -660,6 +679,8 @@ html, body{
       },
       {
         id: "beautiful",
+        pos: "adjective",
+        theme: "평가·정도",
         concept: "아름다운",
         template: "The view from the mountain was absolutely {word}.",
         cluster: [
@@ -736,7 +757,6 @@ html, body{
   var overlayEl = document.getElementById('overlay');
   var cardEl = document.getElementById('card');
   var clearScreenEl = document.getElementById('clearScreen');
-  var clearSubEl = document.getElementById('clearSub');
 
   var ROUND_SIZE = 3; // 한 라운드에 등장하는 그룹 수 (추후 조정 가능)
   var REVIEW_INTERVAL = { 1: 1, 2: 2, 3: 4 }; // box(숙련도)별 복습 주기(라운드 수)
@@ -1089,7 +1109,6 @@ html, body{
   }
 
   function showClearScreen(){
-    clearSubEl.textContent = roundGroupIds.length + '개 그룹 완료';
     clearScreenEl.classList.add('show');
   }
 
@@ -1121,11 +1140,15 @@ html, body{
     }
 
     var hex = COLOR_HEX[color];
+    var hasCluster = group.cluster.length > 1;
     var html = '<button class="card-close" id="cardClose">&times;</button>' +
       '<div class="card-concept"><span class="dot" style="color:' + hex + '"></span>' + escapeHtml(group.concept) + '</div>' +
       '<div class="card-sub">동의어 ' + list.length + '개</div>';
 
-    var hasCluster = group.cluster.length > 1;
+    if (hasCluster){
+      html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
+    }
+
     list.forEach(function(it){
       var isHi = it.text === highlightText;
       var tag = it.type === 'cluster' ? '<span class="tag-same">= 동일 표현</span>' : '';
@@ -1135,9 +1158,6 @@ html, body{
         (it.nuance ? '<div class="entry-nuance">' + escapeHtml(it.nuance) + '</div>' : '') +
         '</div>';
     });
-    if (hasCluster){
-      html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
-    }
 
     if (group.contrastPair){
       var cp = group.contrastPair;
@@ -1153,12 +1173,91 @@ html, body{
     overlayEl.classList.add('open');
     document.getElementById('cardClose').addEventListener('click', closeCard);
   }
-  function renderConceptListHtml(){
+  var POS_LABEL = { verb: '동사', adjective: '형용사', noun: '명사' };
+  var CRITERIA = [
+    { key: 'pos', label: '품사별' },
+    { key: 'theme', label: '주제별' }
+  ];
+
+  var screenStack = [];
+  function pushScreen(renderFn){ screenStack.push(renderFn); renderFn(); }
+  function goBack(){
+    screenStack.pop();
+    var prev = screenStack[screenStack.length - 1];
+    if (prev) prev(); else closeCard();
+  }
+  function bindCommon(){
+    document.getElementById('cardClose').addEventListener('click', closeCard);
+    var back = document.getElementById('cardBack');
+    if (back) back.addEventListener('click', goBack);
+  }
+
+  function labelFor(critKey, value){
+    return critKey === 'pos' ? (POS_LABEL[value] || value) : value;
+  }
+
+  function renderCriteriaScreen(){
     var html = '<button class="card-close" id="cardClose">&times;</button>' +
       '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>VOCA DUMP · 전체 목록</div>' +
-      '<div class="card-sub">' + DATA.groups.length + '개 그룹</div>' +
+      '<div class="card-sub">어떤 기준으로 볼까요?</div>' +
       '<div class="concept-list">';
-    DATA.groups.forEach(function(group){
+    CRITERIA.forEach(function(c){
+      html += '<button class="concept-item" data-crit="' + c.key + '">' +
+        '<span class="concept-item-label">' + escapeHtml(c.label) + '</span>' +
+        '<svg class="concept-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>' +
+        '</button>';
+    });
+    html += '</div>';
+    cardEl.innerHTML = html;
+    bindCommon();
+    Array.prototype.forEach.call(cardEl.querySelectorAll('.concept-item'), function(btn){
+      btn.addEventListener('click', function(){
+        var critKey = btn.dataset.crit;
+        pushScreen(function(){ renderCategoryValuesScreen(critKey); });
+      });
+    });
+  }
+
+  function renderCategoryValuesScreen(critKey){
+    var crit = CRITERIA.filter(function(c){ return c.key === critKey; })[0];
+    var values = [];
+    DATA.groups.forEach(function(g){
+      var v = g[critKey];
+      if (values.indexOf(v) === -1) values.push(v);
+    });
+
+    var html = '<button class="card-close" id="cardClose">&times;</button>' +
+      '<button class="card-back" id="cardBack">← 뒤로</button>' +
+      '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>' + escapeHtml(crit.label) + '</div>' +
+      '<div class="card-sub">' + values.length + '개 분류</div>' +
+      '<div class="concept-list">';
+    values.forEach(function(v){
+      var count = DATA.groups.filter(function(g){ return g[critKey] === v; }).length;
+      html += '<button class="concept-item" data-val="' + escapeHtml(v) + '">' +
+        '<span class="concept-item-label">' + escapeHtml(labelFor(critKey, v)) + '</span>' +
+        '<span class="concept-item-count">' + count + '개</span>' +
+        '<svg class="concept-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>' +
+        '</button>';
+    });
+    html += '</div>';
+    cardEl.innerHTML = html;
+    bindCommon();
+    Array.prototype.forEach.call(cardEl.querySelectorAll('.concept-item'), function(btn){
+      btn.addEventListener('click', function(){
+        var val = btn.dataset.val;
+        pushScreen(function(){ renderConceptsScreen(critKey, val); });
+      });
+    });
+  }
+
+  function renderConceptsScreen(critKey, val){
+    var groups = DATA.groups.filter(function(g){ return g[critKey] === val; });
+    var html = '<button class="card-close" id="cardClose">&times;</button>' +
+      '<button class="card-back" id="cardBack">← 뒤로</button>' +
+      '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>' + escapeHtml(labelFor(critKey, val)) + '</div>' +
+      '<div class="card-sub">' + groups.length + '개 그룹</div>' +
+      '<div class="concept-list">';
+    groups.forEach(function(group){
       var count = group.cluster.length + group.distinct.length;
       html += '<button class="concept-item" data-id="' + escapeHtml(group.id) + '">' +
         '<span class="concept-item-label">' + escapeHtml(group.concept) + '</span>' +
@@ -1167,23 +1266,34 @@ html, body{
         '</button>';
     });
     html += '</div>';
-    return html;
+    cardEl.innerHTML = html;
+    bindCommon();
+    Array.prototype.forEach.call(cardEl.querySelectorAll('.concept-item'), function(btn){
+      btn.addEventListener('click', function(){
+        var g = DATA.groups.filter(function(x){ return x.id === btn.dataset.id; })[0];
+        if (g) pushScreen(function(){ renderConceptDetailScreen(g); });
+      });
+    });
   }
 
   function openAllListCard(){
-    cardEl.innerHTML = renderConceptListHtml();
+    screenStack = [];
     overlayEl.classList.add('open');
-    bindListCardEvents();
+    pushScreen(renderCriteriaScreen);
   }
 
-  function openConceptDetail(group){
+  function renderConceptDetailScreen(group){
     var list = buildUnifiedList(group);
     var hasCluster = group.cluster.length > 1;
 
     var html = '<button class="card-close" id="cardClose">&times;</button>' +
-      '<button class="card-back" id="cardBack">← 전체 목록</button>' +
+      '<button class="card-back" id="cardBack">← 뒤로</button>' +
       '<div class="card-concept"><span class="dot" style="color:#9aa0a6"></span>' + escapeHtml(group.concept) + '</div>' +
       '<div class="card-sub">동의어 ' + list.length + '개</div>';
+
+    if (hasCluster){
+      html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
+    }
 
     list.forEach(function(it){
       var tag = it.type === 'cluster' ? '<span class="tag-same">= 동일 표현</span>' : '';
@@ -1193,9 +1303,6 @@ html, body{
         (it.nuance ? '<div class="entry-nuance">' + escapeHtml(it.nuance) + '</div>' : '') +
         '</div>';
     });
-    if (hasCluster){
-      html += '<div class="cluster-note">"= 동일 표현" 단어들은 위 문장에서 서로 그대로 바꿔 쓸 수 있음.</div>';
-    }
     if (group.contrastPair){
       var cp = group.contrastPair;
       html += '<div class="contrast-box">' +
@@ -1207,18 +1314,7 @@ html, body{
     }
 
     cardEl.innerHTML = html;
-    document.getElementById('cardClose').addEventListener('click', closeCard);
-    document.getElementById('cardBack').addEventListener('click', openAllListCard);
-  }
-
-  function bindListCardEvents(){
-    document.getElementById('cardClose').addEventListener('click', closeCard);
-    Array.prototype.forEach.call(cardEl.querySelectorAll('.concept-item'), function(btn){
-      btn.addEventListener('click', function(){
-        var g = DATA.groups.filter(function(x){ return x.id === btn.dataset.id; })[0];
-        if (g) openConceptDetail(g);
-      });
-    });
+    bindCommon();
   }
 
   function closeCard(){ overlayEl.classList.remove('open'); }
