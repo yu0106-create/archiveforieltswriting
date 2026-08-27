@@ -261,16 +261,18 @@ html, body{
 .concept-item-count{ font-family: var(--en, var(--kr)); font-weight:300; font-size:11.5px; color: var(--c-ink-faint); }
 .concept-item-arrow{ width:14px; height:14px; color: var(--c-ink-faint); flex:none; }
 
-.entry{ margin-bottom: 18px; padding-bottom:16px; border-bottom: 1px solid var(--c-line); }
-.entry:last-of-type{ border-bottom:none; margin-bottom:6px; padding-bottom:0; }
+.entry{ padding: 20px 0; border-bottom: 1px solid var(--c-line); }
+.entry:first-of-type{ padding-top: 0; }
+.entry:last-of-type{ border-bottom:none; padding-bottom:0; }
 .entry.entry-highlight{
   background: #faf8f4;
   border-left: 3px solid currentColor;
-  padding: 12px 14px 14px;
-  margin: 0 0 18px;
+  padding: 16px 14px;
+  margin: 0 0 20px;
   border-bottom: none;
   border-radius: 0 8px 8px 0;
 }
+.entry.entry-highlight:first-of-type{ margin-top:0; }
 .entry-word{
   font-family: var(--word-font); font-style:italic; font-weight:600; font-size:20px;
   color: var(--c-ink);
@@ -294,20 +296,28 @@ html, body{
 }
 .cluster-note{
   font-family: var(--kr); font-weight:300; font-size:12px;
-  color: var(--c-ink-soft); margin-top: 4px; padding: 9px 12px;
+  color: var(--c-ink-soft); margin: 0 0 20px; padding: 9px 12px;
   background: var(--c-subhead-wash); border-radius:6px;
 }
 
+/* '헷갈리기 쉬운 짝' — 배지가 테두리 위에 살짝 걸치는 노트 박스 */
 .contrast-box{
-  margin-top: 6px; padding: 14px; border-radius: 10px;
-  background: #f6f5f2; border: 1px solid var(--c-line);
+  position: relative;
+  margin: 24px 0 4px;
+  padding: 18px 16px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--c-ink);
+  background: #ffffff;
 }
 .contrast-title{
-  font-family:var(--kr); font-weight:700; font-size:11.5px; letter-spacing:0.04em;
-  color: var(--c-ink-faint); text-transform:uppercase; margin-bottom:10px;
+  position: absolute; top: -12px; left: 14px;
+  font-family:var(--kr); font-weight:700; font-size:11px; letter-spacing:0.03em;
+  color: #ffffff; background: var(--c-ink);
+  padding: 4px 10px; border-radius: 6px;
+  margin-bottom: 0;
 }
-.contrast-row{ margin-bottom:8px; }
-.contrast-row:last-of-type{ margin-bottom:10px; }
+.contrast-row{ margin-bottom:10px; margin-top: 8px; }
+.contrast-row:last-of-type{ margin-bottom:12px; }
 .contrast-ex{ font-family: var(--word-font); font-size:14.5px; line-height:1.5; color: var(--c-ink); }
 .contrast-ex b{ font-style:normal; font-weight:700; color: var(--c-red-deep); }
 .contrast-note{ font-family: var(--kr); font-weight:300; font-size:12.5px; color: var(--c-ink-soft); line-height:1.6; }
