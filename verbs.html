@@ -429,6 +429,33 @@ html, body{
   <div class="card" id="card"></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore-compat.js"></script>
+<script>
+  var firebaseConfig = {
+    apiKey: "AIzaSyBBWSFt4KBHBz6mPTdNs9v3iN6F1HL9k_k",
+    authDomain: "grammar-archive.firebaseapp.com",
+    projectId: "grammar-archive",
+    storageBucket: "grammar-archive.firebasestorage.app",
+    messagingSenderId: "756302847323",
+    appId: "1:756302847323:web:734c071b8f16944a614e7e"
+  };
+  // Same Firebase project ielts.html / phrasal-verbs.html use, but its own
+  // document (see SYNC_DOC below) so this page's saved data never mixes
+  // with theirs. If the SDK fails to load (ad-blocker, offline, Firestore
+  // outage...) the game must still work using localStorage only -- db
+  // stays null in that case, and the code below checks for that first.
+  var db = null;
+  try {
+    if (typeof firebase !== 'undefined') {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+    }
+  } catch (e) {
+    console.error('Firebase unavailable, continuing in local-only mode:', e);
+    db = null;
+  }
+</script>
 <script>
 (function(){
 
@@ -822,6 +849,7 @@ html, body{
   }
   function saveStats(stats){
     try { localStorage.setItem(STATS_KEY, JSON.stringify(stats)); } catch (e){}
+    pushToCloud();
   }
   function loadRoundIndex(){
     var v = parseInt(localStorage.getItem(ROUND_KEY) || '0', 10);
@@ -829,6 +857,29 @@ html, body{
   }
   function saveRoundIndex(v){
     try { localStorage.setItem(ROUND_KEY, String(v)); } catch (e){}
+    pushToCloud();
+  }
+
+  // localStorage = instant local cache (works offline, no lag on click).
+  // Firestore = shared source of truth that syncs across devices -- a single
+  // fixed document (kept separate from ielts.html's and phrasal-verbs.html's)
+  // that only this page reads/writes. A box level or round advance made on
+  // one device shows up on the others within a second or two, no refresh
+  // needed, thanks to onSnapshot near the end of this file.
+  var SYNC_DOC = db ? db.collection('sync').doc('voca-dump') : null;
+  var pushTimer = null;
+  function pushToCloud(){
+    if (!SYNC_DOC) return; // no cloud connection -- local-only mode, already saved above
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(function () {
+      SYNC_DOC.set({
+        stats: stats,
+        roundIndex: roundIndex,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).catch(function (err) {
+        console.error('Sync write failed (staying local-only for now):', err);
+      });
+    }, 400);
   }
 
   var stats = loadStats();       // groupId -> { box, lastRound }
@@ -1399,6 +1450,26 @@ html, body{
   document.getElementById('btnAllList').addEventListener('click', openAllListCard);
   document.getElementById('btnReset').addEventListener('click', startRound);
   document.getElementById('btnRestart').addEventListener('click', startRound);
+
+  // Live sync: pull box levels / round index saved from a *different*
+  // device. hasPendingWrites=true means this snapshot is our own optimistic
+  // local echo (we already have this data), so skip it. We deliberately do
+  // NOT force a live re-render of the round currently on screen -- yanking
+  // words out from under an active drag/tap would be jarring. The updated
+  // stats simply take effect starting the next round (startRound()).
+  if (SYNC_DOC) {
+    SYNC_DOC.onSnapshot(function (doc) {
+      if (doc.metadata.hasPendingWrites) return;
+      if (!doc.exists) return;
+      var data = doc.data() || {};
+      stats = data.stats || {};
+      roundIndex = typeof data.roundIndex === 'number' ? data.roundIndex : 0;
+      try { localStorage.setItem(STATS_KEY, JSON.stringify(stats)); } catch (e){}
+      try { localStorage.setItem(ROUND_KEY, String(roundIndex)); } catch (e){}
+    }, function (err) {
+      console.error('Sync read failed (staying local-only):', err);
+    });
+  }
 
   /* ============ init ============ */
   startRound();
