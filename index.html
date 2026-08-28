@@ -123,9 +123,12 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
    around empty space. Instead we stack several blurred drop-shadows in
    white -- drop-shadow follows the image's actual alpha shape, so the
    glow traces the real outline of the object, not a bounding box.
-   The horse frame is handled separately (see .horse-hotspot below):
-   it's an opaque photo, not a link itself, so it needs its own oval
-   hotspot rather than an alpha-shape glow. */
+   The horse frame is handled separately (see .horse-cutout below): the
+   base frame photo is opaque, so instead of glowing the whole photo we
+   layer a real alpha-cutout of just that one horse (horse-cutout.png)
+   on top, aligned to sit exactly over its counterpart in the photo --
+   that gives the same real-silhouette glow treatment as the book and
+   pencase, on just that one horse. */
 .corner-book:hover img,
 .corner-pencase:hover img{
   filter:
@@ -157,9 +160,8 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
    clicking it to navigate, since both gestures started with the same
    pointerdown anywhere on the image. Now .corner-frame2 is a plain
    draggable <div> (whole photo moves as one on drag, same as before),
-   and only a small oval hotspot positioned over the rightmost horse's
-   face (.horse-hotspot, see below) is the actual link + hover
-   highlight. */
+   and only the real horse-cutout layered on top (see .frame2-photo /
+   .horse-cutout below) is the actual link + hover highlight. */
 .corner-frame2{
   /* Same 16-tile (4x4, 680px) target as the pink frame's outer edge --
      see the .stage comment above for how that 680px number was
@@ -183,32 +185,56 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
   filter: drop-shadow(0 16px 32px rgba(0,0,0,0.4));
 }
 .corner-frame2.dragging{ cursor: grabbing; }
-.corner-frame2 img{ width: 100%; height: auto; transform-origin: 50% 50%; }
+.corner-frame2 > img{ width: 100%; height: auto; transform-origin: 50% 50%; display: block; }
 
-/* The actual link + hover highlight, positioned over just the
-   rightmost horse's face (measured from the source photo as % of the
-   frame's own box: that horse's head runs roughly x 65%-97%,
-   y 8%-74% within the full framed image). Oval shape (border-radius
-   50%) roughly matches a horse's head silhouette better than a
-   rectangle. Sits above the frame image but still inside
-   .corner-frame2, so a drag that starts here still bubbles up to the
-   frame's own drag handler -- only a genuine click (no movement)
-   navigates. */
-.horse-hotspot{
+/* ===================== the third horse's real cutout ===================== */
+/* .frame2-photo is a clipping window matching just the PHOTO part of
+   the frame (i.e. the frame's outer box minus its wooden border --
+   measured the same way as the .stage opening: the border's inner
+   edges as % of the full horse-frame.png). overflow:hidden here is
+   what keeps the highlight from ever showing on top of the wood --
+   the cutout (and its glow) gets cut off right at the photo's edge,
+   same as the real horse does in the photo underneath.
+   pointer-events:none on this wrapper lets drags/hovers over the rest
+   of the photo (the other two horses, the sky, the wood) pass straight
+   through to .corner-frame2 beneath; only .horse-cutout re-enables
+   pointer-events so it alone is interactive. */
+.frame2-photo{
   position: absolute;
-  left: 65%;
-  top: 8%;
-  width: 32%;
-  height: 66%;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: box-shadow .25s ease;
+  left: 8.57%;
+  top: 5.94%;
+  width: 82.78%;
+  height: 81.62%;
+  overflow: hidden;
+  pointer-events: none;
 }
-.horse-hotspot:hover{
-  box-shadow:
-    0 0 6px 2px rgba(255,255,255,0.9),
-    0 0 16px 6px rgba(255,255,255,0.7),
-    0 0 28px 10px rgba(255,255,255,0.45);
+/* horse-cutout.png is a real alpha cutout of just the rightmost horse,
+   measured and scaled to sit exactly on top of that same horse in the
+   base photo (right edge and bottom edge both touch the photo's own
+   edges, matching how that horse is cropped by the frame in real
+   life). Because it's pixel-for-pixel the same horse, at rest it's
+   invisible on top of the real photo -- only the hover glow reveals
+   it. */
+.horse-cutout{
+  position: absolute;
+  left: 69%;
+  bottom: 0;
+  width: 31%;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.horse-cutout img{
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: filter .25s ease;
+}
+.horse-cutout:hover img{
+  /* same white glow treatment as book/pencase, scaled up 1.2x */
+  filter:
+    drop-shadow(0 0 3.6px #ffffff)
+    drop-shadow(0 0 7.2px #ffffff)
+    drop-shadow(0 0 12px #ffffff);
 }
 @media (max-width: 760px){
   .corner-frame2{
@@ -242,7 +268,11 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 
 <div class="corner-frame2">
   <img src="horse-frame.png" alt="세 마리 말이 있는 사진 액자">
-  <a class="horse-hotspot" href="phrasal-verbs.html" aria-label="구동사 사전으로 이동 (맨 오른쪽 말)"></a>
+  <div class="frame2-photo">
+    <a class="horse-cutout" href="phrasal-verbs.html" aria-label="구동사 사전으로 이동 (맨 오른쪽 말)">
+      <img src="horse-cutout.png" alt="">
+    </a>
+  </div>
 </div>
 
 <script>
