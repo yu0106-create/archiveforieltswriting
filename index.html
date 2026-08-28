@@ -118,23 +118,21 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 .corner-obj img{ width: 100%; height: 100%; transition: filter .25s ease; }
 
 /* ===================== hover highlight (link objects only) ===================== */
-/* All three linked objects (book, pencase, horse frame) are transparent-
-   background PNGs with irregular silhouettes, so a normal CSS border
-   would just draw a rectangle around empty space. Instead we stack
-   several blurred drop-shadows in the same neon pink -- drop-shadow
-   follows the image's actual alpha shape, so the glow traces the real
-   outline of the object, not a bounding box. */
+/* Book/pencase are transparent-background PNGs with irregular
+   silhouettes, so a normal CSS border would just draw a rectangle
+   around empty space. Instead we stack several blurred drop-shadows in
+   white -- drop-shadow follows the image's actual alpha shape, so the
+   glow traces the real outline of the object, not a bounding box.
+   The horse frame is handled separately (see .horse-hotspot below):
+   it's an opaque photo, not a link itself, so it needs its own oval
+   hotspot rather than an alpha-shape glow. */
 .corner-book:hover img,
-.corner-pencase:hover img,
-.corner-frame2:hover img{
+.corner-pencase:hover img{
   filter:
     drop-shadow(0 0 3px #ffffff)
     drop-shadow(0 0 6px #ffffff)
     drop-shadow(0 0 10px #ffffff);
 }
-/* frame2's own cast-shadow drop-shadow lives on the outer <a> (see
-   .corner-frame2 above); the pink glow above is layered on the inner
-   <img> so both effects stack without overwriting each other. */
 
 .corner-book{
   left: -10%; top: -4%;
@@ -153,8 +151,14 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
    already baked into it) with only the outer background removed --
    unlike the pink frame it has no separate "opening" for a scene behind
    it, so it behaves like a third clickable corner object rather than a
-   second .stage. Same two-layer split as the book/pencase: the outer
-   <a> owns position, the inner <img> owns the hover pink-glow
+   second .stage.
+   Unlike book/pencase, this element itself is NOT the link anymore --
+   dragging the whole photo (frame included) used to fight with
+   clicking it to navigate, since both gestures started with the same
+   pointerdown anywhere on the image. Now .corner-frame2 is a plain
+   draggable <div> (whole photo moves as one on drag, same as before),
+   and only a small oval hotspot positioned over the rightmost horse's
+   face (.horse-hotspot, see below) is the actual link + hover
    highlight. */
 .corner-frame2{
   /* Same 16-tile (4x4, 680px) target as the pink frame's outer edge --
@@ -179,7 +183,33 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
   filter: drop-shadow(0 16px 32px rgba(0,0,0,0.4));
 }
 .corner-frame2.dragging{ cursor: grabbing; }
-.corner-frame2 img{ width: 100%; height: auto; transform-origin: 50% 50%; transition: filter .25s ease; }
+.corner-frame2 img{ width: 100%; height: auto; transform-origin: 50% 50%; }
+
+/* The actual link + hover highlight, positioned over just the
+   rightmost horse's face (measured from the source photo as % of the
+   frame's own box: that horse's head runs roughly x 65%-97%,
+   y 8%-74% within the full framed image). Oval shape (border-radius
+   50%) roughly matches a horse's head silhouette better than a
+   rectangle. Sits above the frame image but still inside
+   .corner-frame2, so a drag that starts here still bubbles up to the
+   frame's own drag handler -- only a genuine click (no movement)
+   navigates. */
+.horse-hotspot{
+  position: absolute;
+  left: 65%;
+  top: 8%;
+  width: 32%;
+  height: 66%;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: box-shadow .25s ease;
+}
+.horse-hotspot:hover{
+  box-shadow:
+    0 0 6px 2px rgba(255,255,255,0.9),
+    0 0 16px 6px rgba(255,255,255,0.7),
+    0 0 28px 10px rgba(255,255,255,0.45);
+}
 @media (max-width: 760px){
   .corner-frame2{
     width: min(59.4vw, 45.6vh, 336px); /* 0.6x of previous mobile size */
@@ -210,9 +240,10 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
 <img class="frame-img" src="pink-frame.png" alt="">
 </div>
 
-<a class="corner-frame2" href="phrasal-verbs.html" aria-label="구동사 사전으로 이동">
-  <img src="horse-frame.png" alt="">
-</a>
+<div class="corner-frame2">
+  <img src="horse-frame.png" alt="세 마리 말이 있는 사진 액자">
+  <a class="horse-hotspot" href="phrasal-verbs.html" aria-label="구동사 사전으로 이동 (맨 오른쪽 말)"></a>
+</div>
 
 <script>
 /* ===================== free-drag repositioning ===================== */
