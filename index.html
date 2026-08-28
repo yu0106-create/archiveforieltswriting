@@ -289,11 +289,18 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
    survives page reloads (but only on this device/browser, like a real
    desktop -- it won't follow you to a different computer).
 
-   A drag vs. a plain click share the same pointerdown/pointerup pair,
-   so a short movement threshold decides which one happened; if it was
-   a drag, the click that the browser fires right after is swallowed
-   (in the capture phase) so it doesn't also trigger navigation on the
-   book/pencase/horse-frame links. */
+   A drag vs. a plain click/tap share the same pointerdown/pointerup
+   pair, so a short movement threshold decides which one happened.
+   Navigation is triggered EXPLICITLY here (window.location.href) rather
+   than relying on the browser's own synthesized "click" event: once
+   el.setPointerCapture() is active (needed for the drag itself to keep
+   tracking the pointer even if it slides off the element), some
+   browsers retarget that synthesized click to the capturing container
+   instead of the nested <a> the user actually pressed on -- which was
+   silently swallowing every tap on the book/pencase/horse links, not
+   just the ones that followed an actual drag. Tracking our own
+   "which link (if any) was under the pointer at press-time" and
+   navigating manually on a clean release sidesteps that entirely. */
 (function(){
   const THRESHOLD = 5; // px of movement before a press counts as a drag
   const EDGE_MARGIN = 40; // keep at least this much on-screen at all times
@@ -314,23 +321,10 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
     };
   }
 
-  // Swallows the single click that follows a drag, anywhere inside the
-  // dragged element (including its nested <a> links), so a drag never
-  // also fires a navigation.
-  function swallowNextClick(container){
-    function onClickCapture(e){
-      if (container.contains(e.target)){
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      document.removeEventListener('click', onClickCapture, true);
-    }
-    document.addEventListener('click', onClickCapture, true);
-  }
-
   function makeDraggable(el, storageKey){
     let dragging = false, moved = false;
     let startX = 0, startY = 0, baseLeft = 0, baseTop = 0;
+    let pressedLink = null; // the <a> under the pointer at press-time, if any
 
     // restore a previously saved position, clamped to the current
     // viewport in case the window is now smaller than when it was saved
@@ -354,6 +348,7 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
       const c = centerOf(el);
       baseLeft = c.left;
       baseTop = c.top;
+      pressedLink = e.target.closest('a');
       el.setPointerCapture(e.pointerId);
     });
 
@@ -375,8 +370,13 @@ img{ -webkit-user-drag:none; user-select:none; display:block; }
       el.classList.remove('dragging');
       if (moved){
         localStorage.setItem(storageKey, JSON.stringify(centerOf(el)));
-        swallowNextClick(el);
+      } else if (pressedLink){
+        // A clean press-and-release with no drag, started on a link --
+        // navigate ourselves instead of hoping the browser's own click
+        // reaches the nested <a> (see comment above).
+        window.location.href = pressedLink.href;
       }
+      pressedLink = null;
     }
     el.addEventListener('pointerup', endDrag);
     el.addEventListener('pointercancel', endDrag);
