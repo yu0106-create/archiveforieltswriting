@@ -1,391 +1,89 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Desktop</title>
 <style>
-@font-face{
-  font-family: 'BookkGothic';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkGothic-Bd.woff2') format('woff2');
-  font-weight: 700;
-  font-display: swap;
-}
+  * { box-sizing: border-box; }
 
-:root{
-  --ink: #2b2622;
-  --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-*{ box-sizing:border-box; }
-html, body{
-  margin:0; padding:0; height:100%;
-  font-family: var(--kr);
-  color: var(--ink);
-  overflow: hidden; /* this page is a single fixed scene, not a scroll --
-    the entrance animation is the "reveal", so there's nothing to scroll to. */
-}
-body{
-  position: relative; /* frames are now individually absolute-positioned,
-    not flex-centered as a single unit, so two frames can sit at two
-    different spots on the wall. */
-  /* the wall is now a real tiled-mosaic photo repeated edge to edge --
-     the source crop was cut exactly at grout-line centers on all four
-     sides (found by detecting the grout's brightness peaks), so tiling
-     it lines the grout up continuously instead of showing a seam. */
-  background-image: url('wall-tile-unit.jpg');
-  background-repeat: repeat;
-  background-size: 340px 340px;
-}
-a{ color:inherit; text-decoration:none; }
-img{ -webkit-user-drag:none; user-select:none; display:block; }
-
-/* ===================== the framed picture ===================== */
-/* A real photographed picture frame (pink/mauve molded wood) instead of
-   a CSS-drawn border. The frame image's own background AND its inner
-   opening were both flattened to transparent (see pink-frame.png), so
-   it can sit directly on top of the scene: .frame-img is scaled up and
-   shifted so its opening lines up exactly with .stage underneath,
-   using the opening's measured position within the source photo
-   (openingLeft/openingTop/openingWidth as fractions of the full image)
-   converted to percentages of .stage's own box. */
-.picture{
-  position: absolute;
-  /* Default position: chosen so that BOTH frames together, as one
-     group, sit centered on the page (both axes). Offsets are in px
-     from the exact viewport center (50%, 50%), sized against this
-     frame's own rendered footprint (~408 x 387px, from .stage's
-     214.2px * the 190.3%/180.6% frame-img scale) so it balances
-     against .corner-frame2's footprint below -- see that block's
-     comment for the matching math. */
-  left: calc(50% - 224px);
-  top: calc(50% + 100px);
-  transform: translate(-50%, -50%);
-  filter: drop-shadow(0 22px 46px rgba(0,0,0,0.45));
-  cursor: grab; /* whole set (frame + book + pencase) drags together --
-    see the drag script at the bottom of the page. */
-}
-.picture.dragging{ cursor: grabbing; }
-.frame-img{
-  position: absolute;
-  left: -44.6%; top: -46.4%;
-  width: 190.3%; height: 180.6%;
-  z-index: 6;
-  pointer-events: none;
-}
-
-/* The source photos are a perfect 1:1 square, so the stage keeps that
-   exact aspect ratio -- that keeps the scene lined up with the frame's
-   window at any screen size. Clipped here (not just the background):
-   the corner objects are now the FULL, un-cropped book/pencil-case
-   photos (real edges, no artificial rectangular crop line), sized with
-   plenty of spare room around where they actually show through, so the
-   transparent margin never reveals a hard-cut edge. */
-.stage{
-  position: relative;
-  /* Sized against the wall tile grid itself, not an independent vw/vh
-     guess: the tile photo's background-size is a fixed 340px repeat
-     unit containing a 2x2 block of tiles, so one tile "square" is
-     170px (measured by autocorrelating the tile photo's grout-line
-     spacing). The pink frame's outer edge should span a 4x4 block of
-     those squares (16 tiles) = 680px, and since frame-img is scaled to
-     190.3% of .stage (see below), .stage itself needs to be
-     680 / 1.903 = ~357px for the frame's outer molding to land on
-     that 4-tile mark. vw/vh still cap it lower on small screens so it
-     never overflows a phone; the tile-matched 357px is only the
-     desktop ceiling. */
-  width: min(22.8vw, 25.2vh, 214.2px); /* 0.6x of previous size */
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-}
-@media (max-width: 760px){
-  .stage{ width: min(31.2vw, 24vh, 176.4px); } /* 0.6x of previous mobile size */
-}
-.scene-bg{
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-
-/* ===================== the two corner objects ===================== */
-/* Each is a two-layer element: the outer <a> owns positioning/rotation
-   (a plain static transform); the inner <img> owns the hover pink-glow
-   highlight (see the "hover highlight" block below). */
-.corner-obj{
-  position: absolute;
-  z-index: 5;
-  cursor: pointer;
-}
-.corner-obj img{ width: 100%; height: 100%; transition: filter .25s ease; }
-
-/* ===================== hover highlight (link objects only) ===================== */
-/* Book/pencase are transparent-background PNGs with irregular
-   silhouettes, so a normal CSS border would just draw a rectangle
-   around empty space. Instead we stack several blurred drop-shadows in
-   white -- drop-shadow follows the image's actual alpha shape, so the
-   glow traces the real outline of the object, not a bounding box.
-   The horse frame is handled separately (see .horse-cutout below): the
-   base frame photo is opaque, so instead of glowing the whole photo we
-   layer a real alpha-cutout of just that one horse (horse-cutout.png)
-   on top, aligned to sit exactly over its counterpart in the photo --
-   that gives the same real-silhouette glow treatment as the book and
-   pencase, on just that one horse. */
-.corner-book:hover img,
-.corner-pencase:hover img{
-  filter:
-    drop-shadow(0 0 3px #ffffff)
-    drop-shadow(0 0 6px #ffffff)
-    drop-shadow(0 0 10px #ffffff);
-}
-
-.corner-book{
-  left: -10%; top: -4%;
-  width: 26.3%;
-  transform: rotate(-4deg);
-}
-.corner-pencase{
-  right: -8%; bottom: -6%;
-  width: 46.7%;
-  transform: rotate(-18deg);
-}
-.corner-book img, .corner-pencase img{ width: 100%; height: auto; }
-
-/* ===================== second framed picture (phrasal verbs) ===================== */
-/* This one is a single flattened photo (frame + the little horse print
-   already baked into it) with only the outer background removed --
-   unlike the pink frame it has no separate "opening" for a scene behind
-   it, so it behaves like a third clickable corner object rather than a
-   second .stage.
-   Unlike book/pencase, this element itself is NOT the link anymore --
-   dragging the whole photo (frame included) used to fight with
-   clicking it to navigate, since both gestures started with the same
-   pointerdown anywhere on the image. Now .corner-frame2 is a plain
-   draggable <div> (whole photo moves as one on drag, same as before),
-   and only the real horse-cutout layered on top (see .frame2-photo /
-   .horse-cutout below) is the actual link + hover highlight. */
-.corner-frame2{
-  /* Same 16-tile (4x4, 680px) target as the pink frame's outer edge --
-     see the .stage comment above for how that 680px number was
-     measured. This one is a single flattened image (no inner-scaling
-     trick), so its CSS width IS its visible outer width directly. It
-     sits flat/level with no rotation.
-     Default position: paired with .picture's offset above so the two
-     frames sit mirrored left/right of page-center (~40px gap between
-     their outer edges) and stacked so the taller .picture rides lower
-     and this shorter, wider frame rides higher -- together the whole
-     two-frame group's bounding box centers exactly on the page. Sized
-     against this frame's own ~408 x 274px rendered footprint (408px
-     width cap, ~1.49:1 photo aspect ratio). */
-  position: absolute;
-  left: calc(50% + 224px);
-  top: calc(50% - 156px);
-  width: min(43.2vw, 48vh, 408px); /* 0.6x of previous size */
-  transform: translate(-50%, -50%);
-  z-index: 5;
-  cursor: grab;
-  filter: drop-shadow(0 16px 32px rgba(0,0,0,0.4));
-}
-.corner-frame2.dragging{ cursor: grabbing; }
-.corner-frame2 > img{ width: 100%; height: auto; transform-origin: 50% 50%; display: block; }
-
-/* ===================== the third horse's real cutout ===================== */
-/* .frame2-photo is a clipping window matching just the PHOTO part of
-   the frame (i.e. the frame's outer box minus its wooden border --
-   measured the same way as the .stage opening: the border's inner
-   edges as % of the full horse-frame.png). overflow:hidden here is
-   what keeps the highlight from ever showing on top of the wood --
-   the cutout (and its glow) gets cut off right at the photo's edge,
-   same as the real horse does in the photo underneath.
-   pointer-events:none on this wrapper lets drags/hovers over the rest
-   of the photo (the other two horses, the sky, the wood) pass straight
-   through to .corner-frame2 beneath; only .horse-cutout re-enables
-   pointer-events so it alone is interactive. */
-.frame2-photo{
-  position: absolute;
-  left: 8.57%;
-  top: 5.94%;
-  width: 82.78%;
-  height: 81.62%;
-  overflow: hidden;
-  pointer-events: none;
-}
-/* horse-cutout.png is a real alpha cutout of just the rightmost horse,
-   measured and scaled to sit exactly on top of that same horse in the
-   base photo (right edge and bottom edge both touch the photo's own
-   edges, matching how that horse is cropped by the frame in real
-   life). Because it's pixel-for-pixel the same horse, at rest it's
-   invisible on top of the real photo -- only the hover glow reveals
-   it. */
-.horse-cutout{
-  position: absolute;
-  left: 69%;
-  bottom: 0;
-  width: 31%;
-  pointer-events: auto;
-  cursor: pointer;
-}
-.horse-cutout img{
-  display: block;
-  width: 100%;
-  height: auto;
-  transition: filter .25s ease;
-}
-.horse-cutout:hover img{
-  /* same white glow treatment as book/pencase, scaled up 1.2x */
-  filter:
-    drop-shadow(0 0 3.6px #ffffff)
-    drop-shadow(0 0 7.2px #ffffff)
-    drop-shadow(0 0 12px #ffffff);
-}
-@media (max-width: 760px){
-  .corner-frame2{
-    width: min(59.4vw, 45.6vh, 336px); /* 0.6x of previous mobile size */
-    /* same centering math as the desktop rule above, recomputed
-       against this breakpoint's smaller rendered footprints (.picture
-       ~336 x 319px, this frame ~336 x 226px). */
-    left: calc(50% + 176px);
-    top: calc(50% - 116px);
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #46413e;
   }
-}
 
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  .frame {
+    position: relative;
+    width: min(1400px, 94vw);
+    aspect-ratio: 16 / 9;
+  }
+
+  .frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .hotspot {
+    position: absolute;
+    display: block;
+    border-radius: 6px;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: box-shadow .18s ease, background-color .18s ease;
+  }
+
+  .hotspot:hover,
+  .hotspot:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.45) inset;
+  }
+
+  /* IELTS WRITING 폴더 라벨 */
+  .hotspot.ielts {
+    left: 12.76%;
+    top: 11.11%;
+    width: 17.97%;
+    height: 8.80%;
+  }
+
+  /* SYNONYMS 폴더 라벨 */
+  .hotspot.synonyms {
+    left: 39.84%;
+    top: 33.33%;
+    width: 19.27%;
+    height: 9.72%;
+  }
+
+  /* PHRASAL VERBS 폴더 라벨 */
+  .hotspot.phrasal {
+    left: 17.19%;
+    top: 59.72%;
+    width: 21.88%;
+    height: 8.80%;
+  }
 </style>
 </head>
 <body>
 
-<div class="picture">
-<div class="stage">
-  <img class="scene-bg" src="scene-bg.jpg" alt="">
+  <div class="frame">
+    <img src="home-folders.png" alt="Current Studies in Folders — IELTS WRITING, SYNONYMS, PHRASAL VERBS">
 
-  <a class="corner-obj corner-book" href="verbs.html" aria-label="Phrasal Verbs Dump로 이동">
-    <img src="full-book.png" alt="">
-  </a>
-
-  <a class="corner-obj corner-pencase" href="ielts.html" aria-label="IELTS Writing으로 이동">
-    <img src="full-pencase.png" alt="">
-  </a>
-</div>
-<img class="frame-img" src="pink-frame.png" alt="">
-</div>
-
-<div class="corner-frame2">
-  <img src="horse-frame.png" alt="세 마리 말이 있는 사진 액자">
-  <div class="frame2-photo">
-    <a class="horse-cutout" href="phrasal-verbs.html" aria-label="구동사 사전으로 이동 (맨 오른쪽 말)">
-      <img src="horse-cutout.png" alt="">
-    </a>
+    <a class="hotspot ielts" href="ielts.html" aria-label="IELTS WRITING 폴더로 이동"></a>
+    <a class="hotspot synonyms" href="verbs.html" aria-label="SYNONYMS 폴더로 이동"></a>
+    <a class="hotspot phrasal" href="phrasal-verbs.html" aria-label="PHRASAL VERBS 폴더로 이동"></a>
   </div>
-</div>
-
-<script>
-/* ===================== free-drag repositioning ===================== */
-/* Lets the two frames be dragged anywhere on the wall, like moving
-   folder icons on a desktop. Both .picture (the pink frame, which
-   carries the book/pencase inside it as one set) and .corner-frame2
-   (the horse frame) already use position:absolute + left/top +
-   translate(-50%,-50%), so left/top are the CENTER point -- dragging
-   just needs to add the pointer's movement (in screen px) onto that
-   center point directly, no unit conversion needed.
-
-   Positions persist per-browser via localStorage, so a saved layout
-   survives page reloads (but only on this device/browser, like a real
-   desktop -- it won't follow you to a different computer).
-
-   A drag vs. a plain click/tap share the same pointerdown/pointerup
-   pair, so a short movement threshold decides which one happened.
-   Navigation is triggered EXPLICITLY here (window.location.href) rather
-   than relying on the browser's own synthesized "click" event: once
-   el.setPointerCapture() is active (needed for the drag itself to keep
-   tracking the pointer even if it slides off the element), some
-   browsers retarget that synthesized click to the capturing container
-   instead of the nested <a> the user actually pressed on -- which was
-   silently swallowing every tap on the book/pencase/horse links, not
-   just the ones that followed an actual drag. Tracking our own
-   "which link (if any) was under the pointer at press-time" and
-   navigating manually on a clean release sidesteps that entirely. */
-(function(){
-  const THRESHOLD = 5; // px of movement before a press counts as a drag
-  const EDGE_MARGIN = 40; // keep at least this much on-screen at all times
-
-  function centerOf(el){
-    const rect = el.getBoundingClientRect();
-    const parentRect = el.offsetParent.getBoundingClientRect();
-    return {
-      left: rect.left + rect.width / 2 - parentRect.left,
-      top: rect.top + rect.height / 2 - parentRect.top
-    };
-  }
-
-  function clamp(pos){
-    return {
-      left: Math.min(Math.max(pos.left, EDGE_MARGIN), window.innerWidth - EDGE_MARGIN),
-      top: Math.min(Math.max(pos.top, EDGE_MARGIN), window.innerHeight - EDGE_MARGIN)
-    };
-  }
-
-  function makeDraggable(el, storageKey){
-    let dragging = false, moved = false;
-    let startX = 0, startY = 0, baseLeft = 0, baseTop = 0;
-    let pressedLink = null; // the <a> under the pointer at press-time, if any
-
-    // restore a previously saved position, clamped to the current
-    // viewport in case the window is now smaller than when it was saved
-    try{
-      const saved = JSON.parse(localStorage.getItem(storageKey));
-      if (saved && typeof saved.left === 'number' && typeof saved.top === 'number'){
-        const c = clamp(saved);
-        el.style.left = c.left + 'px';
-        el.style.top = c.top + 'px';
-      }
-    }catch(e){}
-
-    el.style.touchAction = 'none'; // dragging owns touch gestures here, not page scroll
-
-    el.addEventListener('pointerdown', (e) => {
-      if (e.button !== undefined && e.button !== 0) return; // left button / touch only
-      dragging = true;
-      moved = false;
-      startX = e.clientX;
-      startY = e.clientY;
-      const c = centerOf(el);
-      baseLeft = c.left;
-      baseTop = c.top;
-      pressedLink = e.target.closest('a');
-      el.setPointerCapture(e.pointerId);
-    });
-
-    el.addEventListener('pointermove', (e) => {
-      if (!dragging) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      if (!moved && Math.hypot(dx, dy) < THRESHOLD) return;
-      moved = true;
-      el.classList.add('dragging');
-      const next = clamp({ left: baseLeft + dx, top: baseTop + dy });
-      el.style.left = next.left + 'px';
-      el.style.top = next.top + 'px';
-    });
-
-    function endDrag(e){
-      if (!dragging) return;
-      dragging = false;
-      el.classList.remove('dragging');
-      if (moved){
-        localStorage.setItem(storageKey, JSON.stringify(centerOf(el)));
-      } else if (pressedLink){
-        // A clean press-and-release with no drag, started on a link --
-        // navigate ourselves instead of hoping the browser's own click
-        // reaches the nested <a> (see comment above).
-        window.location.href = pressedLink.href;
-      }
-      pressedLink = null;
-    }
-    el.addEventListener('pointerup', endDrag);
-    el.addEventListener('pointercancel', endDrag);
-  }
-
-  makeDraggable(document.querySelector('.picture'), 'pos-picture');
-  makeDraggable(document.querySelector('.corner-frame2'), 'pos-frame2');
-})();
-</script>
 
 </body>
 </html>
