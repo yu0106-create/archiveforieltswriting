@@ -162,6 +162,32 @@ body{
 .status-badge[data-status="known"]{ background: var(--green-wash); border-color: var(--green); color: var(--green-deep); }
 .status-badge[data-status="unsure"]{ background: var(--amber-wash); border-color: var(--amber-line); color: var(--amber-deep); }
 .status-badge[data-status="unknown"]{ background: var(--red-wash); border-color: var(--red-soft); color: var(--red-soft); }
+/* 상태 배지를 누르면 뜨는 팝업 — 현재 상태를 제외한 나머지 두 상태를 바로 고를 수 있게 해서,
+   순환(cycle) 방식처럼 중간 상태를 거치며 카드가 재정렬돼 위치를 잃는 문제를 없앤다. */
+.status-picker{
+  position: fixed;
+  z-index: 60;
+  display: none;
+  gap: 6px;
+  background: var(--paper);
+  border: 2px solid var(--lime-line);
+  box-shadow: 0 6px 14px rgba(51,54,31,0.2);
+  padding: 6px;
+}
+.status-picker.open{ display: flex; }
+.status-picker button{
+  width: 30px; height: 30px;
+  border: 1.5px solid var(--lime-line);
+  background: var(--paper);
+  border-radius: 0;
+  padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.status-picker button svg{ width: 16px; height: 16px; display: block; }
+.status-picker button[data-status="known"]{ background: var(--green-wash); border-color: var(--green); color: var(--green-deep); }
+.status-picker button[data-status="unsure"]{ background: var(--amber-wash); border-color: var(--amber-line); color: var(--amber-deep); }
+.status-picker button[data-status="unknown"]{ background: var(--red-wash); border-color: var(--red-soft); color: var(--red-soft); }
 .no-results{
   text-align: center;
   color: var(--ink-soft);
@@ -637,6 +663,60 @@ const STATUS_SYMBOL = {
   unsure: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 4.5 21 19.5H3L12 4.5Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>',
   known: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.5" stroke="currentColor" stroke-width="2.4"/></svg>'
 };
+const STATUS_ALL = ['unknown', 'unsure', 'known'];
+
+// 상태 배지를 클릭했을 때, 순환(cycle) 대신 "현재 상태를 제외한 나머지 두 상태" 중 하나를
+// 바로 고를 수 있는 작은 팝업을 띄운다. 그리드가 상태 기준으로 정렬되기 때문에, 기존
+// 순환 방식은 중간 상태를 거치는 동안 카드가 계속 재정렬되어 위치를 잃어버리는 문제가 있었음.
+const statusPicker = document.createElement('div');
+statusPicker.className = 'status-picker';
+document.body.appendChild(statusPicker);
+let pickerHeadword = null;
+
+function closeStatusPicker(){
+  statusPicker.classList.remove('open');
+  statusPicker.innerHTML = '';
+  pickerHeadword = null;
+}
+function openStatusPicker(badge, headword){
+  const cur = getStatus(headword);
+  const options = STATUS_ALL.filter(s => s !== cur);
+  statusPicker.innerHTML = options.map(s =>
+    `<button type="button" data-status="${s}" aria-label="상태를 ${s}(으)로 변경">${STATUS_SYMBOL[s]}</button>`
+  ).join('');
+  statusPicker.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setStatus(headword, btn.dataset.status);
+      closeStatusPicker();
+      applySearch(); // 상태가 바뀌면 정렬 순서도 바뀌므로 그리드를 다시 그려서 카드 위치를 즉시 반영
+    });
+  });
+  const rect = badge.getBoundingClientRect();
+  statusPicker.style.top = (rect.bottom + 6) + 'px';
+  statusPicker.style.left = Math.max(6, rect.right - 74) + 'px';
+  statusPicker.classList.add('open');
+  pickerHeadword = headword;
+  // 팝업 실제 크기를 잰 뒤 화면 밖으로 넘치면 위치를 보정 (아래쪽/오른쪽이 넘치면 반대쪽으로)
+  requestAnimationFrame(() => {
+    const pr = statusPicker.getBoundingClientRect();
+    if(pr.right > window.innerWidth - 6){
+      statusPicker.style.left = Math.max(6, window.innerWidth - pr.width - 6) + 'px';
+    }
+    if(pr.bottom > window.innerHeight - 6){
+      statusPicker.style.top = Math.max(6, rect.top - pr.height - 6) + 'px';
+    }
+  });
+}
+document.addEventListener('click', (e) => {
+  if(!statusPicker.classList.contains('open')) return;
+  if(statusPicker.contains(e.target)) return;
+  if(e.target.closest && e.target.closest('.status-badge')) return; // 배지 자체 클릭은 배지 핸들러가 열고/닫음을 직접 관리
+  closeStatusPicker();
+});
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeStatusPicker(); });
+window.addEventListener('scroll', () => { if(statusPicker.classList.contains('open')) closeStatusPicker(); }, true);
+window.addEventListener('resize', () => { if(statusPicker.classList.contains('open')) closeStatusPicker(); });
 
 const gridView = document.getElementById('gridView');
 const studyView = document.getElementById('studyView');
@@ -745,8 +825,11 @@ function renderGrid(rawList){
     const badge = el.querySelector('.status-badge');
     badge.addEventListener('click', (e) => {
       e.stopPropagation();
-      cycleStatus(card.headword);
-      applySearch(); // 상태가 바뀌면 정렬 순서도 바뀌므로 그리드를 다시 그려서 카드 위치를 즉시 반영
+      if(pickerHeadword === card.headword && statusPicker.classList.contains('open')){
+        closeStatusPicker();
+      } else {
+        openStatusPicker(badge, card.headword);
+      }
     });
     frag.appendChild(el);
   });
@@ -823,6 +906,7 @@ function updateCount(list){
   countLine.textContent = `총 ${DATA.length}개 구동사 (뜻풀이 ${DATA.reduce((a,c)=>a+c.senses.length,0)}개)`;
 }
 function applySearch(){
+  closeStatusPicker();
   const q = searchInput.value.trim().toLowerCase();
   if(!q){ renderGrid(DATA); updateCount(DATA); return; }
   const filtered = DATA.filter(card => {
@@ -894,6 +978,7 @@ function buildQueue(){
 }
 
 function enterStudy(){
+  closeStatusPicker();
   buildQueue();
   pageHead.style.display = 'none';
   gridView.style.display = 'none';
