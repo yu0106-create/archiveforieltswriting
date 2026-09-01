@@ -706,7 +706,20 @@ function buildSensesHtml(card){
   `).join('');
 }
 
-function renderGrid(list){
+// 그리드 카드 정렬 우선순위: X(모르는, unknown) → △(애매한, unsure) → ○(아는, known).
+// 같은 상태 안에서는 원래 순서(DATA/검색결과 순서)를 그대로 유지 (stable sort).
+const STATUS_ORDER = { unknown: 0, unsure: 1, known: 2 };
+function sortByStatus(list){
+  return list
+    .map((card, i) => ({ card, i }))
+    .sort((a, b) => {
+      const diff = STATUS_ORDER[getStatus(a.card.headword)] - STATUS_ORDER[getStatus(b.card.headword)];
+      return diff !== 0 ? diff : a.i - b.i;
+    })
+    .map(x => x.card);
+}
+function renderGrid(rawList){
+  const list = sortByStatus(rawList);
   grid.innerHTML = '';
   if(list.length === 0){
     noResults.style.display = 'block';
@@ -732,9 +745,8 @@ function renderGrid(list){
     const badge = el.querySelector('.status-badge');
     badge.addEventListener('click', (e) => {
       e.stopPropagation();
-      const next = cycleStatus(card.headword);
-      badge.dataset.status = next;
-      badge.innerHTML = STATUS_SYMBOL[next];
+      cycleStatus(card.headword);
+      applySearch(); // 상태가 바뀌면 정렬 순서도 바뀌므로 그리드를 다시 그려서 카드 위치를 즉시 반영
     });
     frag.appendChild(el);
   });
