@@ -411,6 +411,7 @@ body{
   width: 100%;
   max-width: 380px;
   height: 440px;
+  height: min(600px, 66vh);
   flex-shrink: 0;
 }
 .swipe-card{
@@ -1015,6 +1016,7 @@ function renderStudyCard(){
   studyEmpty.style.display = 'none';
   const card = studyQueue[0];
   swipeCardInner.innerHTML = `<h3>${escapeHtml(card.headword)}</h3>` + buildSensesHtml(card);
+  swipeCardInner.scrollTop = 0;
   studyProgress.textContent = `${studyQueue.length}개 남음`;
 }
 
@@ -1051,21 +1053,49 @@ document.getElementById('btnUnsure').addEventListener('click', () => animateAndC
 document.getElementById('btnKnown').addEventListener('click', () => animateAndClassify('know', 480, 0));
 
 /* drag / swipe gesture */
+// axisLock: null(아직 방향 결정 전) | 'x'(좌우 스와이프 = 카드 드래그) | 'y'(상하 = 기본적으로
+// 뜻풀이 스크롤, 맨 위에서 더 아래로 당길 때만 카드 드래그로 전환돼 "Unsure" 제스처가 됨).
+// 뜻이 2개 이상이라 카드 안 내용이 넘칠 때, 스크롤하려는 손동작이 카드째로 끌려나가버리던
+// 버그를 고치기 위한 로직 -- 카드 높이를 늘려도 내용이 더 길면 여전히 필요함.
 let dragging = false, startX = 0, startY = 0, curX = 0, curY = 0;
+let axisLock = null, startScrollTop = 0;
+const AXIS_THRESHOLD = 6;
 
 swipeCard.addEventListener('pointerdown', (e) => {
   if(studyQueue.length === 0) return;
   dragging = true;
   startX = e.clientX; startY = e.clientY;
   curX = 0; curY = 0;
+  axisLock = null;
+  startScrollTop = swipeCardInner.scrollTop;
   swipeCard.style.transition = 'none';
   try{ swipeCard.setPointerCapture(e.pointerId); }catch(err){}
 });
 swipeCard.addEventListener('pointermove', (e) => {
   if(!dragging) return;
-  curX = e.clientX - startX;
-  curY = e.clientY - startY;
-  swipeCard.style.transform = `translate(${curX}px, ${curY}px) rotate(${curX/18}deg)`;
+  const dx = e.clientX - startX;
+  const dy = e.clientY - startY;
+
+  if(axisLock === null){
+    if(Math.abs(dx) < AXIS_THRESHOLD && Math.abs(dy) < AXIS_THRESHOLD) return;
+    axisLock = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+  }
+
+  if(axisLock === 'x'){
+    curX = dx; curY = dy;
+    swipeCard.style.transform = `translate(${curX}px, ${curY}px) rotate(${curX/18}deg)`;
+    return;
+  }
+
+  // axisLock === 'y': 먼저 뜻풀이 텍스트를 스크롤한다. 이미 맨 위(scrollTop 0)인
+  // 상태에서 계속 아래로 당기는 만큼(overshoot)만 카드를 실제로 끌어내린다.
+  const maxScroll = Math.max(0, swipeCardInner.scrollHeight - swipeCardInner.clientHeight);
+  const desiredScrollTop = startScrollTop - dy;
+  const clampedScrollTop = Math.max(0, Math.min(maxScroll, desiredScrollTop));
+  swipeCardInner.scrollTop = clampedScrollTop;
+  const overshoot = desiredScrollTop < 0 ? -desiredScrollTop : 0;
+  curX = 0; curY = overshoot;
+  swipeCard.style.transform = `translate(0px, ${curY}px) rotate(0deg)`;
 });
 function endDrag(){
   if(!dragging) return;
