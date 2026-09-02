@@ -422,6 +422,15 @@ body:not(.is-home) .hero{
   color: var(--ink-faint);
   margin-bottom: 8px;
 }
+.essay-original .word-count-note{
+  font-family: var(--kr);
+  font-weight: 300;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+.essay-original .word-count-note.is-ok{ color: var(--ink-soft); }
+.essay-original .word-count-note.is-short{ color: var(--red-deep); }
 .essay-original .question-text{
   font-family: var(--kr);
   font-weight: 300;
@@ -2413,7 +2422,13 @@ const DATA = {
 
     var originalHtml = (essay.originalText || '')
       .split(/\n\s*\n/)
-      .map(function (p) { return '<p>' + escapeHtml(p.trim()) + '</p>'; })
+      .map(function (p, idx) {
+        var field = 'original-' + idx;
+        var hl = Highlights.get(essay.id, field);
+        return '<p class="hl-zone" data-entry-id="' + escapeHtml(essay.id) + '" data-field="' + field + '">' +
+          renderAnnotatedText(p.trim(), hl, null, null) +
+        '</p>';
+      })
       .join('');
 
     var imageBlock = essay.image
@@ -2423,11 +2438,18 @@ const DATA = {
         '</div>'
       : '';
 
+    var titleHl = Highlights.get(essay.id, 'title');
+    var titleHtml = '<h3 class="hl-zone" data-entry-id="' + escapeHtml(essay.id) + '" data-field="title">' +
+      renderAnnotatedText(essay.title, titleHl, null, null) +
+    '</h3>';
+
+    var wordCountHtml = buildWordCountNote(essay);
+
     wrap.innerHTML =
       '<div class="essay-header">' +
         '<div>' +
           '<div class="meta-line">' + essay.date + '</div>' +
-          '<h3>' + escapeHtml(essay.title) + '</h3>' +
+          titleHtml +
           '<a href="#/" class="back">← 전체 글 목록으로</a>' +
         '</div>' +
         '<div class="score">' +
@@ -2443,9 +2465,42 @@ const DATA = {
         imageBlock +
         '<div class="block">' +
           '<div class="block-label">원문 (첨삭 전)</div>' +
+          wordCountHtml +
           '<div class="original-text">' + originalHtml + '</div>' +
         '</div>' +
       '</div>';
+  }
+
+  // Counts words in the essay's original text (whitespace-delimited tokens)
+  // and, when the essay's title tells us which IELTS task it is ("Task 1"
+  // / "Task 2"), compares that count against the official minimum (150 /
+  // 250 words) -- reporting how far over or under the essay falls using a
+  // nominal-ending ("~함/~임/~됨") status phrase, per project convention.
+  var TASK_MIN_WORDS = { 1: 150, 2: 250 };
+  function countWords(text) {
+    var trimmed = (text || '').trim();
+    if (!trimmed) return 0;
+    return trimmed.split(/\s+/).length;
+  }
+  function buildWordCountNote(essay) {
+    var count = countWords(essay.originalText);
+    var taskMatch = (essay.title || '').match(/Task\s*(\d+)/i);
+    var taskNum = taskMatch ? parseInt(taskMatch[1], 10) : null;
+    var minWords = taskNum ? TASK_MIN_WORDS[taskNum] : null;
+
+    if (!minWords) {
+      return '<div class="word-count-note">총 ' + count + '단어</div>';
+    }
+
+    var diff = count - minWords;
+    var statusClass = diff < 0 ? 'is-short' : 'is-ok';
+    var statusText = diff < 0
+      ? (Math.abs(diff) + '단어 부족함')
+      : (diff === 0 ? '기준 단어 수 정확히 충족함' : (diff + '단어 초과 충족함'));
+
+    return '<div class="word-count-note ' + statusClass + '">' +
+      '총 ' + count + '단어 · Task ' + taskNum + ' 최소 기준 ' + minWords + '단어 — ' + statusText +
+    '</div>';
   }
 
   function buildEssayGridEl(essays, activeTag) {
