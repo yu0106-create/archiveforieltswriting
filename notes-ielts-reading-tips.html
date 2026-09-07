@@ -1,199 +1,346 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IELTS READING TIPS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lekton:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; }
+@font-face{
+  font-family: 'BookkGothic';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkGothic-Lt.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face{
+  font-family: 'BookkGothic';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkGothic-Bd.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@import url('https://fonts.googleapis.com/css2?family=Lekton:wght@400;700&display=swap');
 
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: #46413e;
-    min-height: 100vh;
-  }
+/* ============ 팔레트 ============
+   index.html(폴더 사진 페이지)과 같은 갈색 배경 위에, ielts.html "문법
+   가이드"와 같은 핑크 포인트를 그대로 씀 -- 거기서는 흰 배경 + 핑크였다면
+   여기는 갈색 배경 + 핑크. 하이라이트(mint)는 어느 배경에서도 잘 보이도록
+   원래 색 그대로 유지. */
+:root{
+  --bg: #46413e;
+  --card: #55493f;
+  --box: #4b4038;
+  --line: #6b5d51;
+  --ink: #f3ece1;
+  --ink-soft: #cbbdae;
+  --ink-faint: #9c8b7a;
+  --pink: #fc3468;
+  --pink-light: #f3b6c8;
+  --pink-deep: #ff6f9c;
+  --pink-wash: rgba(252, 52, 104, 0.15);
+  --hl-mint: #ccffff;
+  --kr: 'BookkGothic', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
+  --lekton: 'Lekton', 'Courier New', monospace;
+}
 
-  body {
-    font-family: 'Lekton', 'Courier New', monospace;
-    -webkit-tap-highlight-color: transparent;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 28px 16px 64px;
-  }
+*{ box-sizing: border-box; }
+html{ background: var(--bg); }
+body{
+  margin: 0 auto;
+  max-width: 720px;
+  padding: 36px 18px 80px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--kr);
+  font-weight: 300;
+  line-height: 1.6;
+}
+a{ color: inherit; text-decoration: none; }
+::selection{ background: var(--pink-wash); color: var(--pink-deep); }
+:focus-visible{ outline: 2px solid var(--pink); outline-offset: 3px; }
 
-  .back-link {
-    align-self: flex-start;
-    margin: 0 0 22px 4px;
-    color: #e1c7cd;
-    text-decoration: none;
-    font-size: 14px;
-    letter-spacing: 0.03em;
-    opacity: 0.85;
-  }
-  .back-link:hover { opacity: 1; }
+.back-link{
+  display: inline-block;
+  margin-bottom: 26px;
+  font-family: var(--lekton);
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  color: var(--pink-deep);
+  opacity: 0.85;
+}
+.back-link:hover{ opacity: 1; }
 
-  /* ============ 공책 스프레드 ============ */
-  .notebook-wrap {
-    width: 100%;
-    max-width: 880px;
-    display: flex;
-    justify-content: center;
-  }
+.page-title{
+  font-family: var(--lekton);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  margin: 0 0 4px;
+}
+.page-title{
+  margin-bottom: 26px;
+}
 
-  .notebook {
-    position: relative;
-    display: flex;
-    width: 100%;
-    aspect-ratio: 4 / 2.85;
-    background: #f4ecd8;
-    border-radius: 4px;
-    box-shadow:
-      0 22px 50px rgba(0,0,0,0.45),
-      0 2px 0 rgba(255,255,255,0.15) inset;
-    overflow: hidden;
-  }
+/* ============ 문법 가이드 카드 (ielts.html의 guide-card와 같은 구조) ============ */
+.guide-card{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--pink-light);
+  padding: 22px 22px;
+}
+.guide-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.guide-head .eyebrow{
+  font-family: var(--lekton);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.notes-content{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.notes-content > .notes-placeholder{
+  font-size: 14px;
+  color: var(--ink-faint);
+  font-style: italic;
+}
 
-  /* 가운데 제본선(그림자)으로 두 페이지가 펼쳐진 느낌을 줌 */
-  .notebook::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 46px;
-    height: 100%;
-    transform: translateX(-50%);
-    background: linear-gradient(
-      to right,
-      rgba(0,0,0,0) 0%,
-      rgba(0,0,0,0.16) 42%,
-      rgba(0,0,0,0.22) 50%,
-      rgba(0,0,0,0.16) 58%,
-      rgba(0,0,0,0) 100%
-    );
-    pointer-events: none;
-    z-index: 3;
-  }
+.notes-section{
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px 18px;
+  background: #ffffff;
+}
+.notes-section-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+.notes-section-title{
+  font-family: var(--kr);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.notes-section-title::before{
+  content: "";
+  width: 14px; height: 2px;
+  background: var(--pink-light);
+  display: inline-block;
+  flex: none;
+}
 
-  .page {
-    position: relative;
-    flex: 1 1 50%;
-    min-width: 0;
-    padding: 34px 30px 30px;
-    background:
-      repeating-linear-gradient(
-        to bottom,
-        transparent,
-        transparent 27px,
-        rgba(58,47,40,0.10) 28px
-      );
-    background-position: 0 92px;
-  }
+.notes-section.collapsible > .notes-section-head{ cursor: pointer; }
+.notes-section-chevron{
+  width: 14px; height: 14px;
+  color: var(--ink-faint);
+  flex: none;
+  display: block;
+  transition: transform .15s ease;
+}
+.notes-section.collapsible.is-collapsed{
+  align-self: flex-start;
+  width: max-content;
+  max-width: 100%;
+}
+.notes-section.collapsible.is-collapsed > .notes-section-head{ margin-bottom: 0; }
+.notes-section.collapsible:not(.is-collapsed){ align-self: stretch; }
+.notes-section.collapsible.is-collapsed .notes-section-body{ display: none; }
+.notes-section.collapsible.is-collapsed .notes-section-chevron{ transform: rotate(90deg); }
+.notes-section.collapsible:not(.is-collapsed) .notes-section-chevron{ transform: rotate(-90deg); }
 
-  /* 왼쪽 페이지: 세로 여백선(빨간 줄) */
-  .page.left {
-    border-right: none;
-  }
-  .page.left::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 56px;
-    width: 1px;
-    background: rgba(196, 90, 90, 0.32);
-  }
+.notes-section-body{
+  font-family: var(--kr);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.85;
+  color: #1a1a1a;
+}
+.notes-block{ margin-bottom: 14px; }
+.notes-block:last-child{ margin-bottom: 0; }
+.notes-subhead{
+  font-family: var(--kr);
+  font-weight: 700;
+  font-size: 15.5px;
+  color: #1a1a1a;
+  background: var(--pink-wash);
+  padding: 9px 12px;
+  border-radius: 6px;
+  margin: 14px 0;
+}
+.notes-subhead:first-child{ margin-top: 0; }
+.notes-subhead:last-child{ margin-bottom: 0; }
+.notes-line{ display: flex; align-items: flex-start; }
+.notes-line-label{ white-space: pre; flex: none; color: #555; }
+.notes-line-text{ flex: 1 1 auto; min-width: 0; }
+.notes-placeholder{ color: var(--ink-faint); font-style: italic; }
 
-  .page.right {
-    display: flex;
-    flex-direction: column;
-  }
+/* ============ 하이라이트 (ielts.html과 동일한 기능) ============ */
+mark.hl{
+  background: var(--hl-mint);
+  color: #073130;
+  border-radius: 2px;
+  padding: 0 1px;
+  cursor: pointer;
+  position: relative;
+}
+.hl-zone{ cursor: text; }
+.hl-note-dot{
+  display: inline-block;
+  width: 5px; height: 5px;
+  margin: -3px 0 0 1px;
+  border-radius: 50%;
+  background: var(--pink-deep);
+  border: none;
+  padding: 0;
+  vertical-align: top;
+  cursor: pointer;
+}
+.hl-note-dot:hover{ transform: scale(1.4); }
 
-  .page-title {
-    font-weight: 700;
-    font-size: 21px;
-    letter-spacing: 0.05em;
-    color: #3a2f28;
-    margin: 0 0 4px;
-    padding-bottom: 18px;
-  }
+.hl-popup{
+  position: absolute;
+  z-index: 300;
+  display: none;
+  transform: translate(-50%, -100%);
+  background: #211d1a;
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  gap: 2px;
+}
+.hl-popup-btn{
+  border: none;
+  background: none;
+  color: #f3ece1;
+  font-family: var(--kr);
+  font-size: 12.5px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.hl-popup-btn:hover{ background: rgba(255,255,255,0.12); }
+.hl-popup-sep{ width: 1px; background: rgba(255,255,255,0.18); margin: 4px 0; }
 
-  .page-sub {
-    font-size: 12px;
-    letter-spacing: 0.05em;
-    color: #a08b73;
-    margin-bottom: 8px;
-  }
+.hl-memo-panel{
+  position: absolute;
+  z-index: 300;
+  width: 260px;
+  max-width: calc(100vw - 24px);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  padding: 10px;
+}
+.hl-memo-textarea{
+  width: 100%;
+  min-height: 70px;
+  resize: vertical;
+  font-family: var(--kr);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--box);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px;
+}
+.hl-memo-textarea:focus{ outline: 2px solid var(--pink); outline-offset: 1px; }
+.hl-memo-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+.hl-memo-actions button{
+  font-family: var(--kr);
+  font-size: 12px;
+  border: 1px solid var(--line);
+  background: var(--box);
+  color: var(--ink-soft);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.hl-memo-actions button:hover{ border-color: var(--ink); color: var(--ink); }
+.hl-memo-actions .hl-memo-save{ background: var(--pink); color: #2a0f18; border-color: var(--pink); font-weight: 700; }
+.hl-memo-actions .hl-memo-save:hover{ opacity: 0.85; }
 
-  .notes-area {
-    flex: 1;
-    outline: none;
-    font-family: 'Lekton', 'Courier New', monospace;
-    font-size: 15px;
-    line-height: 28px;
-    color: #3a2f28;
-    white-space: pre-wrap;
-    word-break: break-word;
-    caret-color: #c45a5a;
-  }
-
-  .notes-area:empty::before {
-    content: attr(data-placeholder);
-    color: #a08b73;
-    opacity: 0.75;
-  }
-
-  .save-hint {
-    position: fixed;
-    bottom: 18px;
-    right: 22px;
-    font-size: 12px;
-    color: #e1c7cd;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-  }
-  .save-hint.show { opacity: 0.75; }
-
-  @media (max-width: 700px) {
-    .notebook {
-      aspect-ratio: auto;
-      flex-direction: column;
-    }
-    .notebook::before { display: none; }
-    .page { padding: 26px 20px 24px; background-position: 0 78px; }
-    .page.left::before { left: 40px; }
-    .page-title { font-size: 18px; }
-  }
+.hl-memo-view{
+  position: absolute;
+  z-index: 300;
+  width: 320px;
+  max-width: calc(100vw - 24px);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  padding: 12px 14px;
+}
+.hl-memo-view-head{
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.hl-memo-view-text{
+  font-family: var(--kr);
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+.hl-memo-view-edit,
+.hl-memo-view-close{
+  width: 22px; height: 22px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--box);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-faint);
+  cursor: pointer;
+  padding: 0;
+  transition: border-color .15s ease, color .15s ease;
+}
+.hl-memo-view-edit svg,
+.hl-memo-view-close svg{ width: 11px; height: 11px; }
+.hl-memo-view-edit:hover{ border-color: var(--pink-deep); color: var(--pink-deep); }
+.hl-memo-view-close:hover{ border-color: var(--ink); color: var(--ink); }
 </style>
 </head>
 <body>
 
-  <a class="back-link" href="index.html">← index</a>
+  <a class="back-link" href="index.html">&larr; index</a>
+  <div class="page-title">IELTS READING TIPS</div>
 
-  <div class="notebook-wrap">
-    <div class="notebook">
-      <div class="page left">
-        <div class="page-title">IELTS READING TIPS</div>
-        <div class="page-sub">memo</div>
-      </div>
-      <div class="page right">
-        <div
-          class="notes-area"
-          id="notesArea"
-          contenteditable="true"
-          data-placeholder="여기에 메모를 적어보세요..."
-          spellcheck="false"
-        ></div>
-      </div>
+  <div class="guide-card" id="guideCard" data-essay-id="ielts-reading-tips-guide">
+    <div class="guide-head">
+      <div class="eyebrow">READING TIPS</div>
     </div>
+    <div class="notes-content" id="notesContent"></div>
   </div>
-
-  <div class="save-hint" id="saveHint">저장됨</div>
 
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore-compat.js"></script>
@@ -207,9 +354,9 @@
     appId: "1:756302847323:web:734c071b8f16944a614e7e"
   };
   // ielts.html / verbs.html / phrasal-verbs.html와 같은 Firebase 프로젝트,
-  // 자기만의 sync 문서('notes-ielts-reading-tips')를 써서 데이터가 섞이지 않음.
-  // SDK가 로드 안 되면(오프라인, 애드블락 등) db는 null로 남고, 그 아래 코드는
-  // localStorage만으로 계속 동작함.
+  // 자기만의 sync 문서('notes-ielts-reading-tips')를 씀. 이 페이지는 내용
+  // 자체는 정적(채팅으로 소스를 주면 이 파일을 다시 만들어 반영)이고,
+  // 하이라이트만 기기 간 동기화됨.
   var db = null;
   try {
     if (typeof firebase !== 'undefined') {
@@ -223,61 +370,48 @@
 </script>
 <script>
 (function () {
-  var STORAGE_KEY = 'notebook_ielts-reading-tips_v1';
-  var notesArea = document.getElementById('notesArea');
-  var saveHint = document.getElementById('saveHint');
 
-  function loadLocal() {
-    try { return localStorage.getItem(STORAGE_KEY) || ''; }
-    catch (e) { return ''; }
-  }
-  function saveLocal(text) {
-    try { localStorage.setItem(STORAGE_KEY, text); } catch (e) {}
+  // ============ 내용 (여기에 새 팁을 주면 이 문자열에 반영해서 파일을
+  // 다시 드립니다). "━━━ 제목 ━━━" = 새 토글 박스, "## 소제목" = 박스 안
+  // 핑크 소제목, "- " / "1)" 등으로 시작하는 줄은 행잉 인덴트로 렌더링됨. ============
+  var GUIDE_TEXT =
+"━━━ 단복수 변경 금지 규칙 ━━━\n" +
+"아이엘츠 리딩 주관식 문제(from the passage)에서 단복수를 마음대로 바꾸면 오답 처리됨. 본문에 나온 형태 그대로 적는 것이 원칙임.\n" +
+"\n" +
+"## 단복수를 바꾸면 안 되는 이유\n" +
+"- 지문 그대로(from the passage) 복사 규칙: 'Choose NO MORE THAN TWO WORDS from the passage' 같은 지시문이 있으면, 지문에 나온 단어를 그대로 복사(Copy & Paste)해야 함.\n" +
+"- 철자(Spelling) 오류 간주: 복수형 어미 -s / -es를 임의로 붙이거나 빼는 것은 철자 오류로 처리되어 감점됨.\n" +
+"\n" +
+"## 예외적인 상황과 대처법\n" +
+"1) 문법적 호응 확인: 빈칸 앞뒤 문장 구조(단수 관사 a/an이 있는지, 동사가 복수형인지 등)를 먼저 보고 문법에 맞는 단어를 지문에서 찾아야 함. 본문 안에 단수형과 복수형이 모두 존재하는 경우가 많으므로 문맥에 맞는 쪽을 골라 씀.\n" +
+"2) 단어가 변형되어야만 답이 되는 경우: 지문에 있는 형태를 그대로 넣었을 때 빈칸 주변 문법과 전혀 맞지 않는다면, 그 단어는 애초에 정답이 아닐 확률이 높음 — 다른 단어나 동의어를 지문에서 다시 찾아봐야 함.";
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
   }
 
-  var text = loadLocal();
+  // ---------------- 저장 (localStorage + Firestore, 하이라이트만) ----------------
+  var STORAGE_KEY = 'notes-ielts-reading-tips-highlights-v1';
+  function loadHl() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+  function saveHl(d) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch (e) {}
+  }
+  var hlData = loadHl();
 
   var SYNC_DOC = db ? db.collection('sync').doc('notes-ielts-reading-tips') : null;
-
-  // 다른 기기에서 먼저 적어둔 메모가 있으면 첫 화면부터 반영되도록, 그리기
-  // 전에 클라우드에서 한 번 최신 값을 당겨온다. 오프라인/지연 대비 최대
-  // 1.5초만 기다리고, 응답이 없으면 로컬 값 그대로 그린다.
-  function initialSync(done) {
-    if (!SYNC_DOC) { done(); return; }
-    var settled = false;
-    var timer = setTimeout(function () {
-      if (settled) return;
-      settled = true;
-      done();
-    }, 1500);
-    SYNC_DOC.get().then(function (doc) {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      if (doc.exists) {
-        var data = doc.data() || {};
-        if (typeof data.text === 'string') {
-          text = data.text;
-          saveLocal(text);
-        }
-      }
-      done();
-    }).catch(function (err) {
-      console.error('Initial sync fetch failed (using local data):', err);
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      done();
-    });
-  }
-
   var pushTimer = null;
   var pushPending = false;
   function doPush() {
     pushPending = false;
     if (!SYNC_DOC) return;
     SYNC_DOC.set({
-      text: notesArea.innerText,
+      highlights: hlData,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true }).catch(function (err) {
       console.error('Sync write failed (staying local-only for now):', err);
@@ -299,43 +433,469 @@
   });
   window.addEventListener('pagehide', flushPendingPush);
 
-  var hintTimer = null;
-  function flashSaved() {
-    saveHint.classList.add('show');
-    clearTimeout(hintTimer);
-    hintTimer = setTimeout(function () {
-      saveHint.classList.remove('show');
-    }, 900);
+  function mergeRanges(ranges) {
+    var sorted = ranges.slice().sort(function (a, b) { return a.start - b.start; });
+    var out = [];
+    sorted.forEach(function (r) {
+      var last = out[out.length - 1];
+      if (last && r.start <= last.end) {
+        last.end = Math.max(last.end, r.end);
+        if (!last.note && r.note) last.note = r.note;
+      } else {
+        out.push({ start: r.start, end: r.end, note: r.note });
+      }
+    });
+    return out;
   }
 
-  notesArea.addEventListener('input', function () {
-    var value = notesArea.innerText;
-    saveLocal(value);
-    pushToCloud();
-    flashSaved();
+  var Highlights = {
+    get: function (field) { return (hlData[field]) || []; },
+    add: function (field, start, end) {
+      if (!hlData[field]) hlData[field] = [];
+      hlData[field].push({ start: start, end: end });
+      hlData[field] = mergeRanges(hlData[field]);
+      saveHl(hlData);
+      pushToCloud();
+    },
+    removeAt: function (field, start, end) {
+      if (!hlData[field]) return;
+      hlData[field] = hlData[field].filter(function (r) { return !(r.start === start && r.end === end); });
+      if (!hlData[field].length) delete hlData[field];
+      saveHl(hlData);
+      pushToCloud();
+    },
+    setNote: function (field, start, end, note) {
+      if (!hlData[field]) return;
+      var ranges = hlData[field];
+      for (var i = 0; i < ranges.length; i++) {
+        if (ranges[i].start === start && ranges[i].end === end) {
+          if (note) ranges[i].note = note; else delete ranges[i].note;
+          break;
+        }
+      }
+      saveHl(hlData);
+      pushToCloud();
+    }
+  };
+
+  // ---------------- 텍스트 파싱 + 렌더링 (ielts.html의 splitNotesSections /
+  // renderNotesBody / buildCollapsibleSectionsHtml와 동일한 규칙) ----------------
+  function splitNotesSections(text) {
+    var titleRe = /^━+\s*(.+?)\s*━+\s*$/;
+    var lines = text.split('\n');
+    var sections = [];
+    var current = null;
+    lines.forEach(function (line) {
+      var m = line.match(titleRe);
+      if (m) {
+        current = { title: m[1], bodyLines: [] };
+        sections.push(current);
+      } else {
+        if (!current) { current = { title: '', bodyLines: [] }; sections.push(current); }
+        current.bodyLines.push(line);
+      }
+    });
+    return sections.map(function (s) {
+      return { title: s.title, body: s.bodyLines.join('\n').replace(/^\n+|\n+$/g, '') };
+    }).filter(function (s) { return s.title || s.body; });
+  }
+
+  var NOTES_MARKER_RE = /^(-\s+|\d+\)\s+|Ex\)\s+|비교\s?예시:\s*|비교\)\s+|예시\s?오류:\s*|요약:\s*|설명:\s*|단어:\s*|→\s*)/;
+  var NOTES_SUBHEAD_RE = /^##\s*(.+)$/;
+
+  function renderAnnotatedText(text, highlightRanges, baseOffset) {
+    baseOffset = baseOffset || 0;
+    var points = {};
+    points[0] = true; points[text.length] = true;
+    (highlightRanges || []).forEach(function (r) { points[r.start] = true; points[r.end] = true; });
+    var sorted = Object.keys(points).map(Number).sort(function (a, b) { return a - b; });
+
+    var html = '';
+    for (var k = 0; k < sorted.length - 1; k++) {
+      var s = sorted[k], e = sorted[k + 1];
+      if (s >= e) continue;
+      var seg = text.slice(s, e);
+      var hiRange = (highlightRanges || []).filter(function (r) { return s >= r.start && e <= r.end; })[0];
+      var open = '', close = '';
+      if (hiRange) {
+        var noteAttr = hiRange.note ? ' data-note="' + escapeHtml(hiRange.note) + '"' : '';
+        var noteClass = hiRange.note ? ' has-note' : '';
+        open += '<mark class="hl' + noteClass + '" data-start="' + (s + baseOffset) + '" data-end="' + (e + baseOffset) + '"' + noteAttr + '>';
+        var dotHtml = hiRange.note ? '<button type="button" class="hl-note-dot" data-note="' + escapeHtml(hiRange.note) + '" aria-label="메모 보기"></button>' : '';
+        close = dotHtml + '</mark>' + close;
+      }
+      html += open + escapeHtml(seg) + close;
+    }
+    return html;
+  }
+
+  function renderNotesBody(bodyText, hlRanges) {
+    hlRanges = hlRanges || [];
+    var rawLines = bodyText.split('\n');
+
+    var isSubheadLine = {};
+    rawLines.forEach(function (line, i) {
+      if (NOTES_SUBHEAD_RE.test(line)) isSubheadLine[i] = true;
+    });
+
+    var lineInfos = [];
+    var offset = 0;
+    rawLines.forEach(function (line, i) {
+      var visibleText = isSubheadLine[i] ? line.match(NOTES_SUBHEAD_RE)[1] : line;
+      var start = offset;
+      var end = start + visibleText.length;
+      lineInfos.push({ text: line, visibleText: visibleText, start: start, end: end });
+      offset = end;
+    });
+
+    var lineBlocks = [];
+    var current = [];
+    lineInfos.forEach(function (li, i) {
+      if (li.text === '') {
+        if (current.length) { lineBlocks.push(current); current = []; }
+        return;
+      }
+      if (isSubheadLine[i]) {
+        if (current.length) { lineBlocks.push(current); current = []; }
+        lineBlocks.push([li]);
+        return;
+      }
+      current.push(li);
+    });
+    if (current.length) lineBlocks.push(current);
+
+    return lineBlocks.map(function (block) {
+      if (block.length === 1) {
+        var soleMatch = block[0].text.match(NOTES_SUBHEAD_RE);
+        if (soleMatch) {
+          var li0 = block[0];
+          var headHl = hlRanges
+            .filter(function (r) { return r.start < li0.end && r.end > li0.start; })
+            .map(function (r) { return { start: Math.max(r.start, li0.start) - li0.start, end: Math.min(r.end, li0.end) - li0.start, note: r.note }; });
+          return '<div class="notes-subhead">' + renderAnnotatedText(soleMatch[1], headHl, li0.start) + '</div>';
+        }
+      }
+      var linesHtml = block.map(function (li) {
+        var wsMatch = li.text.match(/^\s*/);
+        var leadingWs = wsMatch[0];
+        var afterWs = li.text.slice(leadingWs.length);
+        var markerMatch = afterWs.match(NOTES_MARKER_RE);
+        var marker = markerMatch ? markerMatch[0] : '';
+        var labelText = leadingWs + marker;
+        var contentText = afterWs.slice(marker.length);
+
+        var lineHl = hlRanges
+          .filter(function (r) { return r.start < li.end && r.end > li.start; })
+          .map(function (r) { return { start: Math.max(r.start, li.start) - li.start, end: Math.min(r.end, li.end) - li.start, note: r.note }; });
+        var labelHl = lineHl
+          .filter(function (r) { return r.start < labelText.length; })
+          .map(function (r) { return { start: r.start, end: Math.min(r.end, labelText.length), note: r.note }; });
+        var contentHl = lineHl
+          .filter(function (r) { return r.end > labelText.length; })
+          .map(function (r) { return { start: Math.max(r.start, labelText.length) - labelText.length, end: r.end - labelText.length, note: r.note }; });
+
+        var labelSpan = labelText
+          ? '<span class="notes-line-label">' + renderAnnotatedText(labelText, labelHl, li.start) + '</span>'
+          : '';
+        var textSpan = '<span class="notes-line-text">' + renderAnnotatedText(contentText, contentHl, li.start + labelText.length) + '</span>';
+
+        return '<div class="notes-line">' + labelSpan + textSpan + '</div>';
+      }).join('');
+      return '<div class="notes-block">' + linesHtml + '</div>';
+    }).join('');
+  }
+
+  var sectionExpanded = {}; // idx -> bool, in-memory (render() 이후에도 유지)
+
+  function buildSectionsHtml() {
+    var sections = splitNotesSections(GUIDE_TEXT);
+    if (!sections.length) {
+      return '<span class="notes-placeholder">아직 등록된 팁이 없음.</span>';
+    }
+    return sections.map(function (sec, idx) {
+      var field = 'notes-' + idx;
+      var hl = Highlights.get(field);
+      var titleHtml = sec.title ? '<div class="notes-section-title">' + escapeHtml(sec.title) + '</div>' : '<div class="notes-section-title"></div>';
+      var chevron = '<svg class="notes-section-chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      var expanded = !!sectionExpanded[idx];
+      return '<div class="notes-section collapsible' + (expanded ? '' : ' is-collapsed') + '" data-guide-idx="' + idx + '">' +
+        '<div class="notes-section-head">' + titleHtml + chevron + '</div>' +
+        '<div class="notes-section-body hl-zone" data-field="' + field + '">' +
+          renderNotesBody(sec.body, hl) +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function render() {
+    document.getElementById('notesContent').innerHTML = buildSectionsHtml();
+  }
+
+  // ---------------- 하이라이트 상호작용 (드래그 선택 -> 팝업 -> 마크) ----------------
+  var popupEl = null;
+  function ensurePopup() {
+    if (!popupEl) {
+      popupEl = document.createElement('div');
+      popupEl.className = 'hl-popup';
+      popupEl.style.display = 'none';
+      document.body.appendChild(popupEl);
+    }
+    return popupEl;
+  }
+  function showPopup(rect, actions) {
+    var p = ensurePopup();
+    p.innerHTML = actions.map(function (a, i) {
+      return '<button type="button" class="hl-popup-btn" data-idx="' + i + '">' + escapeHtml(a.label) + '</button>';
+    }).join('<span class="hl-popup-sep"></span>');
+    p.style.display = 'flex';
+    p.style.left = (rect.left + rect.width / 2 + window.scrollX) + 'px';
+    p.style.top = (rect.top - 10 + window.scrollY) + 'px';
+    Array.prototype.forEach.call(p.querySelectorAll('.hl-popup-btn'), function (btn, i) {
+      btn.onclick = function (ev) { ev.stopPropagation(); actions[i].onClick(); };
+    });
+  }
+  function hidePopup() { if (popupEl) popupEl.style.display = 'none'; }
+
+  var memoPanelEl = null;
+  var memoState = null;
+  function ensureMemoPanel() {
+    if (!memoPanelEl) {
+      memoPanelEl = document.createElement('div');
+      memoPanelEl.className = 'hl-memo-panel';
+      memoPanelEl.hidden = true;
+      memoPanelEl.innerHTML =
+        '<textarea class="hl-memo-textarea" placeholder="메모를 남겨보세요"></textarea>' +
+        '<div class="hl-memo-actions">' +
+          '<button type="button" class="hl-memo-cancel">취소</button>' +
+          '<button type="button" class="hl-memo-save">저장</button>' +
+        '</div>';
+      document.body.appendChild(memoPanelEl);
+      memoPanelEl.querySelector('.hl-memo-cancel').addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        closeMemoPanel();
+      });
+      memoPanelEl.querySelector('.hl-memo-save').addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        if (!memoState) return;
+        var text = memoPanelEl.querySelector('.hl-memo-textarea').value.trim();
+        Highlights.setNote(memoState.field, memoState.start, memoState.end, text);
+        closeMemoPanel();
+        render();
+      });
+    }
+    return memoPanelEl;
+  }
+  function openMemoPanel(rect, field, start, end, currentNote) {
+    var panel = ensureMemoPanel();
+    memoState = { field: field, start: start, end: end };
+    panel.querySelector('.hl-memo-textarea').value = currentNote || '';
+    panel.hidden = false;
+    var top = rect.bottom + 10 + window.scrollY;
+    var left = Math.min(Math.max(rect.left, 8), window.innerWidth - 268) + window.scrollX;
+    panel.style.top = top + 'px';
+    panel.style.left = left + 'px';
+    panel.querySelector('.hl-memo-textarea').focus();
+  }
+  function closeMemoPanel() { memoState = null; if (memoPanelEl) memoPanelEl.hidden = true; }
+
+  var memoViewEl = null;
+  var memoViewAnchorEl = null;
+  function ensureMemoView() {
+    if (!memoViewEl) {
+      memoViewEl = document.createElement('div');
+      memoViewEl.className = 'hl-memo-view';
+      memoViewEl.hidden = true;
+      document.body.appendChild(memoViewEl);
+    }
+    return memoViewEl;
+  }
+  function positionMemoView() {
+    if (!memoViewEl || memoViewEl.hidden || !memoViewAnchorEl) return;
+    var rect = memoViewAnchorEl.getBoundingClientRect();
+    var top = rect.top + window.scrollY - memoViewEl.offsetHeight - 8;
+    var left = Math.min(rect.right, window.innerWidth - 320 - 12) + window.scrollX;
+    memoViewEl.style.top = top + 'px';
+    memoViewEl.style.left = left + 'px';
+  }
+  function openMemoView(anchorEl, noteText, onEdit) {
+    var panel = ensureMemoView();
+    panel.innerHTML =
+      '<div class="hl-memo-view-head">' +
+        '<button type="button" class="hl-memo-view-edit" aria-label="수정">' +
+          '<svg viewBox="0 0 24 24" fill="none"><path d="M4 20h4L18.5 9.5a2 2 0 0 0 0-2.8l-1.2-1.2a2 2 0 0 0-2.8 0L4 15v5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
+        '</button>' +
+        '<button type="button" class="hl-memo-view-close" aria-label="닫기">' +
+          '<svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+        '</button>' +
+      '</div>' +
+      '<div class="hl-memo-view-text"></div>';
+    panel.querySelector('.hl-memo-view-text').textContent = noteText;
+    panel.style.bottom = 'auto';
+    panel.hidden = false;
+    memoViewAnchorEl = anchorEl;
+    positionMemoView();
+    panel.querySelector('.hl-memo-view-edit').onclick = function (ev) {
+      ev.stopPropagation();
+      closeMemoView();
+      onEdit();
+    };
+    panel.querySelector('.hl-memo-view-close').onclick = function (ev) {
+      ev.stopPropagation();
+      closeMemoView();
+    };
+  }
+  function closeMemoView() { if (memoViewEl) memoViewEl.hidden = true; memoViewAnchorEl = null; }
+
+  function getTextOffsetInZone(zone, node, nodeOffset) {
+    var walker = document.createTreeWalker(zone, NodeFilter.SHOW_TEXT, null);
+    var offset = 0, n;
+    while ((n = walker.nextNode())) {
+      if (n === node) return offset + nodeOffset;
+      offset += n.textContent.length;
+    }
+    return offset;
+  }
+
+  function handleSelectionEnd(ev) {
+    if (!ev.target || !ev.target.closest) return;
+    if (ev.target.closest('.hl-popup')) return;
+    if (ev.target.closest('mark.hl')) return;
+    setTimeout(function () {
+      var sel = window.getSelection();
+      if (!sel || sel.isCollapsed || sel.rangeCount === 0) { hidePopup(); return; }
+      var range = sel.getRangeAt(0);
+      var startEl = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer;
+      var endEl = range.endContainer.nodeType === 3 ? range.endContainer.parentElement : range.endContainer;
+      var startZone = startEl.closest('.hl-zone');
+      var endZone = endEl.closest('.hl-zone');
+      if (!startZone || startZone !== endZone) { hidePopup(); return; }
+
+      var start = getTextOffsetInZone(startZone, range.startContainer, range.startOffset);
+      var end = getTextOffsetInZone(startZone, range.endContainer, range.endOffset);
+      if (start === end) { hidePopup(); return; }
+      var lo = Math.min(start, end), hi = Math.max(start, end);
+      var rect = range.getBoundingClientRect();
+      var field = startZone.getAttribute('data-field');
+
+      showPopup(rect, [{ label: '하이라이트', onClick: function () {
+        Highlights.add(field, lo, hi);
+        sel.removeAllRanges();
+        hidePopup();
+        render();
+      } }]);
+    }, 10);
+  }
+  document.addEventListener('mouseup', handleSelectionEnd);
+  document.addEventListener('touchend', handleSelectionEnd);
+  document.addEventListener('mousedown', function (ev) {
+    if (!ev.target || !ev.target.closest) return;
+    if (!ev.target.closest('.hl-popup') && !ev.target.closest('mark.hl')) hidePopup();
+    if (!ev.target.closest('.hl-memo-panel') && !ev.target.closest('mark.hl')) closeMemoPanel();
+    if (!ev.target.closest('.hl-memo-view') && !ev.target.closest('mark.hl')) closeMemoView();
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') { hidePopup(); closeMemoPanel(); closeMemoView(); }
+  });
+  window.addEventListener('resize', positionMemoView);
+
+  document.body.addEventListener('click', function (ev) {
+    var noteDot = ev.target.closest('.hl-note-dot');
+    if (noteDot) {
+      closeMemoPanel();
+      var dotMarkEl = noteDot.closest('mark.hl');
+      var dotZoneEl = dotMarkEl.closest('.hl-zone');
+      var dotNote = noteDot.getAttribute('data-note') || '';
+      openMemoView(noteDot, dotNote, function () {
+        openMemoPanel(
+          dotMarkEl.getBoundingClientRect(),
+          dotZoneEl.getAttribute('data-field'),
+          parseInt(dotMarkEl.getAttribute('data-start'), 10),
+          parseInt(dotMarkEl.getAttribute('data-end'), 10),
+          dotNote
+        );
+      });
+      return;
+    }
+    var markEl = ev.target.closest('mark.hl');
+    if (markEl) {
+      closeMemoPanel();
+      closeMemoView();
+      var zoneEl = markEl.closest('.hl-zone');
+      var start = parseInt(markEl.getAttribute('data-start'), 10);
+      var end = parseInt(markEl.getAttribute('data-end'), 10);
+      var field = zoneEl.getAttribute('data-field');
+      var existingNote = markEl.getAttribute('data-note') || '';
+      var rect = markEl.getBoundingClientRect();
+      showPopup(rect, [
+        { label: existingNote ? '메모 수정' : '메모 추가', onClick: function () {
+            hidePopup();
+            openMemoPanel(rect, field, start, end, existingNote);
+          } },
+        { label: '삭제', onClick: function () {
+            Highlights.removeAt(field, start, end);
+            hidePopup();
+            render();
+          } }
+      ]);
+      return;
+    }
+
+    var toggleHead = ev.target.closest('.notes-section.collapsible > .notes-section-head');
+    if (toggleHead) {
+      var toggledSection = toggleHead.closest('.notes-section');
+      var idx = toggledSection.getAttribute('data-guide-idx');
+      sectionExpanded[idx] = !sectionExpanded[idx];
+      render();
+    }
   });
 
-  // 실시간 동기화: 다른 기기에서 저장한 내용을 반영. hasPendingWrites가
-  // true면 방금 이 기기에서 쓴 내용의 로컬 에코이므로 건너뜀 -- 그렇지
-  // 않으면 타이핑 중 커서 위치가 다른 기기의 내용으로 덮어써질 수 있음.
+  // ---------------- 초기 로드: 클라우드에서 하이라이트 먼저 당겨오기 ----------------
+  function initialSync(done) {
+    if (!SYNC_DOC) { done(); return; }
+    var settled = false;
+    var timer = setTimeout(function () {
+      if (settled) return;
+      settled = true;
+      done();
+    }, 1500);
+    SYNC_DOC.get().then(function (doc) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (doc.exists) {
+        var data = doc.data() || {};
+        if (data.highlights) {
+          hlData = data.highlights;
+          saveHl(hlData);
+        }
+      }
+      done();
+    }).catch(function (err) {
+      console.error('Initial sync fetch failed (using local data):', err);
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      done();
+    });
+  }
+
   if (SYNC_DOC) {
     SYNC_DOC.onSnapshot(function (doc) {
       if (doc.metadata.hasPendingWrites) return;
       if (!doc.exists) return;
-      if (document.activeElement === notesArea) return; // 지금 타이핑 중이면 건드리지 않음
       var data = doc.data() || {};
-      if (typeof data.text === 'string' && data.text !== notesArea.innerText) {
-        notesArea.innerText = data.text;
-        saveLocal(data.text);
+      if (data.highlights) {
+        hlData = data.highlights;
+        saveHl(hlData);
+        render();
       }
     }, function (err) {
       console.error('Sync read failed (staying local-only):', err);
     });
   }
 
-  initialSync(function () {
-    notesArea.innerText = text;
-  });
+  initialSync(render);
+
 })();
 </script>
 </body>
