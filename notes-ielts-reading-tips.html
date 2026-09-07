@@ -239,29 +239,56 @@ mark.hl{
 .hl-popup-btn:hover{ background: rgba(255,255,255,0.12); }
 .hl-popup-sep{ width: 1px; background: rgba(255,255,255,0.18); margin: 4px 0; }
 
+.hl-memo-panel,
+.hl-memo-view{
+  --memo-bg: #ffffc2;
+  --memo-line: #e4da84;
+  --memo-ink: #46381a;
+  --memo-ink-soft: #6d5d2c;
+  --memo-ink-faint: #9c8c4f;
+}
 .hl-memo-panel{
   position: absolute;
   z-index: 300;
   width: 260px;
   max-width: calc(100vw - 24px);
-  background: var(--card);
-  border: 1px solid var(--line);
+  background: var(--memo-bg);
+  border: 1px solid var(--memo-line);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   padding: 10px;
 }
+.hl-memo-title-input{
+  display: block;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--memo-line);
+  background: none;
+  font-family: var(--kr);
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--memo-ink);
+  padding: 4px 2px 8px;
+  margin-bottom: 8px;
+  outline: none;
+  box-sizing: border-box;
+}
+.hl-memo-title-input::placeholder{ color: var(--memo-ink-faint); font-weight: 400; }
+.hl-memo-title-input:focus{ border-bottom-color: var(--pink-deep); }
 .hl-memo-textarea{
   width: 100%;
   min-height: 70px;
   resize: vertical;
   font-family: var(--kr);
   font-size: 13px;
-  color: var(--ink);
-  background: var(--box);
-  border: 1px solid var(--line);
+  color: var(--memo-ink);
+  background: rgba(255,255,255,0.35);
+  border: 1px solid var(--memo-line);
   border-radius: 6px;
   padding: 8px;
+  box-sizing: border-box;
 }
+.hl-memo-textarea::placeholder{ color: var(--memo-ink-faint); }
 .hl-memo-textarea:focus{ outline: 2px solid var(--pink); outline-offset: 1px; }
 .hl-memo-actions{
   display: flex;
@@ -272,14 +299,14 @@ mark.hl{
 .hl-memo-actions button{
   font-family: var(--kr);
   font-size: 12px;
-  border: 1px solid var(--line);
-  background: var(--box);
-  color: var(--ink-soft);
+  border: 1px solid var(--memo-line);
+  background: rgba(255,255,255,0.5);
+  color: var(--memo-ink-soft);
   border-radius: 6px;
   padding: 6px 10px;
   cursor: pointer;
 }
-.hl-memo-actions button:hover{ border-color: var(--ink); color: var(--ink); }
+.hl-memo-actions button:hover{ border-color: var(--memo-ink); color: var(--memo-ink); }
 .hl-memo-actions .hl-memo-save{ background: var(--pink); color: #2a0f18; border-color: var(--pink); font-weight: 700; }
 .hl-memo-actions .hl-memo-save:hover{ opacity: 0.85; }
 
@@ -288,27 +315,47 @@ mark.hl{
   z-index: 300;
   width: 320px;
   max-width: calc(100vw - 24px);
-  background: var(--card);
-  border: 1px solid var(--line);
+  background: var(--memo-bg);
+  border: 1px solid var(--memo-line);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   padding: 12px 14px;
 }
 .hl-memo-view-head{
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 10px;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--memo-line);
+}
+.hl-memo-view-head.no-divider{
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.hl-memo-view-title{
+  flex: 1 1 auto;
+  font-family: var(--kr);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--memo-ink);
+  overflow-wrap: break-word;
+}
+.hl-memo-view-title:empty::before{ content: '(제목 없음)'; color: var(--memo-ink-faint); font-weight: 400; font-style: italic; }
+.hl-memo-view-btns{
+  display: flex;
+  gap: 6px;
+  flex: none;
 }
 .hl-memo-view-text{
   font-family: var(--kr);
   font-weight: 300;
   font-size: 13px;
   line-height: 1.65;
-  color: var(--ink);
+  color: var(--memo-ink-soft);
   white-space: pre-wrap;
 }
 .hl-memo-view-edit,
@@ -316,10 +363,10 @@ mark.hl{
   width: 22px; height: 22px;
   flex: none;
   border-radius: 50%;
-  border: 1px solid var(--line);
-  background: var(--box);
+  border: 1px solid var(--memo-line);
+  background: rgba(255,255,255,0.5);
   display: flex; align-items: center; justify-content: center;
-  color: var(--ink-faint);
+  color: var(--memo-ink-faint);
   cursor: pointer;
   padding: 0;
   transition: border-color .15s ease, color .15s ease;
@@ -327,7 +374,7 @@ mark.hl{
 .hl-memo-view-edit svg,
 .hl-memo-view-close svg{ width: 11px; height: 11px; }
 .hl-memo-view-edit:hover{ border-color: var(--pink-deep); color: var(--pink-deep); }
-.hl-memo-view-close:hover{ border-color: var(--ink); color: var(--ink); }
+.hl-memo-view-close:hover{ border-color: var(--memo-ink); color: var(--memo-ink); }
 </style>
 </head>
 <body>
@@ -390,7 +437,9 @@ mark.hl{
     return String(s)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   // ---------------- 저장 (localStorage + Firestore, 하이라이트만) ----------------
@@ -446,6 +495,32 @@ mark.hl{
       }
     });
     return out;
+  }
+
+  // A memo can be title-only (short reminders) or title+content. Stored as a
+  // single JSON string ({"title":"...","content":"..."}) inside the same
+  // "note" field the highlight range already had. Legacy notes saved before
+  // this split (a plain string) are auto-migrated on read: first line becomes
+  // the title, the rest becomes the content; a single-line legacy note
+  // becomes a title-only memo.
+  function parseNoteValue(raw) {
+    if (!raw) return { title: '', content: '' };
+    try {
+      var parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) &&
+          (typeof parsed.title === 'string' || typeof parsed.content === 'string')) {
+        return { title: parsed.title || '', content: parsed.content || '' };
+      }
+    } catch (e) {}
+    var nl = raw.indexOf('\n');
+    if (nl === -1) return { title: raw.trim(), content: '' };
+    return { title: raw.slice(0, nl).trim(), content: raw.slice(nl + 1).replace(/^\n+/, '') };
+  }
+  function serializeNoteValue(title, content) {
+    title = (title || '').trim();
+    content = (content || '').trim();
+    if (!title && !content) return '';
+    return JSON.stringify({ title: title, content: content });
   }
 
   var Highlights = {
@@ -664,7 +739,8 @@ mark.hl{
       memoPanelEl.className = 'hl-memo-panel';
       memoPanelEl.hidden = true;
       memoPanelEl.innerHTML =
-        '<textarea class="hl-memo-textarea" placeholder="메모를 남겨보세요"></textarea>' +
+        '<input type="text" class="hl-memo-title-input" placeholder="제목" maxlength="60" />' +
+        '<textarea class="hl-memo-textarea" placeholder="내용 (선택)"></textarea>' +
         '<div class="hl-memo-actions">' +
           '<button type="button" class="hl-memo-cancel">취소</button>' +
           '<button type="button" class="hl-memo-save">저장</button>' +
@@ -677,7 +753,9 @@ mark.hl{
       memoPanelEl.querySelector('.hl-memo-save').addEventListener('click', function (ev) {
         ev.stopPropagation();
         if (!memoState) return;
-        var text = memoPanelEl.querySelector('.hl-memo-textarea').value.trim();
+        var title = memoPanelEl.querySelector('.hl-memo-title-input').value;
+        var content = memoPanelEl.querySelector('.hl-memo-textarea').value;
+        var text = serializeNoteValue(title, content);
         Highlights.setNote(memoState.field, memoState.start, memoState.end, text);
         closeMemoPanel();
         render();
@@ -688,13 +766,15 @@ mark.hl{
   function openMemoPanel(rect, field, start, end, currentNote) {
     var panel = ensureMemoPanel();
     memoState = { field: field, start: start, end: end };
-    panel.querySelector('.hl-memo-textarea').value = currentNote || '';
+    var parsed = parseNoteValue(currentNote);
+    panel.querySelector('.hl-memo-title-input').value = parsed.title;
+    panel.querySelector('.hl-memo-textarea').value = parsed.content;
     panel.hidden = false;
     var top = rect.bottom + 10 + window.scrollY;
     var left = Math.min(Math.max(rect.left, 8), window.innerWidth - 268) + window.scrollX;
     panel.style.top = top + 'px';
     panel.style.left = left + 'px';
-    panel.querySelector('.hl-memo-textarea').focus();
+    panel.querySelector('.hl-memo-title-input').focus();
   }
   function closeMemoPanel() { memoState = null; if (memoPanelEl) memoPanelEl.hidden = true; }
 
@@ -719,17 +799,22 @@ mark.hl{
   }
   function openMemoView(anchorEl, noteText, onEdit) {
     var panel = ensureMemoView();
+    var parsed = parseNoteValue(noteText);
     panel.innerHTML =
-      '<div class="hl-memo-view-head">' +
-        '<button type="button" class="hl-memo-view-edit" aria-label="수정">' +
-          '<svg viewBox="0 0 24 24" fill="none"><path d="M4 20h4L18.5 9.5a2 2 0 0 0 0-2.8l-1.2-1.2a2 2 0 0 0-2.8 0L4 15v5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
-        '</button>' +
-        '<button type="button" class="hl-memo-view-close" aria-label="닫기">' +
-          '<svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
-        '</button>' +
+      '<div class="hl-memo-view-head' + (parsed.content ? '' : ' no-divider') + '">' +
+        '<div class="hl-memo-view-title"></div>' +
+        '<div class="hl-memo-view-btns">' +
+          '<button type="button" class="hl-memo-view-edit" aria-label="수정">' +
+            '<svg viewBox="0 0 24 24" fill="none"><path d="M4 20h4L18.5 9.5a2 2 0 0 0 0-2.8l-1.2-1.2a2 2 0 0 0-2.8 0L4 15v5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>' +
+          '</button>' +
+          '<button type="button" class="hl-memo-view-close" aria-label="닫기">' +
+            '<svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+          '</button>' +
+        '</div>' +
       '</div>' +
-      '<div class="hl-memo-view-text"></div>';
-    panel.querySelector('.hl-memo-view-text').textContent = noteText;
+      (parsed.content ? '<div class="hl-memo-view-text"></div>' : '');
+    panel.querySelector('.hl-memo-view-title').textContent = parsed.title;
+    if (parsed.content) panel.querySelector('.hl-memo-view-text').textContent = parsed.content;
     panel.style.bottom = 'auto';
     panel.hidden = false;
     memoViewAnchorEl = anchorEl;
