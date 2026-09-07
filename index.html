@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Desktop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lekton:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
 
@@ -51,6 +54,65 @@
     .hotspot.pink  { left: 23.33%; top: 40.57%; width: 67.22%; height: 18.39%; }
     .hotspot.red   { left: 15.28%; top: 49.06%; width: 65.65%; height: 24.43%; }
   }
+
+  /* ============ 메모 목록 (오른쪽 고정 패널) ============
+     배경은 항상 투명 -- 사진 위에 얹혀 있을 뿐, 패널 자체의
+     박스/배경색은 없음. 메모 제목 스타일(색·폰트·크기)은 사진 속
+     "Current Studies in Folders" 라벨 글자와 맞춤: Lekton 폰트,
+     #e1c7cd, 폴더 라벨 정도의 작고 아담한 크기.
+     새 메모를 추가하려면 아래 <div class="memo-list"> 안에
+     <a class="memo-item" href="...">제목</a> 한 줄만 추가하면 됨 --
+     항목 사이 구분선은 CSS(.memo-item + .memo-item)가 자동으로 그려줌. */
+  .memo-list {
+    position: fixed;
+    top: 36px;
+    right: 28px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    max-width: 46vw;
+    background: transparent;
+  }
+
+  .memo-item {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 2px;
+    font-family: 'Lekton', 'Courier New', monospace;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    color: #e1c7cd;
+    text-decoration: none;
+    text-align: right;
+    background: transparent;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.15s ease;
+  }
+
+  .memo-item:hover,
+  .memo-item:focus-visible {
+    opacity: 0.72;
+  }
+
+  /* 메모 제목과 다음 메모 제목 사이에만 선이 생김 (첫 항목 위/마지막 항목
+     아래에는 선 없음) */
+  .memo-item + .memo-item {
+    border-top: 1px solid rgba(225, 199, 205, 0.35);
+  }
+
+  @media (max-width: 700px) {
+    .memo-list {
+      top: 16px;
+      right: 14px;
+      max-width: 58vw;
+    }
+    .memo-item {
+      font-size: 12px;
+      padding: 7px 2px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -64,6 +126,10 @@
     <a class="hotspot tan"  href="ielts.html"         aria-label="IELTS WRITING 폴더로 이동"></a>
     <a class="hotspot pink" href="verbs.html"         aria-label="SYNONYMS 폴더로 이동"></a>
     <a class="hotspot red"  href="phrasal-verbs.html" aria-label="PHRASAL VERBS 폴더로 이동"></a>
+  </div>
+
+  <div class="memo-list" id="memoList">
+    <a class="memo-item" href="notes-ielts-reading-tips.html">IELTS READING TIPS</a>
   </div>
 
 </body>
