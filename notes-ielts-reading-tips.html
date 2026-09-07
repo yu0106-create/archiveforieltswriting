@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IELTS READING TIPS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lekton:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #46413e;
+    min-height: 100vh;
+  }
+
+  body {
+    font-family: 'Lekton', 'Courier New', monospace;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 64px;
+  }
+
+  .back-link {
+    align-self: flex-start;
+    margin: 0 0 22px 4px;
+    color: #e1c7cd;
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    opacity: 0.85;
+  }
+  .back-link:hover { opacity: 1; }
+
+  /* ============ 공책 스프레드 ============ */
+  .notebook-wrap {
+    width: 100%;
+    max-width: 880px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .notebook {
+    position: relative;
+    display: flex;
+    width: 100%;
+    aspect-ratio: 4 / 2.85;
+    background: #f4ecd8;
+    border-radius: 4px;
+    box-shadow:
+      0 22px 50px rgba(0,0,0,0.45),
+      0 2px 0 rgba(255,255,255,0.15) inset;
+    overflow: hidden;
+  }
+
+  /* 가운데 제본선(그림자)으로 두 페이지가 펼쳐진 느낌을 줌 */
+  .notebook::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 46px;
+    height: 100%;
+    transform: translateX(-50%);
+    background: linear-gradient(
+      to right,
+      rgba(0,0,0,0) 0%,
+      rgba(0,0,0,0.16) 42%,
+      rgba(0,0,0,0.22) 50%,
+      rgba(0,0,0,0.16) 58%,
+      rgba(0,0,0,0) 100%
+    );
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .page {
+    position: relative;
+    flex: 1 1 50%;
+    min-width: 0;
+    padding: 34px 30px 30px;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 27px,
+        rgba(58,47,40,0.10) 28px
+      );
+    background-position: 0 92px;
+  }
+
+  /* 왼쪽 페이지: 세로 여백선(빨간 줄) */
+  .page.left {
+    border-right: none;
+  }
+  .page.left::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 56px;
+    width: 1px;
+    background: rgba(196, 90, 90, 0.32);
+  }
+
+  .page.right {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-title {
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: 0.05em;
+    color: #3a2f28;
+    margin: 0 0 4px;
+    padding-bottom: 18px;
+  }
+
+  .page-sub {
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: #a08b73;
+    margin-bottom: 8px;
+  }
+
+  .notes-area {
+    flex: 1;
+    outline: none;
+    font-family: 'Lekton', 'Courier New', monospace;
+    font-size: 15px;
+    line-height: 28px;
+    color: #3a2f28;
+    white-space: pre-wrap;
+    word-break: break-word;
+    caret-color: #c45a5a;
+  }
+
+  .notes-area:empty::before {
+    content: attr(data-placeholder);
+    color: #a08b73;
+    opacity: 0.75;
+  }
+
+  .save-hint {
+    position: fixed;
+    bottom: 18px;
+    right: 22px;
+    font-size: 12px;
+    color: #e1c7cd;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .save-hint.show { opacity: 0.75; }
+
+  @media (max-width: 700px) {
+    .notebook {
+      aspect-ratio: auto;
+      flex-direction: column;
+    }
+    .notebook::before { display: none; }
+    .page { padding: 26px 20px 24px; background-position: 0 78px; }
+    .page.left::before { left: 40px; }
+    .page-title { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+  <a class="back-link" href="index.html">← index</a>
+
+  <div class="notebook-wrap">
+    <div class="notebook">
+      <div class="page left">
+        <div class="page-title">IELTS READING TIPS</div>
+        <div class="page-sub">memo</div>
+      </div>
+      <div class="page right">
+        <div
+          class="notes-area"
+          id="notesArea"
+          contenteditable="true"
+          data-placeholder="여기에 메모를 적어보세요..."
+          spellcheck="false"
+        ></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="save-hint" id="saveHint">저장됨</div>
+
+<script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore-compat.js"></script>
+<script>
+  var firebaseConfig = {
+    apiKey: "AIzaSyBBWSFt4KBHBz6mPTdNs9v3iN6F1HL9k_k",
+    authDomain: "grammar-archive.firebaseapp.com",
+    projectId: "grammar-archive",
+    storageBucket: "grammar-archive.firebasestorage.app",
+    messagingSenderId: "756302847323",
+    appId: "1:756302847323:web:734c071b8f16944a614e7e"
+  };
+  // ielts.html / verbs.html / phrasal-verbs.html와 같은 Firebase 프로젝트,
+  // 자기만의 sync 문서('notes-ielts-reading-tips')를 써서 데이터가 섞이지 않음.
+  // SDK가 로드 안 되면(오프라인, 애드블락 등) db는 null로 남고, 그 아래 코드는
+  // localStorage만으로 계속 동작함.
+  var db = null;
+  try {
+    if (typeof firebase !== 'undefined') {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+    }
+  } catch (e) {
+    console.error('Firebase unavailable, continuing in local-only mode:', e);
+    db = null;
+  }
+</script>
+<script>
+(function () {
+  var STORAGE_KEY = 'notebook_ielts-reading-tips_v1';
+  var notesArea = document.getElementById('notesArea');
+  var saveHint = document.getElementById('saveHint');
+
+  function loadLocal() {
+    try { return localStorage.getItem(STORAGE_KEY) || ''; }
+    catch (e) { return ''; }
+  }
+  function saveLocal(text) {
+    try { localStorage.setItem(STORAGE_KEY, text); } catch (e) {}
+  }
+
+  var text = loadLocal();
+
+  var SYNC_DOC = db ? db.collection('sync').doc('notes-ielts-reading-tips') : null;
+
+  // 다른 기기에서 먼저 적어둔 메모가 있으면 첫 화면부터 반영되도록, 그리기
+  // 전에 클라우드에서 한 번 최신 값을 당겨온다. 오프라인/지연 대비 최대
+  // 1.5초만 기다리고, 응답이 없으면 로컬 값 그대로 그린다.
+  function initialSync(done) {
+    if (!SYNC_DOC) { done(); return; }
+    var settled = false;
+    var timer = setTimeout(function () {
+      if (settled) return;
+      settled = true;
+      done();
+    }, 1500);
+    SYNC_DOC.get().then(function (doc) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (doc.exists) {
+        var data = doc.data() || {};
+        if (typeof data.text === 'string') {
+          text = data.text;
+          saveLocal(text);
+        }
+      }
+      done();
+    }).catch(function (err) {
+      console.error('Initial sync fetch failed (using local data):', err);
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      done();
+    });
+  }
+
+  var pushTimer = null;
+  var pushPending = false;
+  function doPush() {
+    pushPending = false;
+    if (!SYNC_DOC) return;
+    SYNC_DOC.set({
+      text: notesArea.innerText,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).catch(function (err) {
+      console.error('Sync write failed (staying local-only for now):', err);
+    });
+  }
+  function pushToCloud() {
+    if (!SYNC_DOC) return;
+    clearTimeout(pushTimer);
+    pushPending = true;
+    pushTimer = setTimeout(doPush, 400);
+  }
+  function flushPendingPush() {
+    if (!pushPending || !SYNC_DOC) return;
+    clearTimeout(pushTimer);
+    doPush();
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') flushPendingPush();
+  });
+  window.addEventListener('pagehide', flushPendingPush);
+
+  var hintTimer = null;
+  function flashSaved() {
+    saveHint.classList.add('show');
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function () {
+      saveHint.classList.remove('show');
+    }, 900);
+  }
+
+  notesArea.addEventListener('input', function () {
+    var value = notesArea.innerText;
+    saveLocal(value);
+    pushToCloud();
+    flashSaved();
+  });
+
+  // 실시간 동기화: 다른 기기에서 저장한 내용을 반영. hasPendingWrites가
+  // true면 방금 이 기기에서 쓴 내용의 로컬 에코이므로 건너뜀 -- 그렇지
+  // 않으면 타이핑 중 커서 위치가 다른 기기의 내용으로 덮어써질 수 있음.
+  if (SYNC_DOC) {
+    SYNC_DOC.onSnapshot(function (doc) {
+      if (doc.metadata.hasPendingWrites) return;
+      if (!doc.exists) return;
+      if (document.activeElement === notesArea) return; // 지금 타이핑 중이면 건드리지 않음
+      var data = doc.data() || {};
+      if (typeof data.text === 'string' && data.text !== notesArea.innerText) {
+        notesArea.innerText = data.text;
+        saveLocal(data.text);
+      }
+    }, function (err) {
+      console.error('Sync read failed (staying local-only):', err);
+    });
+  }
+
+  initialSync(function () {
+    notesArea.innerText = text;
+  });
+})();
+</script>
+</body>
+</html>
