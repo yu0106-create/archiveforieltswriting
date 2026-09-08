@@ -207,6 +207,33 @@ body:not(.is-home) .hero{
   margin: 0;
   letter-spacing: -0.01em;
 }
+.hero-row{
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.hero-row > div:first-child{ flex: 1 1 auto; min-width: 0; }
+.hero-noun-link{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--en);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  padding-bottom: 6px;
+  transition: color .15s ease;
+}
+.hero-noun-link svg{ width: 14px; height: 14px; flex: none; }
+.hero-noun-link:hover{ color: var(--ink); }
+@media (max-width: 600px){
+  .hero-row{ justify-content: flex-start; }
+  .hero-noun-link{ margin-left: auto; font-size: 12px; padding-bottom: 4px; }
+}
 .hero h1 a{ display:block; transition: opacity .15s ease; }
 .hero h1 a:hover{ opacity: 0.6; }
 .hero h1 span{ display:block; }
@@ -704,6 +731,88 @@ body:not(.is-home) .hero{
   .worddoc-launcher-imgwrap img{ height: 40px; }
   .starnav{ gap: 3px; }
   .starnav-btn svg{ width: 11px; height: 11px; }
+}
+
+/* ---------- 가산·불가산 명사 표 ("#/nouns" route) ---------- */
+.noun-table-wrap{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 22px 24px;
+  overflow-x: auto;
+}
+.noun-table-legend{
+  display: flex;
+  gap: 18px;
+  margin-bottom: 14px;
+  font-family: var(--kr);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.noun-legend-item{ display: flex; align-items: center; gap: 6px; }
+.noun-swatch{
+  width: 12px; height: 12px; border-radius: 3px; display: inline-block;
+}
+.noun-swatch.noun-countable{ background: #dff3d8; border: 1px solid #a8d99b; }
+.noun-swatch.noun-uncountable{ background: #fbdfe6; border: 1px solid #f0a8bb; }
+.noun-table{
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  font-family: var(--kr);
+  font-size: 14px;
+}
+.noun-table th{
+  text-align: left;
+  font-family: var(--en);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  font-weight: 600;
+  padding: 0 10px 8px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.noun-table td{
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  line-height: 1.55;
+}
+.noun-table tbody tr:last-child td{ border-bottom: none; }
+.noun-table .col-word{ width: 1%; white-space: nowrap; }
+.noun-table .col-wrong{ color: var(--ink-soft); text-decoration: line-through; text-decoration-color: #d9a3ad; }
+.noun-table .col-correct{ color: var(--ink); font-weight: 600; }
+.noun-table .col-note{ color: var(--ink-soft); font-size: 13px; max-width: 260px; }
+.noun-word-cell{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-family: var(--en);
+  font-weight: 700;
+}
+.noun-word-cell.noun-countable{ background: #dff3d8; color: #2e6b23; }
+.noun-word-cell.noun-uncountable{ background: #fbdfe6; color: #9c2d47; }
+.noun-type-tag{
+  font-family: var(--kr);
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+.noun-source-line{ margin-top: 4px; }
+.noun-source{
+  font-family: var(--kr);
+  font-size: 12px;
+  color: var(--ink-faint);
+  text-decoration: underline;
+}
+.noun-source:hover{ color: var(--ink-soft); }
+@media (max-width: 600px){
+  .noun-table-wrap{ padding: 16px 16px 20px; }
+  .noun-table{ font-size: 13px; }
+  .noun-table .col-note{ max-width: 160px; }
 }
 
 .notes-card{
@@ -1270,15 +1379,21 @@ footer{
 
   <div class="hero-collapse"><div class="hero-collapse-inner">
   <section class="hero">
-    <div>
-      <div class="eyebrow">Grammar Archive · IELTS Writing</div>
-      <h1>
-        <a href="#/">
-          <span class="l1">ARCHIVE</span>
-          <span class="l2">for</span>
-          <span class="l3">IELTS WRITING</span>
-        </a>
-      </h1>
+    <div class="hero-row">
+      <div>
+        <div class="eyebrow">Grammar Archive · IELTS Writing</div>
+        <h1>
+          <a href="#/">
+            <span class="l1">ARCHIVE</span>
+            <span class="l2">for</span>
+            <span class="l3">IELTS WRITING</span>
+          </a>
+        </h1>
+      </div>
+      <a href="#/nouns" id="nounTableLink" class="hero-noun-link" aria-label="Countable / Uncountable Nouns 표 보기" title="Countable / Uncountable Nouns">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9.5H20.5M3.5 14.5H20.5M9 4.5V19.5M15 4.5V19.5" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span>Countable / Uncountable Nouns</span>
+      </a>
     </div>
   </section>
   </div></div>
@@ -1409,6 +1524,13 @@ const DATA = {
       "eyebrow": "ARTICLE",
       "description": "\uac00\uc0b0\u00b7\ubd88\uac00\uc0b0 \uc5ec\ubd80\uc640 \ud2b9\uc815\uc131\uc5d0 \ub530\ub77c a/an, the\uc758 \uc0ac\uc6a9 \uc5ec\ubd80\uac00 \ub2ec\ub77c\uc9d0. in second place \uac19\uc740 \uad00\uc6a9\uad6c\uc5d0\ub294 \uad00\uc0ac\ub97c \uc4f0\uc9c0 \uc54a\uace0, \uc77c\ubc18\uc801 \uc758\ubbf8\uc758 time \uac19\uc740 \ubd88\uac00\uc0b0\uba85\uc0ac \uc55e\uc5d0\ub3c4 the\ub97c \ubd99\uc774\uc9c0 \uc54a\uc74c.",
       "guide": "\u2501\u2501\u2501 \uba85\uc0ac \ub4a4 \uc218\uc2dd\uc5b4\uc640 the\uc758 \uad00\uacc4 \u2501\u2501\u2501\n\n\uad00\uc0ac(the)\ub294 \uba85\uc0ac \uc790\uccb4\uc5d0 \ubd99\uc5b4 \uc788\ub294 \ud55c\uc815 \ud45c\ud604\uc5d0 \ubc18\uc751\ud558\ub294 \uac83\uc774\uc9c0, \ubb38\uc7a5 \uc55e\ub4a4\uc5d0 \ub193\uc778 \ub9e5\ub77d \uc815\ubcf4 \uc804\uccb4\uc5d0 \ubc18\uc751\ud558\ub294 \uac8c \uc544\ub2d8. \ubb38\uc7a5 \uc55e\uc5d0 \ubc30\uacbd \uc124\uba85\uc774 \uc788\uc5b4\ub3c4 \uadf8\uac83\uc774 \uba85\uc0ac \ubc14\ub85c \uc606\uc5d0 \ubd99\uc9c0 \uc54a\uc73c\uba74 the\ub97c \uc720\ubc1c\ud558\uc9c0 \uc54a\uc74c.\n\n## the\uac00 \ud544\uc694\ud55c \uacbd\uc6b0: \uba85\uc0ac \ubc14\ub85c \ub4a4\uc5d0 \ubd99\ub294 \ud55c\uc815 \ud45c\ud604\n\n1) \uba85\uc0ac + of\uad6c\n   \uc124\uba85: \uba85\uc0ac \ub4a4\uc5d0 '\ubb34\uc5c7\uc5d0 \ub300\ud55c \uac83\uc778\uc9c0'\ub97c \ubabb\ubc15\ub294 of\uad6c\uac00 \ubc14\ub85c \ubd99\uc73c\uba74, \uadf8 \uba85\uc0ac\ub294 \ub354 \uc774\uc0c1 \uc77c\ubc18 \uac1c\ub150\uc774 \uc544\ub2c8\ub77c \ud2b9\uc815 \ub300\uc0c1\uc774 \ub418\ubbc0\ub85c the\uac00 \ud544\uc694\ud568.\n   Ex) the growth of UK tourist numbers (O) \u2014 growth \ub4a4\uc5d0 \ubd99\uc740 of\uad6c\uac00 \ubb34\uc5c7\uc758 \uc131\uc7a5\uc778\uc9c0 \ud2b9\uc815\ud568\n   Ex) the motivation of the students (O)\n\n2) \uba85\uc0ac + \uad00\uacc4\uc808\n   \uc124\uba85: \uba85\uc0ac \ub4a4\uc5d0 which/that/who\ub85c \uc2dc\uc791\ud558\ub294 \uad00\uacc4\uc808\uc774 \ubd99\uc5b4 \ub300\uc0c1\uc744 \uc881\ud600\uc8fc\ub294 \uacbd\uc6b0\uc5d0\ub3c4 the\uac00 \ud544\uc694\ud568.\n   Ex) the report that was published last year (O)\n\n3) \uba85\uc0ac + \uc22b\uc790(\ub3d9\uaca9)\n   \uc124\uba85: year, number\ucc98\ub7fc '\ubb34\uc5c7'\uc744 \uac00\ub9ac\ud0a4\ub294 \uba85\uc0ac \ub4a4\uc5d0 \uad6c\uccb4\uc801\uc778 \uc22b\uc790\uac00 \ucf64\ub9c8 \uc5c6\uc774 \ubc14\ub85c \ubd99\uc5b4\uc11c \ub3d9\uaca9\uc73c\ub85c \uadf8 \uba85\uc0ac\ub97c \ud2b9\uc815\ud558\ub294 \uacbd\uc6b0\uc5d0\ub3c4 the\uac00 \ud544\uc694\ud568. of\uad6c\ub098 \uad00\uacc4\uc808\ub9cc\ud07c \uac15\ub825\ud55c \ud55c\uc815 \ud45c\ud604\uc784.\n   Ex) In the year 1995, it is drama that stands out as the most popular genre. (O) \u2014 year \ub4a4\uc5d0 1995\uac00 \ub3d9\uaca9\uc73c\ub85c \ubd99\uc5b4 \uba87 \ub144\uc778\uc9c0 \ud2b9\uc815\ud568\n   \ube44\uad50) In 1995 (O, year \uc5c6\uc774 \uc22b\uc790\ub9cc \uc4f0\uba74 \uc560\ucd08\uc5d0 \uad00\uc0ac \ubb38\uc81c\uac00 \uc0dd\uae30\uc9c0 \uc54a\uc74c) / in year 1995 (X, year\ub97c \uba85\uc0ac\ub85c \uc4f0\uba74\uc11c the\ub97c \uc0dd\ub7b5\ud558\uba74 \ud2c0\ub9bc)\n\n## the\uac00 \ud544\uc694 \uc5c6\ub294 \uacbd\uc6b0: \ubb38\uc7a5 \uc804\uccb4\ub97c \uafb8\ubbf8\ub294 \ubd80\uc0ac\uad6c\n\n\ubb38\uc7a5 \ub9e8 \uc55e\uc774\ub098 \ub4a4\uc5d0 \uc624\ub294 for/in/among \uac19\uc740 \uc804\uce58\uc0ac\uad6c\ub294 \ub300\uac1c \uba85\uc0ac \ud558\ub098\uc5d0 \ubd99\ub294 \uc218\uc2dd\uc5b4\uac00 \uc544\ub2c8\ub77c, \ubb38\uc7a5 \uc804\uccb4(\uba85\uc81c)\uac00 \uc801\uc6a9\ub418\ub294 \ubc94\uc704\ub098 \uc870\uac74\uc744 \uc54c\ub824\uc8fc\ub294 \uc5ed\ud560\ub9cc \ud568. \uba85\uc0ac\uc640 \ubb38\ubc95\uc801\uc73c\ub85c \uc5f0\uacb0\ub41c \uac8c \uc544\ub2c8\ub77c \uc808 \uc804\uccb4\ub97c \uafb8\ubbf8\ub294 \uac83\uc774\ubbc0\ub85c, \uadf8 \uba85\uc0ac\ub294 \uc5ec\uc804\ud788 \uc544\ubb34 \uc218\uc2dd\ub3c4 \ubc1b\uc9c0 \uc54a\uc740 \uc77c\ubc18\uc801 \uac1c\ub150\uc73c\ub85c \ub0a8\uc544 \ubb34\uad00\uc0ac\ub85c \uc500.\n\n1) For UK tourists, growth was slow.\n   \uc124\uba85: \"For UK tourists\"\ub294 growth\ub77c\ub294 \uba85\uc0ac\ub97c \uafb8\ubbf8\ub294 \uac8c \uc544\ub2c8\ub77c, \"\uc774 \ubb38\uc7a5\uc774 \uc801\uc6a9\ub418\ub294 \ub300\uc0c1\uc740 UK \uad00\uad11\uac1d\uc774\ub2e4\"\ub77c\ub294 \uc870\uac74\uc744 \ubb38\uc7a5 \uc804\uccb4\uc5d0 \uac78\uc5b4\uc8fc\ub294 \uc5ed\ud560\ub9cc \ud568. growth \uc606\uc5d0\ub294 \uc5ec\uc804\ud788 \uc544\ubb34 \uc218\uc2dd\uc5b4\ub3c4 \uc5c6\uc73c\ubbc0\ub85c \ubb34\uad00\uc0ac.\n   \ube44\uad50) The growth of UK tourist numbers was slow. \u2014 growth \ubc14\ub85c \ub4a4\uc5d0 of\uad6c\uac00 \ubd99\uc5b4\uc57c the\uac00 \ud544\uc694\ud574\uc9d0. \"For UK tourists, the growth was slow\"\ucc98\ub7fc the\ub97c \ub123\uc73c\uba74 \ubd80\uc790\uc5f0\uc2a4\ub7ec\uc6c0.\n\n2) In 2013, sales increased.\n   \uc124\uba85: \"In 2013\"\uc740 \uc2dc\uc810\uc744 \ub098\ud0c0\ub0b4\ub294 \ubd80\uc0ac\uad6c\uc77c \ubfd0, sales\uc5d0 \ubd99\uc5b4\uc11c \uadf8\uac83\uc744 \ud55c\uc815\ud558\ub294 \ud45c\ud604\uc774 \uc544\ub2d8.\n   \ube44\uad50) The sales of laptops increased in 2013. \u2014 sales \ub4a4\uc5d0 of\uad6c\uac00 \ubd99\uc5b4\uc57c the\uac00 \ud544\uc694\ud568.\n\n3) Among teenagers, obesity is rising.\n   \uc124\uba85: \"Among teenagers\"\ub3c4 \ubb38\uc7a5 \uc804\uccb4\uac00 \uc801\uc6a9\ub418\ub294 \ubc94\uc704\ub97c \ub098\ud0c0\ub0bc \ubfd0, obesity \uc606\uc5d0 \ubd99\uc5b4 \uadf8\uac83\uc744 \ud55c\uc815\ud558\ub294 \ud45c\ud604\uc774 \uc544\ub2d8.\n   \ube44\uad50) The obesity rate among teenagers is rising. \u2014 rate\ub77c\ub294 \uba85\uc0ac \uc606\uc5d0 \"among teenagers\"\uac00 \uc9c1\uc811 \ubd99\uc5b4 \ud558\ub098\uc758 \uba85\uc0ac\uad6c(the obesity rate among teenagers)\ub97c \uc774\ub8e8\ubbc0\ub85c the\uac00 \ud544\uc694\ud568.\n\n\uc694\uc57d: the \uc5ec\ubd80\ub294 '\uc774 \ubb38\uc7a5\uc5d0 \ub9e5\ub77d \uc815\ubcf4\uac00 \uc788\ub294\uac00'\uac00 \uc544\ub2c8\ub77c '\uadf8 \uba85\uc0ac \ubc14\ub85c \uc606\uc5d0 \uc774 \uba85\uc0ac\ub97c \ud2b9\uc815 \ub300\uc0c1\uc73c\ub85c \uc881\ud600\uc8fc\ub294 \ud45c\ud604\uc774 \ubb38\ubc95\uc801\uc73c\ub85c \uc9c1\uc811 \ubd99\uc5b4 \uc788\ub294\uac00'\ub85c \ud310\ub2e8\ud574\uc57c \ud568.\n\n\u2501\u2501\u2501 \ubb34\uad00\uc0ac \u00b7 \ubd80\uc815\uad00\uc0ac \u00b7 \uc815\uad00\uc0ac \ube44\uad50 \u2014 food \uc608\uc2dc\ub85c \ubcf4\uae30 \u2501\u2501\u2501\n\nfood\ucc98\ub7fc \ubd88\uac00\uc0b0\uba85\uc0ac\ub85c\ub3c4 \uc4f0\uc774\ub294 \ub2e8\uc5b4\ub294 \uad00\uc0ac\uc5d0 \ub530\ub77c \uc758\ubbf8\uac00 \uc644\uc804\ud788 \ub2ec\ub77c\uc9d0. \uc138 \uac00\uc9c0\ub97c \ub098\ub780\ud788 \ube44\uad50\ud558\uba74 \ud5f7\uac08\ub9ac\uc9c0 \uc54a\uc74c.\n\n1) food (\ubb34\uad00\uc0ac) \u2014 \uc74c\uc2dd\uc774\ub77c\ub294 \uac1c\ub150 \uc804\uccb4\ub97c \uc77c\ubc18\uc801\uc73c\ub85c \uac00\ub9ac\ud0b4\n   \uc124\uba85: \uc544\ubb34 \uc218\uc2dd\uc5b4\ub3c4 \uc5c6\uc774 '\uc74c\uc2dd'\uc774\ub77c\ub294 \ubb3c\uc9c8\u00b7\uac1c\ub150 \uc804\uccb4\ub97c \ub9d0\ud560 \ub54c\ub294 \uad00\uc0ac\ub97c \ubd99\uc774\uc9c0 \uc54a\uc74c.\n   Ex) Food is expensive these days. (\uc74c\uc2dd \uc804\ubc18\uc5d0 \ub300\ud55c \uc77c\ubc18\uc801 \uc9c4\uc220)\n\n2) a food (\uc6d0\uce59\uc801\uc73c\ub85c \ud2c0\ub9bc) \u2014 food\ub294 \uc560\ucd08\uc5d0 \uc140 \uc218 \uc5c6\uc74c\n   \uc124\uba85: food\ub294 \ubd88\uac00\uc0b0\uba85\uc0ac\ub77c \ubd80\uc815\uad00\uc0ac a\ub97c \ubd99\uc77c \uc218 \uc5c6\uc74c. \uad73\uc774 '\ud55c \uac00\uc9c0 \uc74c\uc2dd/\uc74c\uc2dd\uc758 \ud55c \uc885\ub958'\ub97c \ub9d0\ud558\uace0 \uc2f6\ub2e4\uba74 a kind of food, a type of food\ucc98\ub7fc \ud480\uc5b4\uc368\uc57c \ud568.\n   Ex) a food that you bought (X) \u2192 the food that you bought / a type of food (O)\n\n3) the food (\ud2b9\uc815 \uc9c0\uce6d) \u2014 \uc774\ubbf8 \ud2b9\uc815\ub41c \uadf8 \uc74c\uc2dd\n   \uc124\uba85: \uad00\uacc4\uc808(that you bought)\uc774\ub098 of\uad6c\ucc98\ub7fc \uba85\uc0ac\uc5d0 \uc9c1\uc811 \ubd99\ub294 \ud55c\uc815 \ud45c\ud604\uc774 \uc788\uc5b4\uc11c '\uadf8 \uc74c\uc2dd'\uc73c\ub85c \ud2b9\uc815\ub420 \ub54c\ub294 the\ub97c \uc500.\n   Ex) the food that you bought from a grocery store (O)\n\n\uc694\uc57d: \uc77c\ubc18\uc801 \uac1c\ub150 \uc804\uccb4 = \ubb34\uad00\uc0ac, \uc140 \uc218 \uc5c6\ub294 \uba85\uc0ac\uc5d0 '\ud55c \uac1c'\ub77c\ub294 \uc758\ubbf8\uc758 a = \uc6d0\uce59\uc801\uc73c\ub85c \ubd88\uac00, \ud2b9\uc815 \ub300\uc0c1\uc73c\ub85c \uc881\ud600\uc84c\ub2e4\uba74 the.\n\n\u2501\u2501\u2501 few/a few, little/a little \u2014 \uc788\uc74c vs \uac70\uc758 \uc5c6\uc74c \u2501\u2501\u2501\n\n\ub611\uac19\uc774 '\uc870\uae08'\uc774\ub77c\ub294 \ub73b\ucc98\ub7fc \ubcf4\uc5ec\ub3c4, \ubd80\uc815\uad00\uc0ac a\uac00 \uc788\uace0 \uc5c6\uace0\uc5d0 \ub530\ub77c \ub258\uc559\uc2a4\uac00 \uc815\ubc18\ub300\uac00 \ub428.\n\n1) a few / a little \u2014 \ubd80\uc815\uad00\uc0ac a\uac00 \uc788\uc73c\uba74 \uae0d\uc815\uc801 \ub258\uc559\uc2a4 ('\uadf8\ub798\ub3c4 \uc880 \uc788\ub2e4')\n   \uc124\uba85: \uac00\uc0b0\uba85\uc0ac\uc5d0\ub294 a few, \ubd88\uac00\uc0b0\uba85\uc0ac\uc5d0\ub294 a little\uc744 \uc500. \uc591\uc740 \uc801\uc9c0\ub9cc '\uc788\ub2e4'\ub294 \ucabd\uc5d0 \ucd08\uc810\uc774 \uc788\uc74c.\n   Ex) I have a few friends. (\uce5c\uad6c\uac00 \uba87 \uba85 \uc788\uc74c \u2014 \uae0d\uc815\uc801)\n   Ex) There is a little water left. (\ubb3c\uc774 \uc870\uae08 \ub0a8\uc544\uc788\uc74c \u2014 \uae0d\uc815\uc801)\n\n2) few / little \u2014 a \uc5c6\uc774 \uc4f0\uba74 \ubd80\uc815\uc801 \ub258\uc559\uc2a4 ('\uac70\uc758 \uc5c6\ub2e4')\n   \uc124\uba85: \ub611\uac19\uc774 \uac00\uc0b0\uba85\uc0ac\uc5d4 few, \ubd88\uac00\uc0b0\uba85\uc0ac\uc5d4 little\uc744 \uc4f0\uc9c0\ub9cc, \uad00\uc0ac a\uac00 \ube60\uc9c0\uba74 '\ubd80\uc871\ud558\ub2e4'\ub294 \ubd80\uc815\uc801 \uc758\ubbf8\ub85c \ubc14\ub01c.\n   Ex) I have few friends. (\uce5c\uad6c\uac00 \uac70\uc758 \uc5c6\uc74c \u2014 \uc678\ub85c\uc6c0 \ub258\uc559\uc2a4)\n   Ex) There is little water left. (\ubb3c\uc774 \uac70\uc758 \uc5c6\uc74c \u2014 \ubd80\uc871\ud568 \ub258\uc559\uc2a4)\n\n   \ube44\uad50) a few friends (\uce5c\uad6c\uac00 \uba87 \uba85 \uc788\uc74c, O) / few friends (\uce5c\uad6c\uac00 \uac70\uc758 \uc5c6\uc74c, \uc758\ubbf8\uac00 \uc815\ubc18\ub300) \u2014 \uad00\uc0ac a \ud558\ub098\ub85c \ub258\uc559\uc2a4\uac00 \ub4a4\uc9d1\ud788\ubbc0\ub85c \ubc18\ub4dc\uc2dc \uc758\ub3c4\ud55c \uc758\ubbf8\uc5d0 \ub9de\uac8c \uace8\ub77c\uc57c \ud568.\n\n\uc694\uc57d: \uac00\uc0b0\uba85\uc0ac\uc5d4 few \uacc4\uc5f4, \ubd88\uac00\uc0b0\uba85\uc0ac\uc5d4 little \uacc4\uc5f4\uc744 \uc4f0\ub418, a\uac00 \uc788\uc73c\uba74 '\uc788\ub2e4'(\uae0d\uc815), a\uac00 \uc5c6\uc73c\uba74 '\uac70\uc758 \uc5c6\ub2e4'(\ubd80\uc815)\ub294 \ub73b\uc774 \ub428.\n\n\u2501\u2501\u2501 \uac00\uc0b0\u00b7\ubd88\uac00\uc0b0\uba85\uc0ac \u00d7 a/the/\ubb34\uad00\uc0ac \uc870\ud569\ud45c \u2501\u2501\u2501\n\n\uad00\uc0ac \uc120\ud0dd\uc740 \uba85\uc0ac\uac00 \uac00\uc0b0(\uc140 \uc218 \uc788\uc74c)\uc778\uc9c0 \ubd88\uac00\uc0b0(\uc140 \uc218 \uc5c6\uc74c)\uc778\uc9c0, \uadf8\ub9ac\uace0 \uadf8 \uba85\uc0ac\uac00 \ud2b9\uc815 \ub300\uc0c1\uc73c\ub85c \uc881\ud600\uc84c\ub294\uc9c0(\ud55c\uc815) \uc544\ub2c8\uba74 \uc77c\ubc18\uc801 \uac1c\ub150\u00b7\uc804\uccb4\ub97c \uac00\ub9ac\ud0a4\ub294\uc9c0\uc5d0 \ub530\ub77c \uacb0\uc815\ub428. \uc544\ub798\ub294 \uba85\uc0ac \uc885\ub958(\ud589) \u00d7 \uad00\uc0ac(\uc5f4) \uc544\ud649 \uce78\uc744 \ubaa8\ub450 \uc9da\uc5b4\ubcf8 \uac83.\n\n## \uac00\uc0b0\uba85\uc0ac \ub2e8\uc218 (a car / the car / car)\n\n1) a/an \u2014 O, \uae30\ubcf8\ud615\n   \uc124\uba85: \ucc98\uc74c \uc5b8\uae09\ud558\uac70\ub098, \uc5ec\ub7ec \uac1c \uc911 \uc5b4\ub290 \uac83\uc774\uc5b4\ub3c4 \uc0c1\uad00\uc5c6\ub294 \ud558\ub098\ub97c \uac00\ub9ac\ud0ac \ub54c \uc500. \uac00\uc0b0\uba85\uc0ac \ub2e8\uc218\uc758 default \uad00\uc0ac\uc784.\n   Ex) I bought a car last year.\n2) the \u2014 O, \ud2b9\uc815 \uc9c0\uce6d\n   \uc124\uba85: \uc774\ubbf8 \uc5b8\uae09\ub410\uac70\ub098, of\uad6c\u00b7\uad00\uacc4\uc808 \ub4f1\uc73c\ub85c \uc5b4\ub290 \uac83\uc778\uc9c0 \ud2b9\uc815\ub420 \ub54c \uc500.\n   Ex) The car I bought last year broke down.\n3) \ubb34\uad00\uc0ac \u2014 X, \uc6d0\uce59\uc801\uc73c\ub85c \ubd88\uac00\n   \uc124\uba85: \uac00\uc0b0\uba85\uc0ac \ub2e8\uc218\ub294 \uc6d0\uce59\uc801\uc73c\ub85c \uad00\uc0ac \uc5c6\uc774 \ubabb \uc500. school, bed, prison\ucc98\ub7fc \ubcf8\ub798 \uae30\ub2a5\uc744 \ub098\ud0c0\ub0b4\ub294 \uad00\uc6a9\uad6c(go to school, in bed)\ub098 by car \uac19\uc740 \uad50\ud1b5\u00b7\ud1b5\uc2e0\uc218\ub2e8 \ud45c\ud604\uc740 \uc608\uc678\uc784.\n   Ex) I bought car. (X) \u2192 I bought a car. (O)\n   \ube44\uad50) go to school (O, \uc608\uc678 \uad00\uc6a9\uad6c) / go to a school (O, \ud2b9\uc815 \uac74\ubb3c\uc744 \ub9d0\ud560 \ub54c\ub294 \ub2e4\uc2dc \uad00\uc0ac \ud544\uc694)\n\n## \uac00\uc0b0\uba85\uc0ac \ubcf5\uc218 (cars / the cars / \ubb34\uad00\uc0ac cars)\n\n1) a/an \u2014 X, \uc560\ucd08\uc5d0 \uacb0\ud569 \ubd88\uac00\n   \uc124\uba85: a/an\uc740 '\ud558\ub098'\ub97c \ub73b\ud558\ubbc0\ub85c \ubcf5\uc218\ud615\uacfc\ub294 \ud568\uaed8 \uc4f0\uc774\uc9c0 \uc54a\uc74c. \uac1c\uc218\ub97c \ub9d0\ud558\uace0 \uc2f6\uc73c\uba74 some, many, two \uac19\uc740 \uc218\ub7c9 \ud45c\ud604\uc744 \uc500.\n   Ex) a cars (X) \u2192 some cars / two cars (O)\n2) the \u2014 O, \ud2b9\uc815 \uc9c0\uce6d\n   \uc124\uba85: \ud2b9\uc815\ub41c \ubcf5\uc218 \ub300\uc0c1\uc744 \uac00\ub9ac\ud0ac \ub54c \uc500.\n   Ex) The cars in the parking lot are all electric.\n3) \ubb34\uad00\uc0ac \u2014 O, \uc77c\ubc18\uc801 \uc9c4\uc220\n   \uc124\uba85: \ud2b9\uc815\ub418\uc9c0 \uc54a\uc740 \ubcf5\uc218 \ub300\uc0c1\uc744 \uc885\ub958 \uc804\uccb4\ub85c \uc77c\ubc18\ud654\ud574\uc11c \ub9d0\ud560 \ub54c \uac00\uc7a5 \ud754\ud788 \uc500.\n   Ex) Cars are becoming more expensive.\n\n## \ubd88\uac00\uc0b0\uba85\uc0ac (water / the water / \ubb34\uad00\uc0ac water)\n\n1) a/an \u2014 X, \uc6d0\uce59\uc801\uc73c\ub85c \ubd88\uac00\n   \uc124\uba85: \uc140 \uc218 \uc5c6\uc73c\ubbc0\ub85c a\ub97c \ubd99\uc77c \uc218 \uc5c6\uc74c. '\ud55c \uc794/\ud55c \uc885\ub958'\ucc98\ub7fc \ub2e8\uc704\ub97c \ub9d0\ud558\uace0 \uc2f6\uc73c\uba74 a glass of, a kind of, a piece of\ucc98\ub7fc \ub2e8\uc704 \uba85\uc0ac\ub97c \uc55e\uc138\uc6cc\uc57c \ud568.\n   Ex) a water (X) \u2192 a glass of water (O) / a type of research (O)\n2) the \u2014 O, \ud2b9\uc815 \uc9c0\uce6d\n   \uc124\uba85: \uad00\uacc4\uc808\u00b7of\uad6c \ub4f1\uc73c\ub85c \ud2b9\uc815\ub41c \uadf8 \ubb3c\uc9c8\u00b7\uac1c\ub150\uc744 \uac00\ub9ac\ud0ac \ub54c \uc500.\n   Ex) The water in this bottle tastes strange.\n3) \ubb34\uad00\uc0ac \u2014 O, \uc77c\ubc18\uc801 \uc9c4\uc220\n   \uc124\uba85: \ubb3c\uc9c8\u00b7\uac1c\ub150 \uc804\uccb4\ub97c \uc77c\ubc18\uc801\uc73c\ub85c \uac00\ub9ac\ud0ac \ub54c \uac00\uc7a5 \ud754\ud788 \uc500. IELTS \uc5d0\uc138\uc774\uc5d0\uc11c \uac00\uc7a5 \ub9ce\uc774 \uc4f0\ub294 \ud615\ud0dc\uc784.\n   Ex) Water is essential for life.\n\n\uc694\uc57d: the\ub294 \uac00\uc0b0\u00b7\ubd88\uac00\uc0b0 \uc5ec\ubd80\uc640 \uc0c1\uad00\uc5c6\uc774 '\uadf8 \uba85\uc0ac\uac00 \ud2b9\uc815 \ub300\uc0c1\uc73c\ub85c \uc881\ud600\uc84c\ub294\uac00'\uc5d0\ub9cc \ubc18\uc751\ud568. a/an\uc740 \uac00\uc0b0\uba85\uc0ac \ub2e8\uc218\uc5d0\ub9cc \ubd99\uace0, \ubb34\uad00\uc0ac\ub294 \uac00\uc0b0\uba85\uc0ac \ubcf5\uc218\uc640 \ubd88\uac00\uc0b0\uba85\uc0ac\uac00 '\uc77c\ubc18\uc801 \uac1c\ub150 \uc804\uccb4'\ub97c \uac00\ub9ac\ud0ac \ub54c \uc500. \ud45c\ub85c \ubcf4\uba74: (\uac00\uc0b0\ub2e8\uc218, \uac00\uc0b0\ubcf5\uc218, \ubd88\uac00\uc0b0) \u00d7 (a/an, the, \ubb34\uad00\uc0ac) \uc544\ud649 \uce78 \uc911 a/an\uc774 \uc790\uc5f0\uc2a4\ub7ec\uc6b4 \uce78\uc740 \uac00\uc0b0\ub2e8\uc218 \ud558\ub098\ubfd0\uc774\uace0, the\ub294 \uc138 \uce78 \ubaa8\ub450 \uac00\ub2a5\ud558\uba70, \ubb34\uad00\uc0ac\ub294 \uac00\uc0b0\ubcf5\uc218\u00b7\ubd88\uac00\uc0b0 \ub450 \uce78\uc5d0\uc11c \uc790\uc5f0\uc2a4\ub7ec\uc6c0.\n\n\u2501\u2501\u2501 a variety of \u00b7 \uc218\ub7c9\uc0ac\ub85c \uc4f0\uc774\ub294 \uba85\uc0ac\uc758 \uad00\uc0ac \u2501\u2501\u2501\n\nvariety\ucc98\ub7fc '\uc5ec\ub7ec \uac1c'\ub77c\ub294 \ub73b\uc744 \ub2f4\uc740 \uba85\uc0ac\uac00 a lot of, a number of\ucc98\ub7fc \uc218\ub7c9\uc0ac \uc5ed\ud560\uc744 \ud560 \ub54c\ub294, \ub4a4\uc5d0 of\uad6c\uac00 \uc624\ub354\ub77c\ub3c4 \uc77c\ubc18\uc801\uc778 the \uaddc\uce59\uc744 \ub530\ub974\uc9c0 \uc54a\uace0 \ud56d\uc0c1 \ubd80\uc815\uad00\uc0ac a\ub85c \uc2dc\uc791\ud55c\ub2e4.\n\n## a variety of = \uc218\ub7c9\uc0ac \uad00\uc6a9\uad6c\n\uc124\uba85: variety\uac00 \uc5ec\uae30\uc11c\ub294 '\ubb34\uc5c7\uc5d0 \ub300\ud55c \uac83'\uc774\ub77c\ub294 \uc77c\ubc18 \uba85\uc0ac\uac00 \uc544\ub2c8\ub77c, a lot of\u00b7a number of\u00b7a range of\uc640 \uac19\uc740 \ubd80\ub958\uc758 \uc218\ub7c9 \ud45c\ud604\uc73c\ub85c \uad73\uc5b4\uc838 \uc4f0\uc784. \ub4a4\uc5d0 of + \ubcf5\uc218\uba85\uc0ac\uac00 \uc624\uc9c0\ub9cc \ud56d\uc0c1 a\ub85c \uc2dc\uc791\ud558\uace0 the\ub97c \uc4f0\uc9c0 \uc54a\ub294\ub2e4.\nEx) a variety of reasons (O) \u2014 \uc5ec\ub7ec \uac00\uc9c0 \uc774\uc720\ub4e4\nEx) the variety of reasons (X, \uc218\ub7c9\uc0ac\ub85c \uc4f8 \ub54c\ub294 the\ub97c \ubd99\uc774\uc9c0 \uc54a\uc74c)\n\n## the variety of = '\ub2e4\uc591\uc131'\uc774\ub77c\ub294 \uac1c\ub150 \uba85\uc0ac\n\uc124\uba85: variety\ub97c \uc218\ub7c9\uc0ac\uac00 \uc544\ub2c8\ub77c '\ub2e4\uc591\ud568\uc774\ub77c\ub294 \uc131\uc9c8\u00b7\uc815\ub3c4' \uc790\uccb4\ub97c \uac00\ub9ac\ud0a4\ub294 \uc77c\ubc18 \uba85\uc0ac\ub85c \uc4f8 \ub54c\ub294, article \uce74\ud14c\uace0\ub9ac\uc758 \ub2e4\ub978 \uaddc\uce59\uacfc \ub9c8\ucc2c\uac00\uc9c0\ub85c of\uad6c\u00b7\uad00\uacc4\uc808 \ub4f1\uc73c\ub85c \ud2b9\uc815\ub418\uba74 the\uac00 \ubd99\ub294\ub2e4.\nEx) The variety of dishes at the restaurant was impressive. (\uadf8 \uc2dd\ub2f9\uc774 \uc9c0\ub2cc \ub2e4\uc591\uc131 \uc790\uccb4\ub97c \uc8fc\uc5b4\ub85c \uc11c\uc220)\n\n\ube44\uad50) a variety of reasons (\uc5ec\ub7ec \uc774\uc720\ub4e4 \u2014 \uc218\ub7c9\uc0ac, a) / the variety of the menu (\uadf8 \uba54\ub274\uc758 \ub2e4\uc591\uc131 \u2014 \uac1c\ub150 \uba85\uc0ac, the)\n\n\uc694\uc57d: of \ub4a4\uc5d0 \uc628\ub2e4\uace0 \ubb34\uc870\uac74 the\uac00 \ubd99\ub294 \uac8c \uc544\ub2c8\ub77c, \uadf8 \uba85\uc0ac\uac00 '\uc5ec\ub7ec \uac1c\uc758 ~\ub4e4'\uc744 \ub73b\ud558\ub294 \uc218\ub7c9\uc0ac\ub85c \uc4f0\uc600\ub294\uc9c0, '\ub2e4\uc591\ud568'\uc774\ub77c\ub294 \uac1c\ub150 \uba85\uc0ac\ub85c \uc4f0\uc600\ub294\uc9c0\uc5d0 \ub530\ub77c \uad00\uc0ac\uac00 \ub2ec\ub77c\uc9c4\ub2e4.\n\n\u2501\u2501\u2501 \ub2e8\uc218 \uac00\uc0b0\uba85\uc0ac\ub294 \ubc18\ub4dc\uc2dc \ud55c\uc815\uc0ac\uac00 \ud544\uc694\ud568 \u2501\u2501\u2501\n\n\ub2e8\uc218 \uac00\uc0b0\uba85\uc0ac(countable noun \ub2e8\uc218\ud615)\ub294 \uc808\ub300 \uad00\uc0ac\u00b7\ud55c\uc815\uc0ac \uc5c6\uc774 \ud63c\uc790 \uc4f0\uc77c \uc218 \uc5c6\uc74c. car, book, idea\ucc98\ub7fc \uc140 \uc218 \uc788\ub294 \ub2e8\uc218\uba85\uc0ac \uc55e\uc5d0\ub294 \ubc18\ub4dc\uc2dc a/an, the, \uc9c0\uc2dc\uc0ac(this/that), \uc18c\uc720\uaca9(my/your), \uc218\uc0ac(one, another) \ub4f1 \ubb34\uc5b8\uac00\uac00 \ubd99\uc5b4\uc57c \ud568.\n\n## \ub2e8\uc218 \uac00\uc0b0\uba85\uc0ac \uc55e\uc5d0 \uc62c \uc218 \uc788\ub294 \uac83\ub4e4\n\n1) a/an \u2014 \ucc98\uc74c \uc5b8\uae09\ub418\uac70\ub098 \ud2b9\uc815\ud558\uc9c0 \uc54a\uc740 \ud558\ub098\n   Ex) I bought a car last year.\n2) the \u2014 \uc774\ubbf8 \uc5b8\uae09\ub410\uac70\ub098 \ud2b9\uc815\ub41c \ub300\uc0c1\n   Ex) I bought the car you recommended.\n3) \uc9c0\uc2dc\uc0ac\u00b7\uc18c\uc720\uaca9\u00b7\uc218\uc0ac (this/that/my/your/one \ub4f1)\n   Ex) I bought that car. / I bought my car.\n\n## \uc774 \uaddc\uce59\uc5d0\uc11c \uc608\uc678\uc778 \uacbd\uc6b0\n\n1) \ubcf5\uc218 \uac00\uc0b0\uba85\uc0ac \u2014 \uad00\uc0ac \uc5c6\uc774\ub3c4 \uac00\ub2a5\n   Ex) I bought cars. (O)\n2) \ubd88\uac00\uc0b0\uba85\uc0ac \u2014 \uad00\uc0ac \uc5c6\uc774\ub3c4 \uac00\ub2a5\n   Ex) I bought water. (O)\n3) \uace0\uc720\uba85\uc0ac \u2014 \uad00\uc0ac \uc5c6\uc774\ub3c4 \uac00\ub2a5\n   Ex) I met John. (O)\n\n\uc694\uc57d: \ub2e8\uc218\u00b7\uac00\uc0b0\uba85\uc0ac(car \ub4f1)\ub294 \uc55e\uc5d0 \uad00\uc0ac\ub958\uac00 \ubc18\ub4dc\uc2dc \uc788\uc5b4\uc57c \ud558\uba70(bought car\ub294 \uc624\ub958), \ubcf5\uc218\ud615\u00b7\ubd88\uac00\uc0b0\uba85\uc0ac\u00b7\uace0\uc720\uba85\uc0ac\ub294 \uc774 \uaddc\uce59\uc758 \uc608\uc678\ub85c \ubb34\uad00\uc0ac\ub85c \uc368\ub3c4 \ub428.\n\n\u2501\u2501\u2501 \uad00\uc2b5\uc801\uc73c\ub85c the\uac00 \ubd99\ub294 '\uc81c\ub3c4\u00b7\uacf5\uacf5\uac1c\ub150' \uba85\uc0ac\uad70 \u2501\u2501\u2501\n\ngovernment, media, environment, police, news, streets, weather, internet, economy\ucc98\ub7fc \uc138\uc0c1\uc5d0 \uc5ec\ub7ec \uac1c \uc874\uc7ac\ud558\ub294 \ub300\uc0c1\uc774\ub77c\ub3c4, \uc601\uc5b4\uc5d0\uc11c \ud558\ub098\uc758 \uc601\uc5ed\u00b7\uae30\uad00\u00b7\uac1c\ub150\uc73c\ub85c \ucde8\uae09\ud558\ub294 \uba85\uc0ac\ub4e4\uc740 \ubb38\ub9e5\uc5d0\uc11c \ud2b9\uc815 \ub300\uc0c1\uc744 \uc548 \uc815\ud574\uc918\ub3c4 \uad00\uc2b5\uc801\uc73c\ub85c the\ub97c \ubd99\uc778\ub2e4. of\uad6c\u00b7\uad00\uacc4\uc808 \ub4f1 \ubb38\ubc95\uc801 \ud55c\uc815 \ud45c\ud604\uc774 \uc788\uc5b4\uc57c the\uac00 \ubd99\ub294 \uc77c\ubc18 \uba85\uc0ac(article \uaddc\uce59\uc758 \uae30\ubcf8 \uc6d0\ub9ac)\uc640\ub294 \ubcc4\uac1c\uc758, \uc5b4\ud718 \ub2e8\uc704\ub85c \uc554\uae30\ud574\uc57c \ud558\ub294 \uc608\uc678 \uadf8\ub8f9\uc774\ub2e4.\n\n## \uc774 \uadf8\ub8f9\uc758 \ud2b9\uc9d5 \u2014 \ud2b9\uc815\ud654 \uadfc\uac70 \uc5c6\uc774\ub3c4 the\n\n1) the government / the media / the police\n   \uc124\uba85: \uc5b4\ub290 \ub098\ub77c \uc815\ubd80\uc778\uc9c0, \uc5b4\ub290 \uc5b8\ub860\uc0ac\uc778\uc9c0 \ubc1d\ud788\uc9c0 \uc54a\uc544\ub3c4 \uc77c\ubc18\uc801 \uc9c4\uc220\uc5d0\uc11c \uad00\uc2b5\uc801\uc73c\ub85c the\ub97c \ubd99\uc784.\n   Ex) The government should regulate this industry more strictly. (\ud2b9\uc815 \uad6d\uac00\ub97c \uc9c0\ubaa9\ud558\uc9c0 \uc54a\uc544\ub3c4 the government)\n\n2) the environment (\uc0dd\ud0dc\uc801 \uc758\ubbf8) / the streets / the weather\n   \uc124\uba85: \uc9c0\uad6c \ud658\uacbd, \uac70\ub9ac, \ub0a0\uc528\ucc98\ub7fc \uacf5\ub3d9\uccb4\uac00 \uacf5\uc720\ud558\ub294 \ud558\ub098\uc758 \uc601\uc5ed\uc73c\ub85c \uc778\uc2dd\ub418\ub294 \uac1c\ub150\ub3c4 \uc774 \uadf8\ub8f9\uc5d0 \uc18d\ud568. \ub2e8, environment\uac00 '\ubd84\uc704\uae30\u00b7\uc0c1\ud669'\uc744 \ub73b\ud558\ub294 \ub2e4\ub978 \uc758\ubbf8\ub85c \uc4f0\uc774\uba74(a work environment \ub4f1) \uc774 \uaddc\uce59\uc774 \uc801\uc6a9\ub418\uc9c0 \uc54a\uace0 \ud3c9\ubc94\ud55c \uac00\uc0b0\uba85\uc0ac\ub85c \ub3cc\uc544\uac10.\n   Ex) more trash on the streets in tourist areas (\uac70\ub9ac\ub77c\ub294 \uacf5\uacf5\uc7a5\uc18c \uac1c\ub150)\n   Ex) The environment is deteriorating due to pollution. (\uc0dd\ud0dc\uc801 \uc758\ubbf8 \u2014 the \uace0\uc815)\n   \ube44\uad50) the environment(\uc0dd\ud0dc\uacc4, \uad00\uc2b5\uc801 the) / a supportive environment(\ubd84\uc704\uae30\u00b7\uc0c1\ud669, \ud3c9\ubc94\ud55c \uac00\uc0b0\uba85\uc0ac\ub77c a/the \ub2e4 \uac00\ub2a5)\n\n\uc694\uc57d: \uc774 \uba85\uc0ac\uad70\uc740 '\ubb38\ub9e5\uc0c1 \ud2b9\uc815\ub410\ub294\uac00'\ub85c \ud310\ub2e8\ud558\ub294 \uac8c \uc544\ub2c8\ub77c \ub2e8\uc5b4 \uc790\uccb4\uac00 \uad00\uc2b5\uc801\uc73c\ub85c the\ub97c \uc694\uad6c\ud558\ub294\uc9c0\ubd80\ud130 \ud655\uc778\ud574\uc57c \ud558\uba70, city\u00b7landmark\ucc98\ub7fc \ud3c9\ubc94\ud55c \uac00\uc0b0\uba85\uc0ac\uc5d0 \uc798\ubabb \uc801\uc6a9\ud574 the\ub97c \ubd99\uc774\uc9c0 \uc54a\ub3c4\ub85d \uc8fc\uc758\ud574\uc57c \ud55c\ub2e4."
+    },
+    {
+      "id": "collocation",
+      "label": "\uc5f0\uc5b4(Collocation)",
+      "eyebrow": "COLLOCATION",
+      "description": "\ub3d9\uc0ac-\uba85\uc0ac, \uba85\uc0ac-\uc804\uce58\uc0ac \ub4f1 \uc601\uc5b4\uc5d0\uc11c \uad00\uc6a9\uc801\uc73c\ub85c \uad73\uc5b4\uc9c4 \uacb0\ud569\uc744 \ubc97\uc5b4\ub098 \uc5b4\uc0c9\ud558\uac8c \uc870\ud569\ud55c \uacbd\uc6b0.",
+      "guide": ""
     }
   ],
   "essays": [
@@ -1864,6 +1986,83 @@ const DATA = {
           "explanation": "find out\uc740 '\ubab0\ub790\ub358 \uac83\uc744 \uc54c\uc544\ub0b4\ub2e4'\ub77c\ub294 \ub73b\uc774\ub77c \ubb38\ub9e5\uacfc \uc548 \ub9de\uc73c\ubbc0\ub85c find\ub85c \ubc14\uafb8\uace0, \uc544\uc9c1 \ud2b9\uc815\ub418\uc9c0 \uc54a\uc740 \ud574\uacb0\ucc45\uc774\ubbc0\ub85c \ubd80\uc815\uad00\uc0ac a solution\uc774 \uc790\uc5f0\uc2a4\ub7ec\uc6c0."
         }
       ]
+    },
+    {
+      "id": "essay-7",
+      "title": "Task 2 \u00b7 Discussion \u00b7 \uc870\uae30 \uc678\uad6d\uc5b4 \uad50\uc721",
+      "date": "2026-09-08",
+      "score": "6.5",
+      "question": "In some countries, it is thought that children should learn a second language as soon as they start school. While in other countries, it is believed that children should not be taught a second language until they are teenagers. Discuss both views and give your own opinion.",
+      "originalText": "Due to globalization, the importance of learning a second language has increased. There are some controversies surrounding this topic.\nIn some countries, people believe that their children should learn a second language when they enter schools. I partly agree with their opinions, because some countries, including South Korea, value the skill of a second language significantly. In South Korea, the test for going to universities has English exam as one of the most important three subjects. So we cannot blame parents who want their children to learn English and be more fluent, getting the advantage of young age. Also, children would get broader opportunity of exploring the world if they could speak more than one language from the young age.\nHowever, I can easily think of the downsides of allowing children to learn a second language even before they are teenagers. First, learning another language when not sufficiently knowing their mother tongue yet might give children confusion. Meanwhile, besides this problem of the learning process itself, there are more deep problems. If it becomes normal and common to learn a second language, parents would feel pressure to educate their children, and it is apparent that this would cause the harsher competition among young students.\nIn my perspective, this problem should be discussed with each families' circumstances fully appreciated, because it is related to children who are our society's future.",
+      "notes": "\u2501\u2501\u2501 \uad00\uc0ac(a/the) \uc0ac\uc6a9 \uaddc\uce59 \u2501\u2501\u2501\n\n## \uc77c\ubc18\uc801 \uac1c\ub150 vs \ud2b9\uc815 \ub300\uc0c1\n\"\uc5b4\ub9b4 \ub54c\ubd80\ud130\"\ucc98\ub7fc \ud2b9\uc815\ud558\uc9c0 \uc54a\uc740 \uc77c\ubc18\uc801 \uc2dc\uc810\u00b7\uac1c\ub150\uc744 \ub9d0\ud560 \ub54c\ub294 a\ub97c \uc500(from a young age), \uc774\ubbf8 \ud2b9\uc815\ub41c \ub300\uc0c1\uc744 \uac00\ub9ac\ud0ac \ub54c\ub294 the\ub97c \uc500(the English exam).\n   \ube44\uad50) from a young age(\uc77c\ubc18\uc801 \uac1c\ub150, O) / from the young age(X)\n   \ube44\uad50) get a broader opportunity(\uac00\uc0b0\uba85\uc0ac \ub2e8\uc218\uc5d4 a \ud544\uc218, O) / get broader opportunity(X)\n\n## \ubb34\uad00\uc0ac\ub85c \uad73\uc5b4\uc9c4 \ud45c\ud604\n\ud559\uad50\u00b7\ubcd1\uc6d0\ucc98\ub7fc \uae30\uad00\uc744 \uadf8 \ubcf8\ub798 \uae30\ub2a5(\uad50\uc721\uc744 \ubc1b\ub2e4, \uce58\ub8cc\ub97c \ubc1b\ub2e4)\uc73c\ub85c \uc5b8\uae09\ud560 \ub54c\ub294 \ubb34\uad00\uc0ac \ub2e8\uc218\ub97c \uc500.\n   Ex) enter school(O, \uc608\uc678 \uad00\uc6a9\uad6c) / enter schools(X)\n\n\u2501\u2501\u2501 \uc804\uce58\uc0ac\u00b7\uc5f0\uc5b4(collocation) \uc624\ub958 \u2501\u2501\u2501\n\n## \uba85\uc0ac + \uc804\uce58\uc0ac \uacb0\ud569\nperspective\uc640 opportunity\ub294 \uac01\uac01 \uc815\ud574\uc9c4 \uc804\uce58\uc0ac\uc640\ub9cc \uacb0\ud569\ud568.\n   Ex) from my perspective(O) / in my perspective(X)\n   Ex) opportunity to explore(O) / opportunity of exploring(X)\n\n## \ub3d9\uc0ac + \uba85\uc0ac \uacb0\ud569\n\uc774\uc810\uc744 \ud65c\uc6a9\ud558\ub2e4, \ud63c\ub780\uc744 \uc8fc\ub2e4\ucc98\ub7fc \ud55c\uad6d\uc5b4\ub85c\ub294 \uc790\uc5f0\uc2a4\ub7ec\uc6cc \ubcf4\uc5ec\ub3c4 \uc601\uc5b4\uc5d0\uc11c\ub294 \uc815\ud574\uc9c4 \ub3d9\uc0ac\uc640\ub9cc \uc9dd\uc9c0\uc5b4 \uc4f0\ub294 \ud45c\ud604\ub4e4\uc774 \uc788\uc74c.\n   Ex) take advantage of(O) / get advantage of(X)\n   Ex) cause confusion for(O) / give confusion(X)\n\n\u2501\u2501\u2501 each + \ub2e8\uc218\uba85\uc0ac \u2501\u2501\u2501\n\neach\ub294 \ubcf5\uc218 \ub300\uc0c1\uc744 \ud558\ub098\uc529 \uac00\ub9ac\ud0a4\ub294 \ud55c\uc815\uc0ac\uc774\uc9c0\ub9cc, \ub4a4\uc5d0 \uc624\ub294 \uba85\uc0ac\ub294 \ubc18\ub4dc\uc2dc \ub2e8\uc218\ud615\uc73c\ub85c \uc500.\n   Ex) each family's circumstances(O) / each families' circumstances(X)",
+      "entries": [
+        {
+          "category": "article",
+          "wrong": "when they enter schools",
+          "correct": "when they enter school",
+          "explanation": "\ud559\uad50\ub97c \uad50\uc721 \uc81c\ub3c4 \uc790\uccb4\ub85c \uac00\ub9ac\ud0ac \ub54c\ub294 \ubb34\uad00\uc0ac \ub2e8\uc218\ub97c \uc500"
+        },
+        {
+          "category": "comparison",
+          "wrong": "one of the most important three subjects",
+          "correct": "one of the three most important subjects",
+          "explanation": "\uc218\uc0ac\ub294 \ucd5c\uc0c1\uae09 \uc55e\uc5d0 \uc704\uce58\ud568"
+        },
+        {
+          "category": "article",
+          "wrong": "has English exam as",
+          "correct": "has the English exam as",
+          "explanation": "\ud2b9\uc815 \uacfc\ubaa9\uc744 \uc9c0\uce6d\ud558\ubbc0\ub85c \uc815\uad00\uc0ac\uac00 \ud544\uc694\ud568"
+        },
+        {
+          "category": "collocation",
+          "wrong": "getting the advantage of young age",
+          "correct": "taking advantage of their young age",
+          "explanation": "take advantage of\ub85c \uad73\uc5b4\uc9c4 \uacb0\ud569\uc784"
+        },
+        {
+          "category": "article",
+          "wrong": "get broader opportunity",
+          "correct": "get a broader opportunity",
+          "explanation": "\uac00\uc0b0\uba85\uc0ac \ub2e8\uc218 \uc55e\uc5d0\ub294 \ubd80\uc815\uad00\uc0ac\uac00 \ud544\uc694\ud568"
+        },
+        {
+          "category": "preposition",
+          "wrong": "opportunity of exploring the world",
+          "correct": "opportunity to explore the world",
+          "explanation": "opportunity \ub4a4\uc5d0\ub294 to\ubd80\uc815\uc0ac\uac00 \uc634"
+        },
+        {
+          "category": "article",
+          "wrong": "from the young age",
+          "correct": "from a young age",
+          "explanation": "\uc77c\ubc18\uc801 \uac1c\ub150\uc774\ubbc0\ub85c \ubd80\uc815\uad00\uc0ac\ub97c \uc500"
+        },
+        {
+          "category": "sentence-structure",
+          "wrong": "when not sufficiently knowing their mother tongue yet",
+          "correct": "when they do not sufficiently know their mother tongue yet",
+          "explanation": "\uc885\uc18d\uc808\uc5d0 \uc8fc\uc5b4\uac00 \ube60\uc838 \ubd88\uc644\uc804\ud568"
+        },
+        {
+          "category": "collocation",
+          "wrong": "might give children confusion",
+          "correct": "might cause confusion for children",
+          "explanation": "cause confusion\uc73c\ub85c \uad73\uc5b4\uc9c4 \uacb0\ud569\uc784"
+        },
+        {
+          "category": "pronoun-agreement",
+          "wrong": "each families' circumstances",
+          "correct": "each family's circumstances",
+          "explanation": "each\ub294 \ub2e8\uc218 \uba85\uc0ac\uc640 \uacb0\ud569\ud568"
+        },
+        {
+          "category": "preposition",
+          "wrong": "In my perspective",
+          "correct": "From my perspective",
+          "explanation": "perspective\uc640 \uacb0\ud569\ud558\ub294 \uc804\uce58\uc0ac\ub294 from\uc784"
+        }
+      ]
     }
   ],
   "wordDocs": [
@@ -1908,6 +2107,89 @@ const DATA = {
       "title": "Task 2 \u00b7 \uad50\uc721\u00b7\uac00\uc815\u00b7\uac74\uac15\u00b7\uc0ac\ud68c \ud45c\ud604",
       "subtitle": "30\uac1c \ud45c\ud604",
       "text": "\u2501\u2501\u2501 \uad50\uc721\uc5d0 \uad00\ud55c \ud45c\ud604 \u2501\u2501\u2501\n\n1) well-rounded education\n   \ub73b: \ub2e4\uba74\uc801\uc778, \uc798 \uc9dc\uc5ec\uc9c4 \uad50\uc721\n   Ex) Some people think that high schools should offer their students a well-rounded education.\n\n2) learn valuable skills\n   \ub73b: \uc720\uc6a9\ud55c \uae30\uc220\uc744 \ubc30\uc6b0\ub2e4\n   Ex) In addition to normal lessons, students learn valuable skills from interacting with their peers.\n   \ub2e8\uc5b4: \uc0c1\ud638\uc791\uc6a9\ud558\ub2e4 interact\n\n3) extracurricular activities\n   \ub73b: \ud559\uacfc \uc678 \ud65c\ub3d9\n   Ex) Participating in extracurricular activities is a good way to widen their social network.\n   \ub2e8\uc5b4: \ucc38\uc5ec\ud558\ub2e4 participate in\n\n4) hands-on activity\n   \ub73b: \uccb4\ud5d8 \ud65c\ub3d9\n   Ex) Teachers sometimes plan hands-on activities to get students more involved.\n   \ub2e8\uc5b4: \ud3ec\ud568\ud558\ub2e4 involve\n\n5) group assignment\n   \ub73b: \uc870\ubcc4 \uacfc\uc81c\n   Ex) Group assignments are an easy way to build trust between students.\n   \ub2e8\uc5b4: \uc2e0\ub8b0\ub97c \uc313\ub2e4 build trust\n\n6) build a strong character\n   \ub73b: \ud6cc\ub96d\ud55c \uc778\uaca9\uc744 \uae30\ub974\ub2e4\n   Ex) Building a strong character is more important than any academic or financial success.\n\n7) personality development\n   \ub73b: \uc778\uaca9 \ubc1c\ub2ec\n   Ex) Personality development in kindergarten is geared towards teaching children how to interact as part of a group.\n   \ub2e8\uc5b4: \uc720\uce58\uc6d0 kindergarten / ~\uc744 \ud5a5\ud558\ub2e4, \ubaa9\ud45c\ub85c \ud558\ub2e4 geared towards\n\n8) peer pressure\n   \ub73b: \ub610\ub798 \uc555\ubc15\n   Ex) Positive peer pressure can be applied in study groups to help students motivate each other.\n   \ub2e8\uc5b4: \uc801\uc6a9\ud558\ub2e4 apply / \uc790\uadf9\ud558\ub2e4 motivate\n\n\u2501\u2501\u2501 \uac00\uc815\uc5d0 \uad00\ud55c \ud45c\ud604 \u2501\u2501\u2501\n\n9) extended family\n   \ub73b: \ub300\uac00\uc871\n   Ex) Extended family remains as valuable as in the past.\n   \ub2e8\uc5b4: \ub0a8\ub2e4 remain\n\n10) working parents\n   \ub73b: \ub9de\ubc8c\uc774 \ubd80\ubaa8\n   Ex) One of the ways to keep children with working parents happy and safe is to expand daycare facilities.\n   \ub2e8\uc5b4: \uc720\uc544 \uc2dc\uc124 daycare facility\n\n11) birth rate\n   \ub73b: \ucd9c\uc0dd\uc728\n   Ex) Societies with a lower birth rate can offer a better livelihood to the children.\n   \ub2e8\uc5b4: \uc0dd\uacc4 livelihood\n\n12) single-parent family\n   \ub73b: \ud55c\ubd80\ubaa8 \uac00\uc815\n   Ex) Today, single-parent families are becoming more and more common.\n\n13) family gathering\n   \ub73b: \uac00\uc871 \ubaa8\uc784\n   Ex) A family gathering can be a great opportunity to reconnect with distant relatives.\n   \ub2e8\uc5b4: \ub2e4\uc2dc \uc774\uc5b4\uc9c0\ub2e4, \uc7ac\ud68c\ud558\ub2e4 reconnect with / \uba3c distant\n\n14) push one's children\n   \ub73b: \uc544\uc774\ub97c \ub2e4\uadf8\uce58\ub2e4\n   Ex) It is sometimes important to push your children, but not to become overbearing.\n   \ub2e8\uc5b4: \uc9c0\ub098\uce5c, \uacfc\ub3c4\ud55c overbearing\n\n15) emotional attachment\n   \ub73b: \uc815\uc11c\uc801\uc778 \uc560\ucc29\n   Ex) Children often develop an emotional attachment to blankets and teddy bears.\n\n\u2501\u2501\u2501 \uac74\uac15\uc5d0 \uad00\ud55c \ud45c\ud604 \u2501\u2501\u2501\n\n16) life expectancy\n   \ub73b: \ud3c9\uade0 \uc218\uba85\n   Ex) Life expectancy is influenced by a number of factors, such as family history and personal lifestyle.\n   \ub2e8\uc5b4: \uac00\uc871\ub825 family history\n\n17) health care/medical care\n   \ub73b: \uc758\ub8cc \uc11c\ube44\uc2a4, \uce58\ub8cc\n   Ex) Improvements in health care are directly related to advancements in medical science.\n   \ub2e8\uc5b4: \ubc1c\uc804 advancement\n\n18) deadly disease\n   \ub73b: \uce58\uba85\uc801\uc778 \uc9c8\ubcd1\n   Ex) Vaccinating children against deadly diseases has lowered mortality rates in advanced countries.\n   \ub2e8\uc5b4: \uc0ac\ub9dd\ub960 mortality rate\n\n19) stay in shape\n   \ub73b: \uac74\uac15\uc744 \uc720\uc9c0\ud558\ub2e4\n   Ex) It is difficult to stay in shape when sitting at a desk all day and then sitting on a couch all night.\n\n20) break a bad habit\n   \ub73b: \ub098\uc05c \uc2b5\uad00\uc744 \uace0\uce58\ub2e4\n   Ex) An effective way to break a bad habit such as smoking is to substitute it with a new behavior, such as chewing nicotine gum.\n   \ub2e8\uc5b4: \ub300\uccb4\ud558\ub2e4 substitute\n\n\u2501\u2501\u2501 \uc0ac\ud68c\uc5d0 \uad00\ud55c \ud45c\ud604 \u2501\u2501\u2501\n\n21) stressed out\n   \ub73b: \uc2a4\ud2b8\ub808\uc2a4\ub97c \ub9ce\uc774 \ubc1b\ub2e4\n   Ex) There is no point in getting stressed out about things you cannot change.\n\n22) drug addiction\n   \ub73b: \uc57d\ubb3c \uc911\ub3c5\n   Ex) Drug addiction is one of the most dangerous health issues facing society today.\n   \ub2e8\uc5b4: \uc9c1\uba74\ud558\ub2e4 face\n\n23) ever-changing world\n   \ub73b: \ub298 \ubcc0\ud654\ud558\ub294 \uc138\uc0c1\n   Ex) It is difficult to make predictions in an ever-changing world.\n   \ub2e8\uc5b4: \uc608\uce21\ud558\ub2e4 make predictions\n\n24) rural area\n   \ub73b: \uc2dc\uace8 \uc9c0\uc5ed\n   Ex) Growing up in a rural area allows for a close connection with nature which is impossible in a crowded urban area.\n   \ub2e8\uc5b4: \ud63c\uc7a1\ud55c crowded\n\n25) provoke controversy\n   \ub73b: \ub17c\ub780\uc744 \ubd88\ub7ec\uc77c\uc73c\ud0a4\ub2e4\n   Ex) Some companies use advertisements that provoke controversy in order to generate publicity.\n   \ub2e8\uc5b4: \ud64d\ubcf4 publicity\n\n26) social customs\n   \ub73b: \uc0ac\ud68c\uc801 \uad00\uc2b5\n   Ex) Social customs determine how each country's citizens greet each other and say goodbye.\n\n27) popular sentiment\n   \ub73b: \ub300\uc911 \uc815\uc11c\n   Ex) Popular sentiment in favor of smoke-free zones is one reason why lighting up should be banned in public places.\n   \ub2e8\uc5b4: ~\uc744 \uc9c0\uc9c0\ud558\ub294 in favor of ~ / \uae08\uc5f0 \uad6c\uc5ed smoke-free zone\n\n28) privileged people\n   \ub73b: \ud2b9\uad8c\uc744 \uac00\uc9c4 \uc0ac\ub78c\ub4e4\n   Ex) Advertisers encourage average consumers to feel like privileged people by buying expensive brand name goods.\n   \ub2e8\uc5b4: \uad8c\uc7a5\ud558\ub2e4 encourage / \uba85\ud488 brand name goods\n\n29) worth the cost\n   \ub73b: \ube44\uc6a9\ub9cc\ud07c \uac00\uce58\uac00 \uc788\ub2e4\n   Ex) Most people think that the benefits of nationalized healthcare are worth the cost.\n   \ub2e8\uc5b4: \uad6d\uc720\ud654\ub41c nationalized / \uc758\ub8cc \uc11c\ube44\uc2a4 healthcare\n\n30) spending habits\n   \ub73b: \uc18c\ube44 \uc2b5\uad00\n   Ex) Technological advances have caused great changes in the spending habits of today's consumers.\n   \ub2e8\uc5b4: \uae30\uc220\uc758 \ubc1c\uc804 technological advance"
+    }
+  ],
+  "nounTable": [
+    {
+      "word": "time",
+      "type": "uncountable",
+      "wrong": "as the time passed",
+      "correct": "as time passed",
+      "essayId": "essay-2"
+    },
+    {
+      "word": "industry",
+      "type": "countable",
+      "wrong": "work in a finance industry",
+      "correct": "work in the finance industry",
+      "essayId": "essay-3"
+    },
+    {
+      "word": "extent",
+      "type": "countable",
+      "wrong": "to basic extent",
+      "correct": "to a basic extent",
+      "essayId": "essay-3",
+      "note": "\ubcf4\ud1b5 \ubd88\uac00\uc0b0\uc73c\ub85c\ub3c4 \uc4f0\uc774\uc9c0\ub9cc 'to a certain extent'\ub958 \uad00\uc6a9\uad6c\uc5d0\uc11c\ub294 \ubd80\uc815\uad00\uc0ac\uc640 \uacb0\ud569\ud568"
+    },
+    {
+      "word": "food",
+      "type": "uncountable",
+      "wrong": "a food that you bought",
+      "correct": "the food you bought",
+      "essayId": "essay-4"
+    },
+    {
+      "word": "restaurant",
+      "type": "countable",
+      "wrong": "the mood of the restaurant",
+      "correct": "the mood of a restaurant",
+      "essayId": "essay-4"
+    },
+    {
+      "word": "world",
+      "type": "countable",
+      "wrong": "experience broader world",
+      "correct": "experience a broader world",
+      "essayId": "essay-6",
+      "note": "\uc9c0\uad6c\ub77c\ub294 \uace0\uc720 \uac1c\ub150\uc774 \uc544\ub2c8\ub77c '\uacbd\ud5d8\uc758 \ubc94\uc704'\ub97c \ub73b\ud558\ub294 \ucd94\uc0c1\uc801 \uac00\uc0b0\uba85\uc0ac\ub85c \uc4f0\uc784"
+    },
+    {
+      "word": "streets",
+      "type": "countable",
+      "wrong": "trash on streets",
+      "correct": "trash on the streets",
+      "essayId": "essay-6",
+      "note": "\uac00\uc0b0\uba85\uc0ac\uc9c0\ub9cc \uad00\uc6a9\uc801\uc73c\ub85c \ud56d\uc0c1 the streets\ub85c \uc500"
+    },
+    {
+      "word": "school",
+      "type": "countable",
+      "wrong": "enter schools",
+      "correct": "enter school",
+      "essayId": "essay-7",
+      "note": "\uac00\uc0b0\uba85\uc0ac\uc9c0\ub9cc '\ud559\uad50\uc5d0 \ub2e4\ub2c8\ub2e4'\ub77c\ub294 \uae30\ub2a5\uc801 \uc758\ubbf8\ub85c \uc4f8 \ub54c\ub294 \uc608\uc678\uc801\uc73c\ub85c \ubb34\uad00\uc0ac"
+    },
+    {
+      "word": "exam",
+      "type": "countable",
+      "wrong": "has English exam",
+      "correct": "has the English exam",
+      "essayId": "essay-7"
+    },
+    {
+      "word": "opportunity",
+      "type": "countable",
+      "wrong": "get broader opportunity",
+      "correct": "get a broader opportunity",
+      "essayId": "essay-7"
+    },
+    {
+      "word": "age",
+      "type": "countable",
+      "wrong": "from the young age",
+      "correct": "from a young age",
+      "essayId": "essay-7"
     }
   ]
 };
@@ -2326,6 +2608,8 @@ const DATA = {
     if (mWordsDoc) return { type: 'words', docId: decodeURIComponent(mWordsDoc[1]) };
     var mWords = h.match(/^#\/words$/);
     if (mWords) return { type: 'words' };
+    var mNouns = h.match(/^#\/nouns$/);
+    if (mNouns) return { type: 'nouns' };
     return { type: 'home' };
   }
 
@@ -2490,6 +2774,21 @@ const DATA = {
           }
         }
       }
+    } else if (route.type === 'nouns') {
+      catSection.style.display = 'none';
+      essayHeaderWrap.innerHTML =
+        '<div class="essay-header">' +
+          '<div>' +
+            '<div class="meta-line">참고 자료</div>' +
+            '<h3>Countable / Uncountable Nouns</h3>' +
+            '<a href="#/" class="back">← 홈으로</a>' +
+          '</div>' +
+        '</div>';
+      var nounRows = (state.nounTable || []);
+      entryTitle.textContent = 'Countable / Uncountable Nouns';
+      entryCount.textContent = nounRows.length + '개';
+      listArea.innerHTML = '';
+      listArea.appendChild(buildNounTableEl(nounRows));
     } else {
       catSection.style.display = '';
       essayHeaderWrap.innerHTML = '';
@@ -2753,6 +3052,41 @@ const DATA = {
       grid.appendChild(card);
     });
     return grid;
+  }
+
+  function buildNounTableEl(rows) {
+    var wrap = document.createElement('div');
+    wrap.className = 'noun-table-wrap';
+    if (!rows.length) {
+      wrap.innerHTML = '<div class="empty">아직 정리된 명사가 없음.</div>';
+      return wrap;
+    }
+    var legend =
+      '<div class="noun-table-legend">' +
+        '<span class="noun-legend-item"><span class="noun-swatch noun-countable"></span>가산명사</span>' +
+        '<span class="noun-legend-item"><span class="noun-swatch noun-uncountable"></span>불가산명사</span>' +
+      '</div>';
+    var thead =
+      '<thead><tr>' +
+        '<th class="col-word">단어</th>' +
+        '<th class="col-wrong">틀린 표현</th>' +
+        '<th class="col-correct">올바른 표현</th>' +
+        '<th class="col-note">비고</th>' +
+      '</tr></thead>';
+    var tbody = rows.map(function (r) {
+      var typeClass = r.type === 'countable' ? 'noun-countable' : 'noun-uncountable';
+      var typeLabel = r.type === 'countable' ? '가산' : '불가산';
+      var essay = essayById(r.essayId);
+      var essayLink = essay ? ('<a class="noun-source" href="#/essay/' + encodeURIComponent(essay.id) + '">' + escapeHtml(essay.title) + '</a>') : '';
+      return '<tr>' +
+        '<td class="col-word"><span class="noun-word-cell ' + typeClass + '">' + escapeHtml(r.word) + '<span class="noun-type-tag">' + typeLabel + '</span></span></td>' +
+        '<td class="col-wrong">' + escapeHtml(r.wrong) + '</td>' +
+        '<td class="col-correct">' + escapeHtml(r.correct) + '</td>' +
+        '<td class="col-note">' + (r.note ? escapeHtml(r.note) : '') + (essayLink ? '<div class="noun-source-line">' + essayLink + '</div>' : '') + '</td>' +
+      '</tr>';
+    }).join('');
+    wrap.innerHTML = legend + '<table class="noun-table">' + thead + '<tbody>' + tbody + '</tbody></table>';
+    return wrap;
   }
 
   function buildEntriesEl(list, showEssayLink) {
