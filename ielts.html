@@ -228,7 +228,6 @@ body:not(.is-home) .hero{
   padding-bottom: 6px;
   transition: color .15s ease;
 }
-.hero-noun-link svg{ width: 14px; height: 14px; flex: none; }
 .hero-noun-link:hover{ color: var(--ink); }
 @media (max-width: 600px){
   .hero-row{ justify-content: flex-start; }
@@ -758,9 +757,8 @@ body:not(.is-home) .hero{
 .noun-table{
   width: 100%;
   min-width: 620px;
-  border-collapse: collapse;
-  font-family: var(--kr);
-  font-size: 14px;
+  border-collapse: separate;
+  border-spacing: 0 6px;
 }
 .noun-table th{
   text-align: left;
@@ -774,44 +772,29 @@ body:not(.is-home) .hero{
   white-space: nowrap;
 }
 .noun-table td{
-  padding: 10px 10px;
-  border-bottom: 1px solid var(--line);
-  vertical-align: top;
-  line-height: 1.55;
+  padding: 12px 10px;
+  vertical-align: middle;
+  font-family: var(--kr);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink);
 }
-.noun-table tbody tr:last-child td{ border-bottom: none; }
 .noun-table .col-word{ width: 1%; white-space: nowrap; }
-.noun-table .col-wrong{ color: var(--ink-soft); text-decoration: line-through; text-decoration-color: #d9a3ad; }
-.noun-table .col-correct{ color: var(--ink); font-weight: 600; }
-.noun-table .col-note{ color: var(--ink-soft); font-size: 13px; max-width: 260px; }
-.noun-word-cell{
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 10px;
-  border-radius: 7px;
-  font-family: var(--en);
-  font-weight: 700;
+.noun-table .col-note{ max-width: 280px; }
+.noun-table tr.noun-row-countable td{ background: #dff3d8; }
+.noun-table tr.noun-row-uncountable td{ background: #fbdfe6; }
+.noun-table tbody tr td:first-child{ border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+.noun-table tbody tr td:last-child{ border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+.noun-jump-link{
+  text-decoration: none;
+  margin-left: 4px;
+  cursor: pointer;
 }
-.noun-word-cell.noun-countable{ background: #dff3d8; color: #2e6b23; }
-.noun-word-cell.noun-uncountable{ background: #fbdfe6; color: #9c2d47; }
-.noun-type-tag{
-  font-family: var(--kr);
-  font-size: 10px;
-  font-weight: 500;
-  opacity: 0.8;
-}
-.noun-source-line{ margin-top: 4px; }
-.noun-source{
-  font-family: var(--kr);
-  font-size: 12px;
-  color: var(--ink-faint);
-  text-decoration: underline;
-}
-.noun-source:hover{ color: var(--ink-soft); }
+.noun-jump-link:hover{ opacity: 0.6; }
 @media (max-width: 600px){
   .noun-table-wrap{ padding: 16px 16px 20px; }
-  .noun-table{ font-size: 13px; }
+  .noun-table td{ font-size: 13px; }
   .noun-table .col-note{ max-width: 160px; }
 }
 
@@ -1030,6 +1013,11 @@ body:not(.is-home) .hero{
   display:grid;
   grid-template-columns: 140px 1fr;
   gap: 18px;
+  transition: background-color .3s ease;
+}
+.entry.entry-flash{
+  background-color: #fff3cd;
+  border-radius: 8px;
 }
 .entry .meta{
   font-family: var(--en);
@@ -1391,7 +1379,6 @@ footer{
         </h1>
       </div>
       <a href="#/nouns" id="nounTableLink" class="hero-noun-link" aria-label="Countable / Uncountable Nouns 표 보기" title="Countable / Uncountable Nouns">
-        <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9.5H20.5M3.5 14.5H20.5M9 4.5V19.5M15 4.5V19.5" stroke="currentColor" stroke-width="1.8"/></svg>
         <span>Countable / Uncountable Nouns</span>
       </a>
     </div>
@@ -2115,81 +2102,88 @@ const DATA = {
       "type": "uncountable",
       "wrong": "as the time passed",
       "correct": "as time passed",
-      "essayId": "essay-2"
+      "reason": "\uc2dc\uac04\uc758 \ud750\ub984 \uc790\uccb4\ub97c \uac00\ub9ac\ud0a4\ub294 \ucd94\uc0c1\uc801 \uac1c\ub150\uc774\ub77c \ub2e8\uc704\ub85c \uc140 \uc218 \uc5c6\uc74c",
+      "entryId": "essay-2-7"
     },
     {
       "word": "industry",
       "type": "countable",
       "wrong": "work in a finance industry",
       "correct": "work in the finance industry",
-      "essayId": "essay-3"
+      "reason": "\uc0b0\uc5c5 \ubd84\uc57c \ud558\ub098\ud558\ub098\ub97c \uac1c\ubcc4 \ub2e8\uc704\ub85c \uc140 \uc218 \uc788\ub294 \uba85\uc0ac\uc784",
+      "entryId": "essay-3-6"
     },
     {
       "word": "extent",
       "type": "countable",
       "wrong": "to basic extent",
       "correct": "to a basic extent",
-      "essayId": "essay-3",
-      "note": "\ubcf4\ud1b5 \ubd88\uac00\uc0b0\uc73c\ub85c\ub3c4 \uc4f0\uc774\uc9c0\ub9cc 'to a certain extent'\ub958 \uad00\uc6a9\uad6c\uc5d0\uc11c\ub294 \ubd80\uc815\uad00\uc0ac\uc640 \uacb0\ud569\ud568"
+      "reason": "\ubcf8\ub798\ub294 \ubd88\uac00\uc0b0\uc5d0 \uac00\uae5d\uc9c0\ub9cc 'to a certain extent'\ub958 \uad00\uc6a9\uad6c\uc5d0\uc11c\ub294 \uad00\uc6a9\uc801\uc73c\ub85c a\uc640 \uacb0\ud569\ud568",
+      "entryId": "essay-3-7"
     },
     {
       "word": "food",
       "type": "uncountable",
       "wrong": "a food that you bought",
       "correct": "the food you bought",
-      "essayId": "essay-4"
+      "reason": "\uc74c\uc2dd\uc774\ub77c\ub294 \ubb3c\uc9c8\u00b7\uac1c\ub150 \uc804\uccb4\ub97c \uac00\ub9ac\ud0ac \ub54c\ub294 \ub2e8\uc704\ub85c \uc140 \uc218 \uc5c6\uc74c",
+      "entryId": "essay-4-4"
     },
     {
       "word": "restaurant",
       "type": "countable",
       "wrong": "the mood of the restaurant",
       "correct": "the mood of a restaurant",
-      "essayId": "essay-4"
+      "reason": "\ud2b9\uc815\ud558\uc9c0 \uc54a\uc740 \ud558\ub098\uc758 \uc2dd\ub2f9\uc744 \uac00\ub9ac\ud0a4\ub294 \uac00\uc0b0\uba85\uc0ac\uc784",
+      "entryId": "essay-4-9"
     },
     {
       "word": "world",
       "type": "countable",
       "wrong": "experience broader world",
       "correct": "experience a broader world",
-      "essayId": "essay-6",
-      "note": "\uc9c0\uad6c\ub77c\ub294 \uace0\uc720 \uac1c\ub150\uc774 \uc544\ub2c8\ub77c '\uacbd\ud5d8\uc758 \ubc94\uc704'\ub97c \ub73b\ud558\ub294 \ucd94\uc0c1\uc801 \uac00\uc0b0\uba85\uc0ac\ub85c \uc4f0\uc784"
+      "reason": "\uc9c0\uad6c\ub77c\ub294 \uace0\uc720 \uac1c\ub150\uc774 \uc544\ub2c8\ub77c '\uacbd\ud5d8\uc758 \ubc94\uc704'\ub97c \ub73b\ud558\ub294 \ucd94\uc0c1\uc801 \uac00\uc0b0\uba85\uc0ac\ub85c \uc4f0\uc784",
+      "entryId": "essay-6-1"
     },
     {
       "word": "streets",
       "type": "countable",
       "wrong": "trash on streets",
       "correct": "trash on the streets",
-      "essayId": "essay-6",
-      "note": "\uac00\uc0b0\uba85\uc0ac\uc9c0\ub9cc \uad00\uc6a9\uc801\uc73c\ub85c \ud56d\uc0c1 the streets\ub85c \uc500"
+      "reason": "\uac70\ub9ac \ud558\ub098\ud558\ub098\ub294 \uc140 \uc218 \uc788\ub294 \uba85\uc0ac\uc774\uc9c0\ub9cc \uad00\uc6a9\uc801\uc73c\ub85c \ud56d\uc0c1 the streets\ub85c \uc500",
+      "entryId": "essay-6-7"
     },
     {
       "word": "school",
       "type": "countable",
       "wrong": "enter schools",
       "correct": "enter school",
-      "essayId": "essay-7",
-      "note": "\uac00\uc0b0\uba85\uc0ac\uc9c0\ub9cc '\ud559\uad50\uc5d0 \ub2e4\ub2c8\ub2e4'\ub77c\ub294 \uae30\ub2a5\uc801 \uc758\ubbf8\ub85c \uc4f8 \ub54c\ub294 \uc608\uc678\uc801\uc73c\ub85c \ubb34\uad00\uc0ac"
+      "reason": "\ud559\uad50\ub294 \uc140 \uc218 \uc788\ub294 \uba85\uc0ac\uc774\uc9c0\ub9cc '\ud559\uad50\uc5d0 \ub2e4\ub2c8\ub2e4'\ub77c\ub294 \uae30\ub2a5\uc801 \uc758\ubbf8\ub85c \uc4f8 \ub54c\ub294 \uc608\uc678\uc801\uc73c\ub85c \ubb34\uad00\uc0ac",
+      "entryId": "essay-7-0"
     },
     {
       "word": "exam",
       "type": "countable",
       "wrong": "has English exam",
       "correct": "has the English exam",
-      "essayId": "essay-7"
+      "reason": "\ud2b9\uc815 \uc2dc\ud5d8 \ud558\ub098\ub97c \uac00\ub9ac\ud0a4\ub294 \uac00\uc0b0\uba85\uc0ac\uc784",
+      "entryId": "essay-7-2"
     },
     {
       "word": "opportunity",
       "type": "countable",
       "wrong": "get broader opportunity",
       "correct": "get a broader opportunity",
-      "essayId": "essay-7"
+      "reason": "\uae30\ud68c \ud558\ub098\ud558\ub098\ub97c \uc140 \uc218 \uc788\ub294 \uac00\uc0b0\uba85\uc0ac\uc784",
+      "entryId": "essay-7-4"
     },
     {
       "word": "age",
       "type": "countable",
       "wrong": "from the young age",
       "correct": "from a young age",
-      "essayId": "essay-7"
+      "reason": "\ub098\uc774\ub77c\ub294 \uac1c\ub150\uc744 \ud2b9\uc815 \uc2dc\uc810\uc73c\ub85c \uac00\ub9ac\ud0ac \ub54c \uac00\uc0b0\uba85\uc0ac\ub85c \uc4f0\uc784",
+      "entryId": "essay-7-6"
     }
   ]
 };
@@ -3054,6 +3048,23 @@ const DATA = {
     return grid;
   }
 
+  function jumpToEntry(essayId, entryId) {
+    function doScroll() {
+      var el = document.querySelector('.entry[data-entry-id="' + entryId + '"]');
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('entry-flash');
+      setTimeout(function () { el.classList.remove('entry-flash'); }, 1600);
+    }
+    var target = '#/essay/' + encodeURIComponent(essayId);
+    if (window.location.hash === target) {
+      doScroll();
+    } else {
+      window.location.hash = target;
+      requestAnimationFrame(function () { requestAnimationFrame(doScroll); });
+    }
+  }
+
   function buildNounTableEl(rows) {
     var wrap = document.createElement('div');
     wrap.className = 'noun-table-wrap';
@@ -3074,15 +3085,16 @@ const DATA = {
         '<th class="col-note">비고</th>' +
       '</tr></thead>';
     var tbody = rows.map(function (r) {
-      var typeClass = r.type === 'countable' ? 'noun-countable' : 'noun-uncountable';
-      var typeLabel = r.type === 'countable' ? '가산' : '불가산';
-      var essay = essayById(r.essayId);
-      var essayLink = essay ? ('<a class="noun-source" href="#/essay/' + encodeURIComponent(essay.id) + '">' + escapeHtml(essay.title) + '</a>') : '';
-      return '<tr>' +
-        '<td class="col-word"><span class="noun-word-cell ' + typeClass + '">' + escapeHtml(r.word) + '<span class="noun-type-tag">' + typeLabel + '</span></span></td>' +
+      var rowClass = r.type === 'countable' ? 'noun-row-countable' : 'noun-row-uncountable';
+      var essayId = (r.entryId || '').replace(/-\d+$/, '');
+      var jumpLink = (r.entryId && essayById(essayId)) ?
+        (' <a class="noun-jump-link" href="#/essay/' + encodeURIComponent(essayId) + '" data-essay-id="' +
+          escapeHtml(essayId) + '" data-jump-entry="' + escapeHtml(r.entryId) + '" aria-label="첨삭된 문장으로 이동" title="첨삭된 문장으로 이동">🔗</a>') : '';
+      return '<tr class="' + rowClass + '">' +
+        '<td class="col-word">' + escapeHtml(r.word) + '</td>' +
         '<td class="col-wrong">' + escapeHtml(r.wrong) + '</td>' +
         '<td class="col-correct">' + escapeHtml(r.correct) + '</td>' +
-        '<td class="col-note">' + (r.note ? escapeHtml(r.note) : '') + (essayLink ? '<div class="noun-source-line">' + essayLink + '</div>' : '') + '</td>' +
+        '<td class="col-note">' + escapeHtml(r.reason || '') + jumpLink + '</td>' +
       '</tr>';
     }).join('');
     wrap.innerHTML = legend + '<table class="noun-table">' + thead + '<tbody>' + tbody + '</tbody></table>';
@@ -3677,6 +3689,12 @@ const DATA = {
   // clicks inside the results list: star buttons + highlight marks (event
   // delegation on the container, since its contents are fully rebuilt on every render)
   document.body.addEventListener('click', function (ev) {
+    var jumpLink = ev.target.closest('.noun-jump-link');
+    if (jumpLink) {
+      ev.preventDefault();
+      jumpToEntry(jumpLink.getAttribute('data-essay-id'), jumpLink.getAttribute('data-jump-entry'));
+      return;
+    }
     var starBtn = ev.target.closest('[data-star-entry]');
     if (starBtn) {
       var id = starBtn.getAttribute('data-star-entry');
