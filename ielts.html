@@ -879,6 +879,8 @@ body:not(.is-home) .hero{
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0; /* let a long title shrink and wrap so the stars stay inside the box on narrow phones */
+  overflow-wrap: anywhere;
 }
 .notes-section-title-empty::before{ background: var(--ink-faint); }
 .notes-section-title::before{
@@ -971,6 +973,7 @@ body:not(.is-home) .hero{
 .notes-line-text{
   flex: 1 1 auto;
   min-width: 0;
+  overflow-wrap: anywhere; /* long unbroken strings (Advantages/Disadvantages(outweigh)) must wrap instead of widening the page on narrow phones */
 }
 .notes-placeholder{ color: var(--ink-faint); font-style: italic; }
 .notes-editarea{
@@ -4766,15 +4769,25 @@ const DATA = {
       note.style.left = center + 'px'; // temporary, refined below once width is known
       wrongEl.appendChild(note);
 
-      // Note is always a single line (nowrap); if it's wider than the space
+      // Note starts as a single line (nowrap); if it's wider than the space
       // around the struck word's center, shift it left/right just enough to
       // stay inside the card instead of letting it clip or wrap.
+      // If it is wider than the whole card, no shift can keep it inside:
+      // centering it would push its right half past the page edge, which on
+      // phones widens the page, leaves the body pinned to the left and shows the
+      // dotted background on the right only. So it wraps to the card's width.
       var noteW = note.getBoundingClientRect().width;
-      var half = noteW / 2;
-      var clampedCenter = (half * 2 > wrongRect.width)
-        ? wrongRect.width / 2
-        : Math.min(Math.max(center, half), wrongRect.width - half);
-      note.style.left = clampedCenter + 'px';
+      if (noteW > wrongRect.width) {
+        note.style.whiteSpace = 'normal';
+        note.style.width = wrongRect.width + 'px';
+        note.style.left = (wrongRect.width / 2) + 'px';
+        // a full-width note can't sit beside the struck word without covering the
+        // sentence's remaining wrapped lines, so it goes just below the whole sentence
+        note.style.top = (wrongEl.offsetHeight + NOTE_GAP) + 'px';
+      } else {
+        var half = noteW / 2;
+        note.style.left = Math.min(Math.max(center, half), wrongRect.width - half) + 'px';
+      }
 
       var noteRect = note.getBoundingClientRect();
       var neededHeight = (noteRect.bottom - wrongRect.top) - wrongEl.offsetHeight;
